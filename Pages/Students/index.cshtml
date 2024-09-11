@@ -1,0 +1,29 @@
+﻿@page
+@model indexModel
+@{
+}
+
+
+
+<h1>Student List</h1>
+
+
+<table class="table">
+	<thead class="bg-black">
+		<tr class="text-white">
+			<th scope="col">Navn</th>
+			<th scope="col">Klasse</th>
+			<th scope="col">Køn</th>
+			<th scope="col">Elev id</th>
+		</tr>
+	</thead>
+	@foreach (var student in Model.Students)
+	{
+		<tr>
+			<td>@student.FirstName @student.LastName</td>
+			<td>@student.SchoolClass.ClassName</td>
+			<td>@student.Gender</td>
+			<td>@student.StudentId</td>
+		</tr>
+	}
+</table>

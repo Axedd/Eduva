@@ -1,0 +1,56 @@
+# Ignore build output folders
+bin/
+obj/
+
+# Ignore user-specific files
+.vscode/
+.vs/
+*.user
+*.suo
+
+# Ignore logs
+*.log
+logs/
+
+# Ignore published output
+publish/
+out/
+
+# Ignore temporary files
+*.tmp
+*.temp
+*.pid
+*.seed
+*.pid.lock
+
+# Ignore database and secret files
+*.mdf
+*.ldf
+*.sqlite
+*.db
+appsettings.json
+appsettings.Development.json
+secrets.json
+
+# Ignore package management folders
+node_modules/
+bower_components/
+
+# Ignore .NET environment files
+*.swp
+*.sln.docstates
+.project
+.idea/
+
+# Ignore any additional tool configuration
+**/RazorGenerated/
+libman.json
+
+# Ignore OS-generated files
+.DS_Store
+Thumbs.db
+
+# Ignore wwwroot generated content (only if files are generated at runtime)
+# If your static content is included in the project, do not exclude wwwroot/
+# Uncomment the following line if you're using a build process to generate these assets
+wwwroot/students
