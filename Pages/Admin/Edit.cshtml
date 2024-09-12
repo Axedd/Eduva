@@ -1,0 +1,40 @@
+﻿@page "{StudentId:long}"
+@model SchoolSystem.Pages.Admin.EditModel
+@{
+}
+
+<h1>Edit Student</h1>
+
+<form method="post">
+    <div class="form-group">
+        <div class="input-container">
+            <label for="firstName">First Name</label>
+            <div class="input-group">
+                <input class="form-control" id="firstName" name="Student.FirstName" value="@Model.Student.FirstName" readonly />
+                <button type="button" class="btn btn-secondary btn-toggle" id="toggleButtonFirstName">Make Editable</button>
+            </div>
+        </div>
+
+        <div class="input-container">
+            <label for="lastName">Last Name</label>
+            <div class="input-group">
+                <input class="form-control" id="lastName" name="Student.LastName" value="@Model.Student.LastName" readonly />
+                <button type="button" class="btn btn-secondary btn-toggle" id="toggleButtonLastName">Make Editable</button>
+            </div>
+        </div>
+
+        <div class="input-container">
+            <label for="className">Class</label>
+            <div class="input-group">
+                <input class="form-control" id="className" name="Student.SchoolClass.ClassName" value="@Model.Student.SchoolClass.ClassName" readonly />
+                <button type="button" class="btn btn-secondary btn-toggle" id="toggleButtonClassName">Make Editable</button>
+            </div>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-save">Save</button>
+</form>
+
+<!-- Link to external CSS and JS -->
+<link rel="stylesheet" href="~/css/edit-student.css" />
+<script src="~/js/edit-student.js"></script>

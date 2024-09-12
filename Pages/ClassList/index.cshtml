@@ -6,21 +6,20 @@
 <h1>Klasser:</h1>
 
 
-<table class="table">
-	<tbody>
-		<tr>
-		@foreach (var Class in Model.SchoolClasses)
-		{
-			
-				<td>
-					<a asp-page="./Class" asp-route-id="@Class.ClassId" >@Class.ClassName</a>
-				</td>
+<div class="container-fluid">
+    <div class="row">
+        @foreach (var Class in Model.SchoolClasses)
+        {
+            <div class="col-6 col-sm-4 col-md-3 col-lg-2 p-1">
+                <div class="class-card">
+                    <a asp-page="./Class" asp-route-id="@Class.ClassId" class="class-link">
+                        @Class.ClassName
+                    </a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
 
-		}
-		</tr>
-	</tbody>
-</table>
 
-<ul>
-	
-</ul>
+<link rel="stylesheet" href="~/css/class-list.css" />

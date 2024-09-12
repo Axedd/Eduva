@@ -1,0 +1,35 @@
+﻿.container-fluid {
+    padding: 0;
+}
+
+.class-card {
+    background-color: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    padding: 10px;
+    text-align: center;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+    .class-card:hover {
+        background-color: #e9ecef;
+        transform: translateY(-2px);
+    }
+
+.class-link {
+    text-decoration: none;
+    color: #212529;
+    font-weight: 500;
+    display: block;
+    padding: 5px;
+}
+
+    .class-link:hover {
+        color: #007bff;
+    }
+
+.col-6, .col-sm-4, .col-md-3, .col-lg-2 {
+    padding: 0 5px; /* Tighten up the padding between columns */
+}

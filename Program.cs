@@ -8,6 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<SchoolSystemDbContext>(options =>
 options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"), new MySqlServerVersion(new Version(8, 0, 33))
 ));
+builder.Services.AddScoped<Random>();
 builder.Services.AddScoped<StudentService>();
 
 

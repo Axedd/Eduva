@@ -19,7 +19,7 @@ namespace SchoolSystem.Pages.ClassList
 		public async Task<IActionResult> OnGetAsync(int id)
         {
 			SchoolClass = await _studentService.GetSchoolClassByIdAsync(id);
-			ClassStudents = await _studentService.GetClassStudentsByIdAsync(id);
+			ClassStudents = await _studentService.GetClassStudentsByClassIdAsync(id);
 
 
             return Page();

@@ -1,0 +1,40 @@
+﻿/* wwwroot/css/edit-student.css */
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+}
+
+h1 {
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.input-container {
+    margin-bottom: 15px;
+    max-width: 600px; /* Adjust as needed */
+}
+
+.input-group {
+    display: flex;
+    align-items: center;
+}
+
+    .input-group input {
+        flex: 1;
+        margin-right: 10px; /* Space between input and button */
+    }
+
+    .input-group button {
+        flex-shrink: 0;
+    }
+
+.btn-toggle {
+    border-radius: 4px;
+}
+
+.btn-save {
+    margin-top: 20px;
+}

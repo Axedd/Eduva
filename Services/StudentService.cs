@@ -9,10 +9,12 @@ namespace SchoolSystem.Services
 	public class StudentService
 	{
 		private readonly SchoolSystemDbContext _context;
+		private readonly Random _random;
 
-		public StudentService(SchoolSystemDbContext context)
+		public StudentService(SchoolSystemDbContext context, Random random)
 		{
 			_context = context;
+			_random = random;
 		}
 
 		public async Task AddNewStudentAsync(Student student)
@@ -46,11 +48,6 @@ namespace SchoolSystem.Services
 				.Include(s => s.SchoolClass)
 				.FirstOrDefaultAsync(s => s.StudentId == studentId);
 
-			if (student == null)
-			{
-				throw new Exception($"Student with ID {studentId} not found.");
-			}
-
 			return student;
 		}
 
@@ -70,7 +67,7 @@ namespace SchoolSystem.Services
 			return schoolClass;
 		}
 
-        public async Task<List<Student>> GetClassStudentsByIdAsync(int id)
+        public async Task<List<Student>> GetClassStudentsByClassIdAsync(int id)
         {
             var ClassStudents = await _context.Students.Where(s => s.ClassId == id).ToListAsync();
 			
@@ -83,10 +80,8 @@ namespace SchoolSystem.Services
 		
 		public async Task<long> GenerateStudentIdAsync()
 		{
-			Random rnd = new Random();
-
 			// Generate a random 11-digit number
-			long studentId = await GenerateRandom11DigitNumber(rnd);
+			long studentId = await GenerateRandom11DigitNumber(_random);
 
 
 			return studentId;
