@@ -17,9 +17,6 @@ namespace SchoolSystem.Pages.Class
         public async Task<IActionResult> OnGetAsync() 
         {
             SchoolClasses = await _studentService.GetSchoolClassesAsync();
-			SchoolClasses = SchoolClasses.OrderBy(m => m.ClassName).ToList();
-
-
 
 			return Page();
         }

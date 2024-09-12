@@ -16,7 +16,6 @@ namespace SchoolSystem.Models
 
         // Navigation property
         public SchoolClass SchoolClass { get; set; }
-
 		public string ImageFileName => $"/students/{FirstName[0]}/{Gender}/{FirstName[0]}_{StudentId}.jpg"; // Adjust directory and extension as needed
 	}
 }

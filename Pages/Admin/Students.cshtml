@@ -1,0 +1,37 @@
+﻿@page
+@model StudentsModel
+@{
+}
+
+<h1>Admin Page</h1>
+<h2>Manage students</h2>
+
+
+<form method="post">
+	<div class="form-group">
+		<label>Enter student's first name</label>
+		<input asp-for="Student.FirstName" type="text" class="form-control"/><br />
+		<label>Enter student's last name'</label>
+		<input asp-for ="Student.LastName" type="text" class="form-control" />
+	</div><br />
+	<div class="form-group">
+		<label>Select Class</label><br />
+		<select asp-for="Student.ClassId" class="form-group">
+			<option></option>
+			@foreach (var Class in Model.schoolClasses)
+			{
+				<option value="@Class.ClassId">@Class.ClassName</option>
+			}
+		</select>
+		<br />
+		<label>Select Gender</label>
+		<select asp-for="Student.Gender" class="form-group">Select Gender
+			<option>Male</option>
+			<option>Female</option>
+		</select>
+		<br />
+		<img src="/students/default.jpg" />
+		<input asp-for="Student.ProfilePicturePath" value="/students/default.jpg" />
+	</div><br />
+	<button type="submit" class="btn btn-primary">Add Student</button>
+</form>
