@@ -1,0 +1,97 @@
+﻿@page
+@model AuthWebApp.Pages.Admin.SettingsModel
+@{
+}
+
+
+<h1>Class and Student Selection</h1>
+
+<!-- Class Selection -->
+<select id="class-select" class="form-select" aria-label="Classes">
+    <option selected>Select a class</option>
+    @foreach (var Class in Model.StudentClasses)
+    {
+        <option value="@Class.StudentClassId">@Class.ClassName</option>
+    }
+</select>
+
+<!-- Student Selection -->
+<select id="student-select" class="form-select" aria-label="Students">
+    <option selected>Select a student</option>
+</select>
+
+<div class="container mt-4 admin-profile-container">
+    <div class="row">
+        <!-- Profile Image Column -->
+        <div class="col-md-4 text-center">
+            <img id="profile-image" class="profile-image" src="/students/default.jpg" alt="Profile Picture" onerror="this.onerror=null; this.src='/students/default.jpg';">
+        </div>
+        <!-- Student Data Column -->
+        <div class="col-md-8 profile-info" id="profile-info">       
+            <ul id="student-info">
+                <li><strong>Name:</strong> </li>
+                <li><strong>Gender:</strong> </li>
+            </ul>
+        </div>
+    </div>
+    
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('class-select').addEventListener('change', function () {
+            var classId = this.value;
+
+            // Clear the student dropdown and image
+            var studentSelect = document.getElementById('student-select');
+            var profileImage = document.getElementById('profile-image');
+            var studentInfo = document.getElementById('student-info');
+
+            studentSelect.innerHTML = '<option selected>Select a student</option>';
+            profileImage.src = '/path/to/default/image.jpg'; // Set default image
+
+            // Only proceed if a valid class is selected
+            if (classId && classId !== "Select a class") {
+                // Fetch students for the selected class
+                fetch(`/Admin/Settings?handler=GetStudentsByClass&classId=` + classId)
+                    .then(response => response.json())
+                    .then(data => {
+                        // Populate the student dropdown with fetched data
+                        data.forEach(function (student) {
+                            var option = document.createElement('option');
+                            option.value = student.studentId;
+                            option.text = student.firstName + ' ' + student.lastName;
+                            studentSelect.add(option);
+                        });
+                    })
+                    .catch(error => console.error('Error fetching students:', error));
+            }
+        });
+
+        document.getElementById('student-select').addEventListener('change', function () {
+            var studentId = this.value;
+
+            // Fetch student details to get profile picture and other info
+            if (studentId) {
+                fetch(`/Admin/Settings?handler=GetStudentById&studentId=` + studentId)
+                    .then(response => response.json())
+                    .then(student => {
+                        var profileImage = document.getElementById('profile-image');
+                        var studentInfo = document.getElementById('student-info');
+
+                        profileImage.src = student.profilePicturePath || '/path/to/default/image.jpg'; // Set profile picture or default image
+
+                        // Update student info
+                        studentInfo.innerHTML = `
+                                    <li><strong>StudentId:</strong> ${student.studentId}</li>
+                                    <li><strong>Name:</strong> ${student.firstName} ${student.lastName}</li>
+                                    <li><strong>Gender:</strong> ${student.gender}</li>
+                                    <li><strong>Class:</strong> ${student.studentClass ? student.studentClass.className : 'Not assigned'}</li>
+                                    <button class="btn btn-primary" onclick="location.href='/Admin/EditStudent?StudentId=${student.studentId}'">Edit</button>
+                                `;
+                    })
+                    .catch(error => console.error('Error fetching student:', error));
+            }
+        });
+    </script>
+}

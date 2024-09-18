@@ -1,0 +1,34 @@
+﻿@page
+@model AuthWebApp.Pages.Account.LoginModel
+@{
+    ViewData["Title"] = "Log in";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<section id="loginForm">
+    <form asp-route-returnUrl="@Model.ReturnUrl" method="post">
+        <div class="form-group">
+            <label asp-for="Input.UserName"></label>
+            <input asp-for="Input.UserName" class="form-control" />
+            <span asp-validation-for="Input.UserName" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Input.Password"></label>
+            <input asp-for="Input.Password" class="form-control" />
+            <span asp-validation-for="Input.Password" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <div class="checkbox">
+                <label asp-for="Input.RememberMe">
+                    <input asp-for="Input.RememberMe" />
+                    Remember me?
+                </label>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Log in</button>
+    </form>
+</section>

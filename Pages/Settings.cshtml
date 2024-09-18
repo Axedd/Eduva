@@ -1,0 +1,12 @@
+﻿@page
+@model AuthWebApp.Pages.SettingsModel
+@{
+}
+
+
+<ul>
+	@foreach (var studentClass in Model.StudentClasses)
+	{
+		<li>@studentClass.ClassName</li>
+	}
+</ul>

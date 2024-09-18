@@ -1,0 +1,25 @@
+﻿@page
+@model AuthWebApp.Pages.StudentClasses.IndexModel
+@{
+}
+
+
+<h1>Student Classes:</h1>
+<div class="container mt-5">
+    <div class="row">
+        @foreach (var studentClass in Model.StudentClasses)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="square">
+                    <div class="square-content">
+                        <a asp-page="/StudentClasses/Details" asp-route-ClassId="@studentClass.StudentClassId">
+                            @studentClass.ClassName
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+

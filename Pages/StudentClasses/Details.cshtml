@@ -1,0 +1,15 @@
+﻿@page "{ClassId:int}"
+@model AuthWebApp.Pages.StudentClasses.DetailsModel
+@{
+    ViewData["Title"] = "Class Details";
+}
+
+<h1>@Model.StudentClass.ClassName</h1>
+
+<h2>Students:</h2>
+<ul>
+    @foreach (var student in Model.Students)
+    {
+        <li>@student.FirstName @student.LastName</li>
+    }
+</ul>

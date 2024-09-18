@@ -1,0 +1,48 @@
+﻿@page 
+@model AuthWebApp.Pages.Admin.EditStudentModel
+@{
+}
+
+
+
+<h1>Edit Student Details</h1>
+
+
+<form method="post">
+	<input type="hidden" name="Student.StudentId" value="@Model.Student.StudentId" />
+
+	<div class="form-group row">
+		<label for="FirstName" class="col-sm-2 col-form-label">First Name</label> 
+		<div class="col-sm-10">
+			<input type="text" name="Student.FirstName" class="form-control" id="inputFirstName" value="@Model.Student.FirstName" />
+		</div>
+	</div>
+	<div class="form-group row">
+		<label for="LastName" class="col-sm-2 col-form-label">Last Name</label> 
+		<div class="col-sm-10">
+			<input type="text" name="Student.LastName" class="form-control" id="inputLastName" value="@Model.Student.LastName" />
+		</div>
+	</div>
+    <div class="form-group row">
+        <label for="StudentClass" class="col-sm-2 col-form-label">Class</label>
+        <div class="col-sm-10">
+            <select name="Student.StudentClassId" class="form-select">
+                @foreach (var Class in Model.StudentClasses)
+                {
+                    if (Class.StudentClassId != Model.Student.StudentClassId)
+                    {
+                        <option value="@Class.StudentClassId">@Class.ClassName</option>
+                    }
+                    else
+                    {
+                       
+                    }
+                }
+                <option value="@Model.Student.StudentClassId" selected>@Model.Student.StudentClass.ClassName</option>
+            </select>
+        </div>
+    </div>
+	<button class="btn btn-primary">Save</button>
+</form>
+
+

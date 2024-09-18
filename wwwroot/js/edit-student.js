@@ -8,8 +8,14 @@ document.getElementById('toggleButtonLastName').addEventListener('click', functi
 });
 
 document.getElementById('toggleButtonClassName').addEventListener('click', function () {
-    toggleReadonly('className', this);
+    toggleDisabled('className', this);
 });
+
+
+function toggleDisabled(inputId, button) {
+    const input = document.getElementById(inputId);
+    input.disabled = !input.disabled;
+}
 
 function toggleReadonly(inputId, button) {
     const input = document.getElementById(inputId);

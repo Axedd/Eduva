@@ -1,0 +1,34 @@
+﻿@page
+@model AuthWebApp.Pages.Account.UserDetailsModel
+@{
+    ViewData["Title"] = "User Details";
+}
+
+<h2>User Details</h2>
+
+@if (Model.Student != null)
+{
+    <div>
+        <h3>Student Information</h3>
+        <p><strong>Name:</strong> @Model.Student.FirstName @Model.Student.LastName</p>
+        <p><strong>BirthDate:</strong> @Model.Student.DateOfBirth</p>
+        <p><strong>Class:</strong> @Model.StudentClass.ClassName</p>
+
+        @if (Model.Subject != null && Model.Teacher != null)
+        {
+            <div>
+                <h3>Subject Information</h3>
+                <p><strong>Subject:</strong> @Model.Subject.SubjectName</p>
+                <p><strong>Teacher:</strong> @Model.Teacher.FirstName @Model.Teacher.LastName</p>
+            </div>
+        }
+        else
+        {
+            <p>No subjects available for this class.</p>
+        }
+    </div>
+}
+else
+{
+    <p>Student not found.</p>
+}

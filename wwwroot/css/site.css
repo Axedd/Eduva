@@ -18,5 +18,43 @@ html {
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
+    font-family: Arial, sans-serif;
+}
+
+h1 {
+    color: #333;
+}
+
+select.form-select {
+    width: 200px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+    select.form-select option {
+        padding: 5px;
+    }
+
+
+
+/* Additional styling for the profile info */
+.profile-info ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.profile-info li {
+    margin-bottom: 8px; /* Space between list items */
+    font-size: 16px; /* Adjust font size */
+}
+
+/* Ensures proper spacing and alignment of the profile container */
+.admin-profile-container {
+    padding: 20px; /* Add padding around the container */
+}
+
+.container {
+    max-width: 1200px; /* Adjust width if needed */
 }

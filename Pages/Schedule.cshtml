@@ -1,0 +1,70 @@
+﻿@page
+@model AuthWebApp.Pages.ScheduleModel
+@{
+}
+
+<style>
+    .schedule-header {
+        background-color: #f8f9fa;
+        border-bottom: 2px solid #dee2e6;
+    }
+    .schedule-cell {
+        border: 1px solid #dee2e6;
+        padding: 5px;
+        height: 100%;
+    }
+    .schedule-time {
+        font-weight: bold;
+        color: #6c757d;
+    }
+    .schedule-item {
+        background-color: #e9ecef;
+        border-radius: 4px;
+        padding: 5px;
+        margin-bottom: 5px;
+    }
+    .schedule-item:last-child {
+        margin-bottom: 0;
+    }
+</style>
+
+
+<div class="container-fluid mt-3">
+    <div class="row schedule-header">
+        <div class="col">
+            <h2 class="text-center">Uge 37 - 2023</h2>
+        </div>
+    </div>
+    <div class="row schedule-header">
+        <div class="col-2"></div>
+        <div class="col">Mandag (11/9)</div>
+        <div class="col">Tirsdag (12/9)</div>
+        <div class="col">Onsdag (13/9)</div>
+        <div class="col">Torsdag (14/9)</div>
+        <div class="col">Fredag (15/9)</div>
+    </div>
+    <div class="row">
+        <div class="col-2 schedule-time">
+            <div>1. modul</div>
+            <div>8:00 - 9:30</div>
+            <div>2. modul</div>
+            <span>10:00 - 11:30</span>
+        </div>
+        <div class="col schedule-cell">
+            <div class="schedule-item">3ms1 DA • JL • UV - 146 9. Sildig Opvaagnen II</div>
+        </div>
+        <div class="col schedule-cell">
+            <div class="schedule-item">3ms1 MA • PA • UV - 043 Integralregning</div>
+        </div>
+        <div class="col schedule-cell">
+            <div class="schedule-item">3ms1 DA • JL • UV - 046 - Oikos 10. Sildig Opvaagnen III</div>
+        </div>
+        <div class="col schedule-cell">
+            <div class="schedule-item">3ms1 re • HG • UV - 148 Kvinder og ægteskab</div>
+        </div>
+        <div class="col schedule-cell">
+            <div class="schedule-item">3ms1 skolepulje • CB • UV - 142 Timen starter kl. 8:15</div>
+        </div>
+    </div>
+    <!-- Add more rows for other time slots -->
+</div>
