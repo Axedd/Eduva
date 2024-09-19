@@ -1,25 +1,27 @@
-html {
-  font-size: 14px;
+html, body {
+    height: 100%;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
+    html {
+        font-size: 16px;
+    }
 }
 
 body {
-    margin-bottom: 60px;
+    display: flex;
+    flex-direction: column;
     font-family: Arial, sans-serif;
+    /* Remove margin-bottom to avoid interfering with the footer placement */
+}
+
+main {
+    flex-grow: 1;
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
 h1 {
@@ -36,8 +38,6 @@ select.form-select {
     select.form-select option {
         padding: 5px;
     }
-
-
 
 /* Additional styling for the profile info */
 .profile-info ul {

@@ -1,0 +1,20 @@
+﻿@page
+@model SchoolSystem.Pages.Admin.AddSubjectModel
+@{
+}
+
+
+<select class="form-control">
+	@foreach(var subject in Model.Subjects)
+	{
+		<option value="@subject.SubjectId">@subject.SubjectName</option>
+	}
+</select>
+
+<form method="post">
+	<div class="form-group">
+		<label>Subject Name</label>
+		<input name="Subject.SubjectName" class="form-control" placeholder="Enter subject name" />
+	</div>	
+	<button type="submit" class="btn btn-primary">Add</button>
+</form>

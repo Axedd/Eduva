@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using SchoolSystem.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,6 +40,8 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 
 // Register authorization handlers
 builder.Services.AddSingleton<IAuthorizationHandler, HRMangerProbationRequirementHandler>();
+builder.Services.AddScoped<SubjectService>();
+builder.Services.AddScoped<Random>();
 
 var app = builder.Build();
 
