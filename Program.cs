@@ -35,19 +35,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders(); 
 
-builder.Services.AddAuthentication("MyCookieAuth").AddCookie("MyCookieAuth", options =>
-{
-    options.Cookie.Name = "MyCookieAuth";
-});
 
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("AdminOnly", policy => policy.RequireClaim("Admin"));
-    options.AddPolicy("MustBelongToHRDepartment", policy => policy.RequireClaim("Department", "HR"));
-    options.AddPolicy("HRManagerOnly", policy => policy
-        .RequireClaim("Department", "HR")
-        .RequireClaim("HRManagerOnly").Requirements.Add(new HRMangerProbationRequirement(3)));
-});
 
 // Register authorization handlers
 builder.Services.AddSingleton<IAuthorizationHandler, HRMangerProbationRequirementHandler>();

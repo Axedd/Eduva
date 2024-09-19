@@ -18,7 +18,7 @@ namespace AuthWebApp.Pages.Admin
         [BindProperty(SupportsGet = true)]
         public long StudentId { get; set; }
         [BindProperty]
-        public Student Student { get; set; }
+        public Student? Student { get; set; }
         public List<StudentClass> StudentClasses { get; set; }
 
         public async Task<IActionResult> OnGetAsync(long studentId)
@@ -64,8 +64,7 @@ namespace AuthWebApp.Pages.Admin
 				Console.WriteLine("Student not found in the database.");
 				return NotFound();
 			}
-			Console.WriteLine(Student.StudentClassId);
-			Console.WriteLine(existingStudent.StudentClassId);
+
 			existingStudent.FirstName = Student!.FirstName;
 			existingStudent.LastName = Student!.LastName;
             if (Student.StudentClassId != null)
