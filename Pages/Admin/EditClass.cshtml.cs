@@ -27,6 +27,8 @@ namespace SchoolSystem.Pages.Admin
                 StudentClasses = await _context.StudentClasses
                     .OrderBy(sc => sc.ClassName)
                     .ToListAsync();
+
+                
                 return Page();
             }
             catch (Exception ex)

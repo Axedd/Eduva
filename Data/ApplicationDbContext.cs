@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using AuthWebApp.Models; // Ensure this matches your namespace for ApplicationUser
+using AuthWebApp.Models;
+using SchoolSystem.Models; // Ensure this matches your namespace for ApplicationUser
 
 namespace AuthWebApp.Data
 {
@@ -11,59 +12,57 @@ namespace AuthWebApp.Data
         {
         }
 
-		public DbSet<Student> Students { get; set; }
-		public DbSet<Subject> Subjects { get; set; }
-        public DbSet<StudentClass> StudentClasses { get; set; } // Add this line
+        public DbSet<Student> Students { get; set; }
+        public DbSet<Subject> Subjects { get; set; }
+        public DbSet<StudentClass> StudentClasses { get; set; }
+        public DbSet<SubjectTeachers> SubjectTeachers { get; set; }
         public DbSet<StudentClassSubjects> StudentClassSubjects { get; set; }
         public DbSet<Teacher> Teachers { get; set; }
-        
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
 
+            // StudentClassSubjects relationships
             builder.Entity<StudentClassSubjects>()
-                .HasKey(sc => new {sc.StudentClassId, sc.SubjectId});
-            
-            
+                .HasKey(sc => new { sc.StudentClassId, sc.SubjectId });
+
             builder.Entity<StudentClassSubjects>()
                 .HasOne(sc => sc.StudentClass)
                 .WithMany(c => c.StudentClassSubjects)
                 .HasForeignKey(sc => sc.StudentClassId);
-            
+
             builder.Entity<StudentClassSubjects>()
                 .HasOne(sc => sc.Subject)
                 .WithMany(s => s.StudentClassSubjects)
                 .HasForeignKey(sc => sc.SubjectId);
 
-            builder.Entity<StudentClass>()
-                .HasMany(s => s.StudentClassSubjects)
-                .WithOne(s => s.StudentClass)
-                .HasForeignKey(s => s.StudentClassId);
-
-
-            // Configure the relationship between Student and ApplicationUser
+            // Student relationships
             builder.Entity<Student>()
                 .HasOne(s => s.User)
                 .WithOne() // Assuming one-to-one relationship
                 .HasForeignKey<Student>(s => s.UserId)
-                .OnDelete(DeleteBehavior.Cascade); // Adjust delete behavior as needed
+                .OnDelete(DeleteBehavior.Cascade);
 
-            // Configure the relationship between ApplicationUser and StudentClass
             builder.Entity<Student>()
                 .HasOne(s => s.StudentClass)
                 .WithMany(sc => sc.Students)
                 .HasForeignKey(s => s.StudentClassId)
-                .OnDelete(DeleteBehavior.Restrict); // Adjust as needed
+                .OnDelete(DeleteBehavior.Restrict);
 
-            builder.Entity<StudentClassSubjects>()
-           .HasOne(scs => scs.Teacher)
-           .WithMany(t => t.StudentClassSubjects)
-           .HasForeignKey(scs => scs.TeacherId);
+            // Teacher relationships
+            builder.Entity<SubjectTeachers>()
+                .HasKey(st => new { st.SubjectId, st.TeacherId });
+
+            builder.Entity<SubjectTeachers>()
+                .HasOne(st => st.Subject)
+                .WithMany(s => s.SubjectTeachers)
+                .HasForeignKey(st => st.SubjectId);
+
+            builder.Entity<SubjectTeachers>()
+                .HasOne(st => st.Teacher)
+                .WithMany(t => t.SubjectTeachers)
+                .HasForeignKey(st => st.TeacherId);
         }
-
-        // You don't need to define DbSet<ApplicationUser> explicitly 
-        // because IdentityDbContext already includes it.
-        // Define other DbSets for your application's entities here.
     }
 }

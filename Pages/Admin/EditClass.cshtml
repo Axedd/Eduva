@@ -5,6 +5,8 @@
 
 
 
+<a id="addSubjectLink" asp-page="/Admin/AddClassSubject">Add new subject</a>
+
 <select id="class-select" class="form-control"  aria-label="Classes"> 
 	<option selected>Select Class</option>
 	@foreach (var Class in Model.StudentClasses)
@@ -33,6 +35,7 @@
 
 
 
+
 @section Scripts {
     <script>
         document.getElementById('class-select').addEventListener('change', function () {
@@ -40,7 +43,9 @@
 
             var classSelect = document.getElementById('class-select');
             var subjectSelect = document.getElementById('class-subject-select');
+            var addSubjectLink = document.getElementById('addSubjectLink');
 
+            addSubjectLink.href = `/Admin/AddClassSubject?studentClassId=${classId}`
             subjectSelect.innerHTML = "<option selected>Select a Subject</option>";
 
             if (classId && classId !== 'Select Class') {

@@ -1,4 +1,6 @@
-﻿namespace AuthWebApp.Models
+﻿using SchoolSystem.Models;
+
+namespace AuthWebApp.Models
 {
     public class Teacher
     {
@@ -6,6 +8,7 @@
         public string FirstName { get; set; }
         public string LastName { get; set; }
 
-        public ICollection<StudentClassSubjects> StudentClassSubjects { get; set; }
+		public ICollection<SubjectTeachers> SubjectTeachers { get; set; }
+		public ICollection<StudentClassSubjects> StudentClassSubjects { get; set; }
     }
 }

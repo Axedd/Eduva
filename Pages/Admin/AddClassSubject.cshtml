@@ -1,0 +1,39 @@
+﻿@page
+@model SchoolSystem.Pages.Admin.AddClassSubjectModel
+@{
+}
+
+
+
+<p>Add new subject</p>
+<form method="post">
+	<select class="form-select">
+		@foreach (var subject in Model.Subjects)
+		{
+			<option>@subject.SubjectName</option>
+		}
+		
+	</select>
+	<select class="form-select">
+		@foreach (var subject in Model.Subjects)
+		{
+			@foreach (var teacher in subject.SubjectTeachers)
+			{
+				<option>@teacher.Teacher.FirstName @teacher.Teacher.LastName</option>
+			}
+		}
+	</select>
+	<div class="form-control">
+
+	</div>
+</form>
+
+
+
+<h3>Assigned Subjects</h3>
+<ul>
+	@foreach (var Subject in Model.StudentClassSubjects)
+	{
+		<li>@Subject.Subject.SubjectName - @Subject.Teacher.FirstName @Subject.Teacher.LastName</li>
+	}
+</ul>
