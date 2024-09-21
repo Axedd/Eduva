@@ -6,6 +6,7 @@ namespace SchoolSystem.Models
 	{
 		public long SubjectId { get; set; }
 		public long TeacherId { get; set; }
+		
 
 		public virtual Subject Subject { get; set; } 
 		public virtual Teacher Teacher { get; set; } 

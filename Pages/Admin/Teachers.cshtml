@@ -1,0 +1,52 @@
+﻿@page
+@model SchoolSystem.Pages.Admin.TeachersModel
+@Html.AntiForgeryToken()
+@{
+}
+
+
+<select id="teacher-selector" class="form-control">
+	@foreach (var Teacher in Model.Teachers)
+	{
+		<option value="@Teacher.TeacherId">@Teacher.FirstName @Teacher.LastName</option>
+	}
+</select>
+
+
+<div class="container mt-4 admin-profile-container">
+    <div class="row">
+        <!-- Profile Image Column -->
+        <div class="col-md-4 text-center">
+            <img id="profile-image" class="profile-image" src="/students/default.jpg" alt="Profile Picture" onerror="this.onerror=null; this.src='/students/default.jpg';">
+        </div>
+        <!-- Student Data Column -->
+        <div class="col-md-8 profile-info" id="profile-info">
+            <ul id="teacher-info">
+                <li><strong>Name:</strong> </li>
+                <li><strong>Gender:</strong> </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        document.getElementById('teacher-selector').addEventListener('change', function () {
+            var TeacherId = this.value;
+            console.log("Selected Teacher ID:", TeacherId);
+
+            if (TeacherId && TeacherId !== "Select a teacher") {
+                fetch(`/Admin/Teachers?handler=GetTeacherInfo&teacherId=` + TeacherId)
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('profile-image').src = data.profilePicturePath || '/students/default.jpg';
+                        document.getElementById('teacher-info').innerHTML = `
+                            <li><strong>Name:</strong> ${data.firstName} ${data.lastName}</li>
+                            <button class="btn btn-primary" onclick="location.href='/Admin/EditTeacher?teacherId=${data.teacherId}'">Edit</button>`;
+                    })
+                    .catch(error => console.error('Error fetching teacher:', error));
+            }
+        });
+    </script>
+}

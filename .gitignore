@@ -54,5 +54,6 @@ Thumbs.db
 # If your static content is included in the project, do not exclude wwwroot/
 # Uncomment the following line if you're using a build process to generate these assets
 wwwroot/students
+wwwroot/teachers
 
 migrations/
