@@ -7,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AuthWebApp.Pages.Admin
 {
-    [Authorize(Roles = "Admin")]
     public class SettingsModel : PageModel
     {
         private readonly ApplicationDbContext _context;

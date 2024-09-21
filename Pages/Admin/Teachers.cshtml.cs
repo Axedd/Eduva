@@ -36,11 +36,10 @@ namespace SchoolSystem.Pages.Admin
 
 		public async Task<IActionResult> OnGetGetTeacherInfoAsync(long teacherId)
 		{
-			Console.WriteLine(teacherId);
 			var teacherInfo = await _context.Teachers
 				.Where(t => t.TeacherId == teacherId)
 				.FirstOrDefaultAsync();
-			Console.WriteLine(teacherInfo.FirstName);
+
 			return new JsonResult(teacherInfo);
 		}
 	}

@@ -5,35 +5,54 @@
 
 
 
-<p>Add new subject</p>
+<p>Add new subject - @Model.StudentClass.ClassName</p>
+
+<div asp-validation-summary="All" class="text-danger"></div>
 <form method="post">
-	<select class="form-select">
+    <input type="hidden" name="studentClassId" value="@Model.StudentClass.StudentClassId" />
+
+    <select name="SelectedSubjectId" id="subject-selector" class="form-select">
+		<option>Select Subject</option>
 		@foreach (var subject in Model.Subjects)
 		{
-			<option>@subject.SubjectName</option>
+			<option value="@subject.SubjectId">@subject.SubjectName</option>
 		}
 		
 	</select>
-	<select class="form-select">
-		@foreach (var subject in Model.Subjects)
-		{
-			@foreach (var teacher in subject.SubjectTeachers)
-			{
-				<option>@teacher.Teacher.FirstName @teacher.Teacher.LastName</option>
-			}
-		}
-	</select>
-	<div class="form-control">
+    <select name="SelectedTeacherId" id="teacher-selector" class="form-select">
+        <option selected>Select Teacher</option>
+	</select><br />
 
-	</div>
+    <button type="submit" formaction="@Url.Page("AddClassSubject", "AssignSubject")" class="btn btn-primary">Assign Subject</button>
 </form>
 
 
 
-<h3>Assigned Subjects</h3>
-<ul>
-	@foreach (var Subject in Model.StudentClassSubjects)
-	{
-		<li>@Subject.Subject.SubjectName - @Subject.Teacher.FirstName @Subject.Teacher.LastName</li>
-	}
-</ul>
+
+@section Scripts {
+    <script>
+        document.getElementById('subject-selector').addEventListener('change', function () {
+            var subjectId = this.value;
+
+            var teacherSelect = document.getElementById('teacher-selector');
+            teacherSelect.innerHTML = "<option>Select Teacher</option>"
+
+            if (subjectId && subjectId !== "Select Subject") {
+                fetch('/Admin/AddClassSubject?handler=TeachersFromSubjectId&subjectId=' + subjectId)
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data);
+                        var teacherSelector = document.getElementById('teacher-selector');
+
+                        data.forEach(function (subjectTeacher) {
+                            var option = document.createElement('option');
+                            option.value = subjectTeacher.teacher.teacherId; // Ensure teacherId exists
+                            option.text = subjectTeacher.teacher.firstName + ' ' + subjectTeacher.teacher.lastName; // Ensure firstName exists
+                            teacherSelector.add(option);
+                        })
+                    })
+                    .catch(error => console.error('Error fetching data:', error));
+            }
+        });
+    </script>
+}

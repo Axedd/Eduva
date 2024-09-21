@@ -5,12 +5,23 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using SchoolSystem.Interfaces;
 using SchoolSystem.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminPolicy", policy =>
+        policy.RequireRole("Admin")); // Define your policy
+});
+
+
 // Add services to the container.
-builder.Services.AddRazorPages();
+builder.Services.AddRazorPages(options =>
+{
+    options.Conventions.AuthorizeFolder("/Admin", "AdminPolicy"); // Apply the policy to all pages in /Admin
+});
 
 // Configure services
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -42,6 +53,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 builder.Services.AddSingleton<IAuthorizationHandler, HRMangerProbationRequirementHandler>();
 builder.Services.AddScoped<SubjectService>();
 builder.Services.AddScoped<Random>();
+builder.Services.AddScoped<IIdValidationService, IdValidationService>();
 
 var app = builder.Build();
 
