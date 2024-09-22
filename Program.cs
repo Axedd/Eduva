@@ -54,6 +54,8 @@ builder.Services.AddSingleton<IAuthorizationHandler, HRMangerProbationRequiremen
 builder.Services.AddScoped<SubjectService>();
 builder.Services.AddScoped<Random>();
 builder.Services.AddScoped<IIdValidationService, IdValidationService>();
+builder.Services.AddScoped<IStudentService, StudentService>();
+builder.Services.AddScoped<IStudentClassService, StudentClassService>();
 
 var app = builder.Build();
 

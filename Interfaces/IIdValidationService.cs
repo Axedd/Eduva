@@ -2,7 +2,8 @@
 {
     public interface IIdValidationService
     {
-        Task<bool> IsValidStudentIdAsync(int studentId);
+        Task<bool> IsValidStudentIdAsync(long studentId);
+        Task<bool> IsValidTeacherIdAsync(long teacherId);
         Task<bool> IsValidStudentClassIdAsync(int studentClassId);
 
     }

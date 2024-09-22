@@ -3,16 +3,24 @@ using AuthWebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using SchoolSystem.Interfaces;
+using Microsoft.Extensions.Logging; // Make sure to include this for logging
 
 namespace AuthWebApp.Pages.Admin
 {
     public class EditStudentModel : PageModel
     {
         private readonly ApplicationDbContext _context;
+        private readonly IIdValidationService _idValidationService;
+        private readonly IStudentClassService _studentClassService;
+        private readonly ILogger<EditStudentModel> _logger; // Logger for diagnostics
 
-        public EditStudentModel(ApplicationDbContext context)
+        public EditStudentModel(ApplicationDbContext context, IIdValidationService idValidationService, IStudentClassService studentClassService, ILogger<EditStudentModel> logger)
         {
             _context = context;
+            _idValidationService = idValidationService;
+            _studentClassService = studentClassService;
+            _logger = logger;
         }
 
         [BindProperty(SupportsGet = true)]
@@ -23,24 +31,19 @@ namespace AuthWebApp.Pages.Admin
 
         public async Task<IActionResult> OnGetAsync(long studentId)
         {
+            if (!await _idValidationService.IsValidStudentIdAsync(studentId))
+            {
+                _logger.LogWarning("Invalid student ID: {StudentId}", studentId);
+                return NotFound();
+            }
+
             Student = await _context.Students
-                                    .Where(s => s.StudentId == studentId)
-                                    .Include(sc => sc.StudentClass)
-                                    .Select(s => new Student
-                                    {
-                                        StudentId = s.StudentId,
-                                        FirstName = s.FirstName ?? string.Empty, 
-                                        LastName = s.LastName ?? string.Empty,
-                                        StudentClass = s.StudentClass,
-                                        ProfilePicturePath = s.ProfilePicturePath ?? "/students/default.jpg", 
-                                        Gender = s.Gender ?? "Unknown",  
-                                    })
-                                    .FirstOrDefaultAsync();
+                .Include(sc => sc.StudentClass)
+                .FirstOrDefaultAsync(s => s.StudentId == studentId);
 
-			StudentClasses = await _context.StudentClasses.OrderBy(sc => sc.ClassName).ToListAsync();
+            StudentClasses = await _studentClassService.GetStudentClassesAsync();
 
-
-			if (Student == null)
+            if (Student == null)
             {
                 return NotFound();
             }
@@ -48,56 +51,55 @@ namespace AuthWebApp.Pages.Admin
             return Page();
         }
 
-		public async Task<IActionResult> OnPostAsync()
-		{
+        public async Task<IActionResult> OnPostAsync()
+        {
+            if (Student == null || !await _idValidationService.IsValidStudentIdAsync(Student.StudentId))
+            {
+                _logger.LogWarning("Invalid or null student ID.");
+                return NotFound();
+            }
 
+            var existingStudent = await _context.Students
+                .Include(s => s.StudentClass)
+                .FirstOrDefaultAsync(s => s.StudentId == Student.StudentId);
 
-			long studentId = Student!.StudentId;
+            if (existingStudent == null)
+            {
+                _logger.LogWarning("Student not found in the database: {StudentId}", Student.StudentId);
+                return NotFound();
+            }
 
-			// Retrieve the existing student from the database by ID.
-			var existingStudent = await _context.Students
-				.Include(s => s.StudentClass) // Include related entities if needed
-				.FirstOrDefaultAsync(s => s.StudentId == Student.StudentId);
+            existingStudent.FirstName = Student.FirstName;
+            existingStudent.LastName = Student.LastName;
 
-			if (existingStudent == null)
-			{
-				Console.WriteLine("Student not found in the database.");
-				return NotFound();
-			}
-
-			existingStudent.FirstName = Student!.FirstName;
-			existingStudent.LastName = Student!.LastName;
             if (Student.StudentClassId != null)
-			{
+            {
+                if (!await _idValidationService.IsValidStudentClassIdAsync((int)Student.StudentClassId))
+                {
+                    _logger.LogWarning("Invalid Student Class ID: {StudentClassId}", Student.StudentClassId);
+                    return BadRequest("Invalid Student Class ID.");
+                }
+
                 existingStudent.StudentClassId = Student.StudentClassId;
             }
 
-
             _context.Students.Update(existingStudent);
 
-			// Try saving changes and handle potential exceptions
-			try
-			{
-				await _context.SaveChangesAsync();
-			}
-			catch (DbUpdateConcurrencyException)
-			{
-				if (!StudentExists(Student.StudentId))
-				{
-					return NotFound();
-				}
-				else
-				{
-					throw;
-				}
-			}
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                _logger.LogError("Concurrency issue while updating student: {StudentId}", Student.StudentId);
+                if (!await _idValidationService.IsValidStudentIdAsync((int)Student.StudentId))
+                {
+                    return NotFound();
+                }
+                throw;
+            }
 
-			return RedirectToPage("/Admin/Settings");
-		}
-
-		private bool StudentExists(long studentId)
-		{
-			return _context.Students.Any(e => e.StudentId == studentId);
-		}
-	}
+            return RedirectToPage("/Admin/Settings");
+        }
+    }
 }
