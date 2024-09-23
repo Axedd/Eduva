@@ -1,5 +1,5 @@
 ﻿@page
-@model SchoolSystem.Pages.Admin.EditClassModel
+@model SchoolSystem.Pages.Admin.ManageClassesModel
 @{
 }
 
@@ -10,16 +10,21 @@
 
 <p id="error-message" style="color: red; display: none;">Please select a class before adding a subject.</p>
 
-<a id="addSubjectLink" href="javascript:void(0);" class="disabled">Add new subject</a>
 
+<a id="addSubjectLink" href="javascript:void(0);" class="disabled">Assign new subject</a><br />
+
+
+
+<label>Select Class</label>
 <select id="class-select" class="form-control"  aria-label="Classes"> 
 	<option selected>Select Class</option>
 	@foreach (var Class in Model.StudentClasses)
 	{
 		<option value="@Class.StudentClassId">@Class.ClassName</option>
 	}
-</select>
+</select><br />
 
+<label>View Subjects</label>
 <select id="class-subject-select" class="form-control" aria-label="Subject">
 	<option selected>Select Subject</option>
 </select>
@@ -60,7 +65,7 @@
                 addSubjectLink.href = `/Admin/AddClassSubject?studentClassId=${classId}`
                 errorMessage.style.display = 'none';
 
-                fetch(`/Admin/EditClass?handler=SubjectByStudentClassId&classId=${classId}`)
+                fetch(`/Admin/ManageClasses?handler=SubjectByStudentClassId&classId=${classId}`)
                     .then(response => {
                         if (!response.ok) {
                             throw new Error('Network response was not ok ' + response.statusText);
@@ -86,7 +91,7 @@
             var subjectSelect = document.getElementById('class-subject');
 
             if (classId && classId !== 'Select Class') {
-                fetch(`/Admin/EditClass?handler=SubjectInfoByStudentClassId&classId=${classId}&subjectId=${subjectId}`)
+                fetch(`/Admin/ManageClasses?handler=SubjectInfoByStudentClassId&classId=${classId}&subjectId=${subjectId}`)
                     .then(response => {
                         if (!response.ok) {
                             throw new Error('Network response was not ok ' + response.statusText);

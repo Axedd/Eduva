@@ -1,5 +1,5 @@
 ﻿@page
-@model AuthWebApp.Pages.Admin.SettingsModel
+@model AuthWebApp.Pages.Admin.ManageStudentsModel
 @{
 }
 
@@ -53,7 +53,7 @@
             // Only proceed if a valid class is selected
             if (classId && classId !== "Select a class") {
                 // Fetch students for the selected class
-                fetch(`/Admin/Settings?handler=GetStudentsByClass&classId=` + classId)
+                fetch(`/Admin/ManageStudents?handler=GetStudentsByClass&classId=` + classId)
                     .then(response => response.json())
                     .then(data => {
                         // Populate the student dropdown with fetched data
@@ -73,7 +73,7 @@
 
             // Fetch student details to get profile picture and other info
             if (studentId) {
-                fetch(`/Admin/Settings?handler=GetStudentById&studentId=` + studentId)
+                fetch(`/Admin/ManageStudents?handler=GetStudentById&studentId=` + studentId)
                     .then(response => response.json())
                     .then(student => {
                         var profileImage = document.getElementById('profile-image');

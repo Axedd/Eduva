@@ -1,0 +1,20 @@
+﻿@page
+@model SchoolSystem.Pages.Admin.IndexModel
+@{
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin.css" />
+}
+
+<div class="dashboard-container">
+    <h2>Admin Dashboard</h2>
+
+    <div class="list-group">
+        <a class="list-group-item list-group-item-action" asp-page="/Admin/AddStudent">Add New Student</a>
+        <a class="list-group-item list-group-item-action" asp-page="/Admin/ManageStudents">Manage Students</a>
+        <a class="list-group-item list-group-item-action" asp-page="/Admin/ManageClasses">Manage Classes</a>
+        <a class="list-group-item list-group-item-action" asp-page="/Admin/ManageTeachers">Manage Teachers</a>
+        <!-- Add more admin links as needed -->
+    </div>
+</div>

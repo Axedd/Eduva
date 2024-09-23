@@ -2,38 +2,70 @@
 @model SchoolSystem.Pages.Admin.AddStudentModel
 @{
 }
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin.css" />
+}
 
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
 
+<div class="form-container">
+    <h2>Add New Student</h2>
 
-
-<form method="post">
-
-    <div class="form-group row">
-        <label for="FirstName" class="col-sm-2 col-form-label">First Name</label>
-        <div class="col-sm-10">
-            <input type="text" name="Student.FirstName" class="form-control" id="inputFirstName" />
+    <form method="post">
+        <div class="form-group row">
+            <label for="FirstName" class="col-sm-2 col-form-label">First Name</label>
+            <div class="col-sm-10">
+                <input type="text" name="Student.FirstName" class="form-control" id="inputFirstName" />
+                <span asp-validation-for="Student.FirstName" class="text-danger"></span>
+            </div>
         </div>
-    </div><br />
 
-    <div class="form-group row">
-        <label for="LastName" class="col-sm-2 col-form-label">Last Name</label>
-        <div class="col-sm-10">
-            <input type="text" name="Student.LastName" class="form-control" id="inputLastName"  />
+        <div class="form-group row">
+            <label for="LastName" class="col-sm-2 col-form-label">Last Name</label>
+            <div class="col-sm-10">
+                <input type="text" name="Student.LastName" class="form-control" id="inputLastName" />
+                <span asp-validation-for="Student.LastName" class="text-danger"></span>
+            </div>
         </div>
-    </div><br />
 
-    <div class="form-group row">
-        <label class="col-sm-2 col-form-label">Subjects</label>
-        <div class="col-sm-10">
-            <select class="form-control" name="Student.StudentClassId">
-                @foreach (var StudentClass in Model.StudentClasses)
-                {
-                    <option value="@StudentClass.StudentClassId">@StudentClass.ClassName</option>
-                }
-            </select>
+        <div class="form-group row">
+            <label for="DateOfBirth" class="col-sm-2 col-form-label">Date of Birth</label>
+            <div class="col-sm-10">
+                <input type="date" id="DateOfBirth" name="Student.DateOfBirth" class="form-control" />
+                <span asp-validation-for="Student.DateOfBirth" class="text-danger"></span>
+            </div>
         </div>
-    </div><br />
 
+        <div class="form-group row">
+            <label for="Gender" class="col-sm-2 col-form-label">Gender</label>
+            <div class="col-sm-10">
+                <select class="form-control" name="Student.Gender">
+                    <option>Select Gender</option>
+                    <option>Male</option>
+                    <option>Female</option>
+                    <option>Other</option>
+                </select>
+                <span asp-validation-for="Student.Gender" class="text-danger"></span>
+            </div>
+        </div>
 
-    <button type="submit" class="btn btn-primary">Add Student</button>
-</form>
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Subjects</label>
+            <div class="col-sm-10">
+                <select class="form-control" name="Student.StudentClassId">
+                    @foreach (var StudentClass in Model.StudentClasses)
+                    {
+                        <option value="@StudentClass.StudentClassId">@StudentClass.ClassName</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Add Student</button>
+    </form>
+</div>

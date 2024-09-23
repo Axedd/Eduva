@@ -7,11 +7,11 @@ using System.Xml.Linq;
 
 namespace SchoolSystem.Pages.Admin
 {
-    public class EditClassModel : PageModel
+    public class ManageClassesModel : PageModel
     {
         private readonly ApplicationDbContext _context;
 
-        public EditClassModel(ApplicationDbContext context)
+        public ManageClassesModel(ApplicationDbContext context)
         {
             _context = context;
         }

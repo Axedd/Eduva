@@ -1,0 +1,104 @@
+﻿body {
+    background-color: #F5FFF5;
+    font-family: Arial, sans-serif;
+}
+
+h1 {
+    color: #003366;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.form-select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    font-size: 16px;
+    border: 1px solid #003366;
+    border-radius: 4px;
+}
+
+    .form-select:focus {
+        border-color: #008C8C;
+        box-shadow: 0 0 5px rgba(0, 140, 140, 0.5);
+    }
+
+#class-selection-container,
+#student-selection-container,
+#profile-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #FFFFFF;
+    border-radius: 8px;
+    border: 1px solid #003366;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional for a subtle shadow */
+}
+
+.page-title {
+    color: #003366; /* Use your primary color for the title */
+    margin-bottom: 20px; /* Space below the title */
+}
+
+.admin-profile-container {
+    margin-top: 30px;
+}
+
+.profile-image {
+    width: 100%;
+    max-width: 200px;
+    height: auto;
+    border-radius: 8px;
+    border: 2px solid #003366;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.profile-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+    .profile-info ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    .profile-info li {
+        margin-bottom: 10px;
+        font-size: 18px;
+    }
+
+    .profile-info strong {
+        color: #003366;
+    }
+
+.btn-primary {
+    background-color: #008C8C;
+    border-color: #003366;
+    color: #FFFFFF;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 4px;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+    .btn-primary:hover {
+        background-color: #003366;
+        color: #FFFFFF;
+    }
+
+@media (max-width: 768px) {
+    .profile-image {
+        max-width: 150px;
+    }
+
+    .profile-info {
+        font-size: 14px;
+    }
+
+    .form-select {
+        font-size: 14px;
+    }
+}

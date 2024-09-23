@@ -92,7 +92,7 @@ namespace SchoolSystem.Pages.Admin
             }
 
 
-            return RedirectToPage("/Admin/editclass");
+            return RedirectToPage("/Admin/ManageClasses");
         }
 
         // Helper method to load necessary data

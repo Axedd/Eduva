@@ -22,9 +22,6 @@ namespace SchoolSystem.Pages.Admin
 
         [BindProperty]
         public Student Student { get; set; }
-        [BindProperty]
-        public StudentClass StudentClass { get; set; }
-
         public List<StudentClass> StudentClasses { get; set; } = new List<StudentClass>();
 
         public async Task<IActionResult> OnGetAsync()
@@ -36,17 +33,32 @@ namespace SchoolSystem.Pages.Admin
 
         public async Task<IActionResult> OnPostAsync()
         {
+
+            if (Request.Form["Student.Gender"] == "Select Gender")
+            {
+                ModelState.AddModelError("Student.Gender", "Please select a gender.");
+            }
+
+            // If ModelState is invalid, return the page with validation errors
+            if (!ModelState.IsValid)
+            {
+                StudentClasses = await _studentClassService.GetStudentClassesAsync();
+                return Page();
+            }
+
+
             Student.StudentId = await _studentService.GenerateStudentId();
             Student.JoinedDate = DateTime.Now;
+            Student.ProfilePicturePath = "/students/default.jpg";
 
 
-            Console.WriteLine(Student.StudentId);
-            Console.WriteLine(Student.JoinedDate);
-            Console.WriteLine(Student.StudentClassId);
+            _context.Students.Add(Student);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Student added successfully!";
 
             StudentClasses = await _studentClassService.GetStudentClassesAsync();
-
-            return Page();
+            return RedirectToPage();
         }
     }
 }

@@ -7,11 +7,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AuthWebApp.Pages.Admin
 {
-    public class SettingsModel : PageModel
+    public class ManageStudentsModel : PageModel
     {
         private readonly ApplicationDbContext _context;
 
-        public SettingsModel(ApplicationDbContext context)
+        public ManageStudentsModel(ApplicationDbContext context)
         {
             _context = context;
         }
