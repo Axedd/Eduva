@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace AuthWebApp.Pages.Account
+namespace SchoolSystem.Pages.Account
 {
     public class AccessDeniedModel : PageModel
     {

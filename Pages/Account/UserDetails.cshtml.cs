@@ -1,5 +1,5 @@
-using AuthWebApp.Data;
-using AuthWebApp.Models;
+using SchoolSystem.Data;
+using SchoolSystem.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
-namespace AuthWebApp.Pages.Account
+namespace SchoolSystem.Pages.Account
 {
     [Authorize]
     public class UserDetailsModel : PageModel

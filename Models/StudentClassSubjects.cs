@@ -1,4 +1,4 @@
-﻿namespace AuthWebApp.Models
+﻿namespace SchoolSystem.Models
 {
     public class StudentClassSubjects
     {

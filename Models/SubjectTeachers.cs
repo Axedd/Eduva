@@ -1,4 +1,4 @@
-﻿using AuthWebApp.Models;
+﻿using SchoolSystem.Models;
 
 namespace SchoolSystem.Models
 {

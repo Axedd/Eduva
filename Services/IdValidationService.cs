@@ -1,4 +1,4 @@
-﻿using AuthWebApp.Data;
+﻿using SchoolSystem.Data;
 using Microsoft.EntityFrameworkCore;
 using SchoolSystem.Interfaces;
 

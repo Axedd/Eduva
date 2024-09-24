@@ -1,5 +1,5 @@
-﻿using AuthWebApp.Data;
-using AuthWebApp.Models;
+﻿using SchoolSystem.Data;
+using SchoolSystem.Models;
 using Microsoft.EntityFrameworkCore;
 using SchoolSystem.Interfaces;
 
@@ -14,7 +14,18 @@ namespace SchoolSystem.Services
         {
             _context = context;
             _random = random;
-        }                                                   
+        }    
+        
+        public async Task<List<Student>> GetAllStudents()
+        {
+            return await _context.Students.ToListAsync();
+        }
+
+        public async Task<List<Student>> GetAllRegisteredStudents()
+        {
+            return await _context.Students.Where(s => s.UserId != null).ToListAsync();
+        }
+
 
         public async Task<Student> GetStudentById(long studentId)
         {

@@ -1,7 +1,7 @@
-using AuthWebApp.Data;
-using AuthWebApp.Migrations;
-using AuthWebApp.Models;
-using AuthWebApp.Pages.Admin;
+using SchoolSystem.Data;
+using SchoolSystem.Migrations;
+using SchoolSystem.Models;
+using SchoolSystem.Pages.Admin;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;

@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using AuthWebApp.Models;
-using SchoolSystem.Models; // Ensure this matches your namespace for ApplicationUser
+using SchoolSystem.Models;
+using Microsoft.AspNetCore.Identity; // Ensure this matches your namespace for ApplicationUser
 
-namespace AuthWebApp.Data
+namespace SchoolSystem.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityRole, string>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -18,7 +18,8 @@ namespace AuthWebApp.Data
         public DbSet<SubjectTeachers> SubjectTeachers { get; set; }
         public DbSet<StudentClassSubjects> StudentClassSubjects { get; set; }
         public DbSet<Teacher> Teachers { get; set; }
-        public DbSet<UsernameCount> UsernameCounts { get; set; } 
+        public DbSet<UsernameCount> UsernameCounts { get; set; }
+        public DbSet<Role> Roles { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -64,6 +65,15 @@ namespace AuthWebApp.Data
                 .HasOne(st => st.Teacher)
                 .WithMany(t => t.SubjectTeachers)
                 .HasForeignKey(st => st.TeacherId);
+
+            builder.Entity<IdentityRole>()
+                .ToTable("AspNetRoles")
+                .HasDiscriminator<string>("Discriminator")
+                .HasValue<IdentityRole>("IdentityRole");
+
+            builder.Entity<ApplicationUser>()
+            .ToTable("AspNetUsers") // Ensure the table name is correct
+            .HasKey(u => u.Id); // Specify that Id is the primary key
         }
     }
 }

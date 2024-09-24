@@ -1,4 +1,4 @@
-﻿using AuthWebApp.Models;
+﻿using SchoolSystem.Models;
 
 namespace SchoolSystem.Interfaces
 {
@@ -6,6 +6,8 @@ namespace SchoolSystem.Interfaces
     {
         Task<long> GenerateStudentId();
 
+        Task<List<Student>> GetAllStudents();
+        Task<List<Student>> GetAllRegisteredStudents();
         Task<Student> GetStudentById(long studentId);
     }
 }

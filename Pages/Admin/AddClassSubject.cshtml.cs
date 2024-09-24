@@ -1,5 +1,5 @@
-using AuthWebApp.Data;
-using AuthWebApp.Models;
+using SchoolSystem.Data;
+using SchoolSystem.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;

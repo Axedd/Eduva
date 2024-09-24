@@ -1,6 +1,6 @@
 ﻿using SchoolSystem.Models;
 
-namespace AuthWebApp.Models
+namespace SchoolSystem.Models
 {
     public class Teacher
     {

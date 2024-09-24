@@ -1,11 +1,11 @@
-using AuthWebApp.Data;
-using AuthWebApp.Models;
+using SchoolSystem.Data;
+using SchoolSystem.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
-namespace AuthWebApp.Pages.StudentClasses
+namespace SchoolSystem.Pages.StudentClasses
 {
     [Authorize]
     public class DetailsModel : PageModel

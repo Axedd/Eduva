@@ -1,12 +1,12 @@
-using AuthWebApp.Data;
-using AuthWebApp.Models;
+using SchoolSystem.Data;
+using SchoolSystem.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using SchoolSystem.Interfaces;
 using Microsoft.Extensions.Logging; // Make sure to include this for logging
 
-namespace AuthWebApp.Pages.Admin
+namespace SchoolSystem.Pages.Admin
 {
     public class EditStudentModel : PageModel
     {

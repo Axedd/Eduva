@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 
-namespace AuthWebApp.Authorization
+namespace SchoolSystem.Authorization
 {
 	public class HRMangerProbationRequirement : IAuthorizationRequirement
 	{
