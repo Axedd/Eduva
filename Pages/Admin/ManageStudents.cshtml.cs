@@ -64,6 +64,7 @@ namespace AuthWebApp.Pages.Admin
             s.LastName,
             s.ProfilePicturePath,
             s.Gender,
+            s.UserId,
             StudentClass = new
             {
                 s.StudentClass.StudentClassId,

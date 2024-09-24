@@ -83,12 +83,18 @@
 
                         // Update student info
                         studentInfo.innerHTML = `
-                                    <li><strong>StudentId:</strong> ${student.studentId}</li>
-                                    <li><strong>Name:</strong> ${student.firstName} ${student.lastName}</li>
-                                    <li><strong>Gender:</strong> ${student.gender}</li>
-                                    <li><strong>Class:</strong> ${student.studentClass ? student.studentClass.className : 'Not assigned'}</li>
-                                    <button class="btn btn-primary" onclick="location.href='/Admin/EditStudent?StudentId=${student.studentId}'">Edit</button>
-                                `;
+            <ul class="list-group mb-3">
+                <li class="list-group-item"><strong>Student ID:</strong> ${student.studentId}</li>
+                <li class="list-group-item"><strong>Name:</strong> ${student.firstName} ${student.lastName}</li>
+                <li class="list-group-item"><strong>Gender:</strong> ${student.gender}</li>
+                <li class="list-group-item"><strong>Class:</strong> ${student.studentClass ? student.studentClass.className : 'Not assigned'}</li>
+                <li class="list-group-item"><strong>Registered:</strong> ${student.userId ? "True" : "False"}</li>
+            </ul>
+            <div class="d-flex justify-content-start">
+              ${!student.userId ? `<button class="btn btn-secondary me-2" id="registerButton" onclick="location.href='/Admin/RegisterUser?studentId=${student.studentId}'">Register</button>` : ''}
+                <button class="btn btn-primary" onclick="location.href='/Admin/EditStudent?StudentId=${student.studentId}'">Edit</button>
+            </div>
+        `;
                     })
                     .catch(error => console.error('Error fetching student:', error));
             }

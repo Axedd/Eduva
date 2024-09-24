@@ -18,6 +18,7 @@ namespace AuthWebApp.Data
         public DbSet<SubjectTeachers> SubjectTeachers { get; set; }
         public DbSet<StudentClassSubjects> StudentClassSubjects { get; set; }
         public DbSet<Teacher> Teachers { get; set; }
+        public DbSet<UsernameCount> UsernameCounts { get; set; } 
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

@@ -1,4 +1,5 @@
 ﻿using AuthWebApp.Data;
+using AuthWebApp.Models;
 using Microsoft.EntityFrameworkCore;
 using SchoolSystem.Interfaces;
 
@@ -15,6 +16,17 @@ namespace SchoolSystem.Services
             _random = random;
         }                                                   
 
+        public async Task<Student> GetStudentById(long studentId)
+        {
+            var student = await _context.Students.FirstOrDefaultAsync(s => s.StudentId == studentId);
+
+            if (student == null)
+            {
+                throw new KeyNotFoundException($"Student with ID {studentId} not found.");
+            }
+
+            return student;
+        }
 
         public async Task<long> GenerateStudentId()
         {
