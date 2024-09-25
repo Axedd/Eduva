@@ -71,26 +71,23 @@ namespace SchoolSystem.Pages.Admin
                 else if (studentId is long validStudentId && await _idValidationService.IsValidStudentIdAsync(validStudentId))
                 {
                     Student = await _studentService.GetStudentById(validStudentId);
-
-
                 }
 
                 // Return the page with the existing data and validation errors
                 return Page();
             }
 
-
-            string username = await _userService.GenerateUsername();
+            string username = await _userService.GenerateUsername();  // Generate a unique username
 
             ApplicationUser newUser = new ApplicationUser
             {
-                UserName = username,  // This should not be null or empty
-                FirstName = ApplicationUser.FirstName,
+                UserName = username,
+                FirstName = ApplicationUser.FirstName,  
                 LastName = ApplicationUser.LastName,
                 DateOfBirth = ApplicationUser.DateOfBirth,
                 Address = ApplicationUser.Address,
-                JoinedDate = ApplicationUser.JoinedDate,
-                Email = null
+                JoinedDate = DateTime.Now,  
+                Email = null 
             };
 
             if (newUser == null)
@@ -102,26 +99,27 @@ namespace SchoolSystem.Pages.Admin
 
             if (result.Succeeded)
             {
-                return Page();
+                // After user creation, link the user with the student
+                if (studentId.HasValue)
+                {
+                    var student = await _studentService.GetStudentById(studentId.Value);
+                    student.UserId = newUser.Id;  // Link Student to the ApplicationUser
+                    await _studentService.UpdateStudentAsync(student);  // Save the changes
+                }
+
+
+                await _userManager.AddToRoleAsync(newUser, "Student");
+
+                TempData["SuccessMessage"] = "User has been successfully registered.";
+
+                return RedirectToPage(new { studentId = studentId });
             }
 
             // If creation fails, add errors to the ModelState
             foreach (var error in result.Errors)
             {
-                ModelState.AddModelError(string.Empty, error.Description); // Add the error messages
+                ModelState.AddModelError(string.Empty, error.Description);
             }
-
-            // Inspect the errors
-            var errors = result.Errors;  // Add a breakpoint here to see why it failed.
-
-            if (errors.Any())
-            {
-                foreach (var error in errors)
-                {
-                    Console.WriteLine($"Error: {error.Description}");  // Log the errors (for debugging)
-                }
-            }
-
 
             // Reload data for the page
             if (teacherId is long isValidTeacherId && await _idValidationService.IsValidTeacherIdAsync(isValidTeacherId))

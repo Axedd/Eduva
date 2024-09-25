@@ -10,8 +10,5 @@ namespace SchoolSystem.Models
         public string Address { get; set; }
         public DateTime JoinedDate { get; set; }
         public string? Email { get; set; } // Nullable Email
-
-        public virtual ICollection<IdentityUserRole<string>> UserRoles { get; set; }
-
     }
 }

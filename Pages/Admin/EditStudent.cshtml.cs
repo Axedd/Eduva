@@ -99,7 +99,7 @@ namespace SchoolSystem.Pages.Admin
                 throw;
             }
 
-            return RedirectToPage("/Admin/Settings");
+            return RedirectToPage("/Admin/managestudents");
         }
     }
 }

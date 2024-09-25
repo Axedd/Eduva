@@ -39,6 +39,23 @@ namespace SchoolSystem.Services
             return student;
         }
 
+        public async Task<List<Student>> GetStudentsByClassAsync(int classId)
+        {
+            var students = await _context.Students
+                .Where(s => s.StudentClassId == classId)
+                .OrderBy(s => s.FirstName)
+                .ToListAsync();
+            
+            return students;
+        }
+
+
+        public async Task UpdateStudentAsync(Student student)
+        {
+            _context.Students.Update(student);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task<long> GenerateStudentId()
         {
             var existingStudentIds = await _context.Students.Select(s => s.StudentId).ToListAsync();

@@ -1,25 +1,31 @@
 ﻿@page
 @model SchoolSystem.Pages.Admin.ManageStudentsModel
-@{
-}
-
 
 <h1>Class and Student Selection</h1>
 
-<!-- Class Selection -->
+<!-- Class Selection Dropdown -->
 <select id="class-select" class="form-select" aria-label="Classes">
-    <option selected>Select a class</option>
+    <option value="">Select a class</option>
     @foreach (var Class in Model.StudentClasses)
     {
-        <option value="@Class.StudentClassId">@Class.ClassName</option>
+        var isClassSelected = Model.SelectedClassId == Class.StudentClassId ? "selected" : "";
+        <option value="@Class.StudentClassId" selected="@isClassSelected">@Class.ClassName</option>
     }
 </select>
 
-<!-- Student Selection -->
+<!-- Student Selection Dropdown -->
 <select id="student-select" class="form-select" aria-label="Students">
-    <option selected>Select a student</option>
+    <option value="">Select a student</option>
+    @if (Model.SelectedClassId.HasValue && Model.Students != null)
+    {
+        @foreach (var student in Model.Students)
+        {
+            var isStudentSelected = Model.SelectedStudentId == student.StudentId ? "selected" : "";
+            <option value="@student.StudentId" selected="@isStudentSelected">@student.FirstName @student.LastName</option>
+        }
+    }
 </select>
-
+<!-- Student Profile and Info -->
 <div class="container mt-4 admin-profile-container">
     <div class="row">
         <!-- Profile Image Column -->
@@ -27,51 +33,62 @@
             <img id="profile-image" class="profile-image" src="/students/default.jpg" alt="Profile Picture" onerror="this.onerror=null; this.src='/students/default.jpg';">
         </div>
         <!-- Student Data Column -->
-        <div class="col-md-8 profile-info" id="profile-info">       
+        <div class="col-md-8 profile-info" id="profile-info">
             <ul id="student-info">
                 <li><strong>Name:</strong> </li>
                 <li><strong>Gender:</strong> </li>
             </ul>
         </div>
     </div>
-    
 </div>
 
 @section Scripts {
     <script>
+        // Trigger the change event when a class is selected
         document.getElementById('class-select').addEventListener('change', function () {
             var classId = this.value;
+            updateStudentList(classId);
+        });
 
-            // Clear the student dropdown and image
+        // Trigger the change event when a student is selected
+        document.getElementById('student-select').addEventListener('change', function () {
+            var studentId = this.value;
+            updateStudentInfo(studentId);
+        });
+
+        // Function to fetch and update the student list based on selected class
+        function updateStudentList(classId) {
             var studentSelect = document.getElementById('student-select');
             var profileImage = document.getElementById('profile-image');
             var studentInfo = document.getElementById('student-info');
 
-            studentSelect.innerHTML = '<option selected>Select a student</option>';
-            profileImage.src = '/path/to/default/image.jpg'; // Set default image
+            // Reset student dropdown and profile image
+            studentSelect.innerHTML = '<option value="">Select a student</option>';
+            profileImage.src = '/students/default.jpg';
 
-            // Only proceed if a valid class is selected
-            if (classId && classId !== "Select a class") {
-                // Fetch students for the selected class
+            if (classId) {
                 fetch(`/Admin/ManageStudents?handler=GetStudentsByClass&classId=` + classId)
                     .then(response => response.json())
                     .then(data => {
-                        // Populate the student dropdown with fetched data
                         data.forEach(function (student) {
                             var option = document.createElement('option');
                             option.value = student.studentId;
                             option.text = student.firstName + ' ' + student.lastName;
                             studentSelect.add(option);
                         });
+
+                        // Automatically select the previously selected student if available
+                        if (@Model.SelectedStudentId.HasValue) {
+                            studentSelect.value = '@Model.SelectedStudentId';
+                            updateStudentInfo('@Model.SelectedStudentId');
+                        }
                     })
                     .catch(error => console.error('Error fetching students:', error));
             }
-        });
+        }
 
-        document.getElementById('student-select').addEventListener('change', function () {
-            var studentId = this.value;
-
-            // Fetch student details to get profile picture and other info
+        // Function to fetch and display student details
+        function updateStudentInfo(studentId) {
             if (studentId) {
                 fetch(`/Admin/ManageStudents?handler=GetStudentById&studentId=` + studentId)
                     .then(response => response.json())
@@ -79,25 +96,39 @@
                         var profileImage = document.getElementById('profile-image');
                         var studentInfo = document.getElementById('student-info');
 
-                        profileImage.src = student.profilePicturePath || '/path/to/default/image.jpg'; // Set profile picture or default image
+                        // Set profile image or fallback to default
+                        profileImage.src = student.profilePicturePath || '/students/default.jpg';
 
-                        // Update student info
+                        // Update student info section
                         studentInfo.innerHTML = `
-            <ul class="list-group mb-3">
-                <li class="list-group-item"><strong>Student ID:</strong> ${student.studentId}</li>
-                <li class="list-group-item"><strong>Name:</strong> ${student.firstName} ${student.lastName}</li>
-                <li class="list-group-item"><strong>Gender:</strong> ${student.gender}</li>
-                <li class="list-group-item"><strong>Class:</strong> ${student.studentClass ? student.studentClass.className : 'Not assigned'}</li>
-                <li class="list-group-item"><strong>Registered:</strong> ${student.userId ? "True" : "False"}</li>
-            </ul>
-            <div class="d-flex justify-content-start">
-              ${!student.userId ? `<button class="btn btn-secondary me-2" id="registerButton" onclick="location.href='/Admin/RegisterUser?studentId=${student.studentId}'">Register</button>` : ''}
-                <button class="btn btn-primary" onclick="location.href='/Admin/EditStudent?StudentId=${student.studentId}'">Edit</button>
-            </div>
-        `;
+                            <ul class="list-group mb-3">
+                                <li class="list-group-item"><strong>Student ID:</strong> ${student.studentId}</li>
+                                <li class="list-group-item"><strong>Name:</strong> ${student.firstName} ${student.lastName}</li>
+                                <li class="list-group-item"><strong>Gender:</strong> ${student.gender}</li>
+                                <li class="list-group-item"><strong>Class:</strong> ${student.studentClass ? student.studentClass.className : 'Not assigned'}</li>
+                                <li class="list-group-item"><strong>Registered:</strong> ${student.userId ? "True" : "False"}</li>
+                            </ul>
+                            <div class="d-flex justify-content-start">
+                                ${!student.userId ? `<button class="btn btn-secondary me-2" onclick="location.href='/Admin/RegisterUser?studentId=${student.studentId}'">Register</button>` : ''}
+                                <button class="btn btn-primary" onclick="location.href='/Admin/EditStudent?studentId=${student.studentId}'">Edit</button>
+                            </div>
+                        `;
                     })
                     .catch(error => console.error('Error fetching student:', error));
             }
-        });
+        }
+
+        // On page load, trigger change event if class or student is already selected
+        window.onload = function () {
+            var selectedClass = document.getElementById('class-select').value;
+            if (selectedClass) {
+                updateStudentList(selectedClass);
+            }
+
+            var selectedStudent = document.getElementById('student-select').value;
+            if (selectedStudent) {
+                updateStudentInfo(selectedStudent);
+            }
+        }
     </script>
 }

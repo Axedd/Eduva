@@ -201,7 +201,7 @@ namespace SchoolSystem.Services
             const string lowercase = "abcdefghijklmnopqrstuvwxyz";
             const string uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
             const string digits = "0123456789";
-            const string specialChars = "!@#$%^&*()-_=+[]{}|;:,.<>?";
+            const string specialChars = "!@<>?";
 
             // Ensure at least one of each required character type
             var password = new StringBuilder();

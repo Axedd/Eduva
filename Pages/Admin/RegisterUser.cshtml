@@ -8,6 +8,15 @@
 
 <h1>Register User</h1>
 
+<!-- Display success message if available -->
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success" role="alert">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+
 @if (Model.Teacher != null)
 {
     <h2>Teacher Information</h2>
