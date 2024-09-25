@@ -1,4 +1,5 @@
 ﻿using SchoolSystem.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace SchoolSystem.Models
 {
@@ -9,6 +10,11 @@ namespace SchoolSystem.Models
         public string LastName { get; set; }
         public string? ProfilePicturePath { get; set; }
         public string? UserId { get; set; }
+        public DateTime JoinedDate { get; set; }
+        [Required(ErrorMessage = "Date of birth is required")]
+        [DataType(DataType.Date)]
+        public DateTime? DateOfBirth { get; set; }
+        public string? Address { get; set; }
 
         public ICollection<SubjectTeachers> SubjectTeachers { get; set; } = new List<SubjectTeachers>();
         public ICollection<StudentClassSubjects> StudentClassSubjects { get; set; }

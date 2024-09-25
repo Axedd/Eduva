@@ -6,11 +6,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace SchoolSystem.Pages.Admin
 {
-    public class TeachersModel : PageModel
+    public class ManageTeachersModel : PageModel
     {
         private readonly ApplicationDbContext _context;
 
-        public TeachersModel(ApplicationDbContext context)
+        public ManageTeachersModel(ApplicationDbContext context)
         {
             _context = context;
         }

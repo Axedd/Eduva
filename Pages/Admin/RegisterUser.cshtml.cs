@@ -105,14 +105,25 @@ namespace SchoolSystem.Pages.Admin
                     var student = await _studentService.GetStudentById(studentId.Value);
                     student.UserId = newUser.Id;  // Link Student to the ApplicationUser
                     await _studentService.UpdateStudentAsync(student);  // Save the changes
+                    await _userManager.AddToRoleAsync(newUser, "Student");
+
+                    TempData["SuccessMessage"] = "User has been successfully registered.";
+
+                    return RedirectToPage(new { studentId = studentId });
+                } 
+                else if (teacherId.HasValue)
+                {
+                    var teacher = await _teacherService.GetTeacherById(teacherId.Value);
+                    teacher.UserId = newUser.Id;  // Link Student to the ApplicationUser
+                    await _teacherService.UpdateTeacherAsync(teacher);  // Save the changes
+                    await _userManager.AddToRoleAsync(newUser, "Teacher");
+
+                    TempData["SuccessMessage"] = "User has been successfully registered.";
+
+                    return RedirectToPage(new { teacherId = teacherId });
                 }
 
-
-                await _userManager.AddToRoleAsync(newUser, "Student");
-
-                TempData["SuccessMessage"] = "User has been successfully registered.";
-
-                return RedirectToPage(new { studentId = studentId });
+                return Page();
             }
 
             // If creation fails, add errors to the ModelState

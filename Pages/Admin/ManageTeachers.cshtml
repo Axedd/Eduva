@@ -1,5 +1,5 @@
 ﻿@page
-@model SchoolSystem.Pages.Admin.TeachersModel
+@model SchoolSystem.Pages.Admin.ManageTeachersModel
 @Html.AntiForgeryToken()
 @{
 }
@@ -37,13 +37,15 @@
             console.log("Selected Teacher ID:", TeacherId);
 
             if (TeacherId && TeacherId !== "Select a teacher") {
-                fetch(`/Admin/Teachers?handler=GetTeacherInfo&teacherId=` + TeacherId)
+                fetch(`/Admin/ManageTeachers?handler=GetTeacherInfo&teacherId=` + TeacherId)
                     .then(response => response.json())
-                    .then(data => {
-                        document.getElementById('profile-image').src = data.profilePicturePath || '/students/default.jpg';
+                    .then(teacher => {
+                        console.log(teacher);
+                        document.getElementById('profile-image').src = teacher.profilePicturePath || '/students/default.jpg';
                         document.getElementById('teacher-info').innerHTML = `
-                            <li><strong>Name:</strong> ${data.firstName} ${data.lastName}</li>
-                            <button class="btn btn-primary" onclick="location.href='/Admin/EditTeacher?teacherId=${data.teacherId}'">Edit</button>`;
+                        <li><strong>Name:</strong> ${teacher.firstName} ${teacher.lastName}</li>
+                        ${!teacher.userId ? `<button class="btn btn-secondary me-2" onclick="location.href='/Admin/RegisterUser?teacherId=${teacher.teacherId}'">Register</button>` : ''}
+                        <button class="btn btn-primary" onclick="location.href='/Admin/EditTeacher?teacherId=${teacher.teacherId}'">Edit</button>`;
                     })
                     .catch(error => console.error('Error fetching teacher:', error));
             }

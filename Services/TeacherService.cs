@@ -27,5 +27,11 @@ namespace SchoolSystem.Services
             return teacher;
         }
 
+        public async Task UpdateTeacherAsync(Teacher teacher)
+        {
+            _context.Teachers.Update(teacher);
+            await _context.SaveChangesAsync();
+        }
+
     }
 }
