@@ -7,14 +7,14 @@ using SchoolSystem.Models;
 
 namespace SchoolSystem.Pages.Admin
 {
-    public class ManageUserRolesModel : PageModel
+    public class ManageUsersModel : PageModel
     {
 
         private readonly ApplicationDbContext _context;
         private readonly IStudentService _studentService;
         private readonly IUserService _userService;
 
-        public ManageUserRolesModel(ApplicationDbContext context,
+        public ManageUsersModel(ApplicationDbContext context,
             IStudentService studentService,
             IUserService userService)
         {
@@ -24,15 +24,27 @@ namespace SchoolSystem.Pages.Admin
         }
 
         public List<Student> Students { get; set; }
-        public List<StudentRoleViewModel> StudentRoleViewModels { get; set; }
+        public List<StudentRoleViewModel> StudentRoleViewModels { get; set; } = new List<StudentRoleViewModel>();
+
+        public string TempPassword { get; private set; }
 
 
         public async Task<IActionResult> OnGetAsync()
         {
             StudentRoleViewModels = await _userService.GetStudentsWithRolesAsync();
+            return Page();
+        }
 
+        public async Task<IActionResult> OnPostGenerateTempPasswordAsync(string userId)
+        {
+            var tempPassword = await _userService.GenerateTempPassword(userId);
+            if (tempPassword != null)
+            {
+                TempPassword = tempPassword; // Store the generated password
+            }
 
-
+            // Always refresh the student roles after generating a password
+            StudentRoleViewModels = await _userService.GetStudentsWithRolesAsync();
             return Page();
         }
     }

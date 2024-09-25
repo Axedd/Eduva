@@ -21,7 +21,7 @@ namespace SchoolSystem.Pages.StudentClasses
 
         public async Task<IActionResult> OnGetAsync()
         {
-            StudentClasses = await _context.StudentClasses.ToListAsync();
+            StudentClasses = await _context.StudentClasses.OrderBy(sc => sc.ClassName).ToListAsync();
             if (StudentClasses == null)
             {
                 return NotFound();

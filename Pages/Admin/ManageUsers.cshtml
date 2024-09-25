@@ -1,0 +1,68 @@
+﻿@page
+@model SchoolSystem.Pages.Admin.ManageUsersModel
+@{
+
+}
+
+<a href="/admin/ManageStudents">Register new user</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Student ID</th>
+            <th scope="col">User ID</th>
+            <th scope="col">User Name</th>
+            <th scope="col">Password</th>
+            <th scope="col">Roles</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.StudentRoleViewModels != null && Model.StudentRoleViewModels.Any())
+        {
+            @foreach (var student in Model.StudentRoleViewModels)
+            {
+                <tr>
+                    <th scope="row">@student.StudentId</th>
+                    <td>@student.UserId</td>
+                    <td>@student.UserName</td>
+                    @if (student.HasPassword)
+                    {
+                        <td>True</td>
+                    }
+                    else
+                    {
+                        <td>
+                            <form method="post" asp-page-handler="GenerateTempPassword">
+                                <input type="hidden" name="userId" value="@student.UserId" />
+                                <button type="submit">Generate password</button>
+                            </form>
+                        </td>
+                    }
+                    <td>
+                        @if (student.Roles != null && student.Roles.Any())
+                        {
+                            @string.Join(", ", student.Roles.Select(r => r.RoleName))
+                        }
+                        else
+                        {
+                            <span>No Roles</span>
+                        }
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="5">No students found.</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (!string.IsNullOrEmpty(Model.TempPassword))
+{
+    <div class="alert alert-info">
+        Temporary Password: @Model.TempPassword
+    </div>
+}

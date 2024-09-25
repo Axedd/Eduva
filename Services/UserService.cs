@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SchoolSystem.Interfaces;
 using SchoolSystem.Models;
+using Microsoft.AspNetCore.Mvc;
+using System.Text;
+using System.ComponentModel.DataAnnotations;
 
 namespace SchoolSystem.Services
 {
@@ -75,6 +78,39 @@ namespace SchoolSystem.Services
             await _context.SaveChangesAsync(); // Persist changes to the database
         }
 
+        public async Task<string> GenerateTempPassword(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                throw new ArgumentException("User not found.");
+            }
+
+            string tempPassword = GenerateRandomPassword();
+
+            var passwordValidators = _userManager.PasswordValidators;
+            foreach(var validator in passwordValidators)
+            {
+                var validationResult = await validator.ValidateAsync(_userManager, user, tempPassword);
+                if (!validationResult.Succeeded)
+                {
+                    throw new Exception($"Password validation failed: {string.Join(", ", validationResult.Errors.Select(e => e.Description))}");
+                }
+            }
+
+            if (!await _userManager.HasPasswordAsync(user))
+            {
+                await _userManager.AddPasswordAsync(user, tempPassword);
+            } else
+            {
+                throw new ArgumentException("A password is already active!");
+            }
+            
+
+
+            return tempPassword;
+        }
+
         public async Task<IdentityResult> AssignRoleToUserAsync(string userId, string role)
         {
             if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(role))
@@ -130,6 +166,7 @@ namespace SchoolSystem.Services
                         StudentId = student.StudentId,
                         UserId = student.UserId,
                         UserName = user?.UserName,
+                        HasPassword = user.PasswordHash != null,
                         Roles = roles
                     });
                 }
@@ -153,6 +190,36 @@ namespace SchoolSystem.Services
         {
 
             return await _context.Teachers.Where(t => t.TeacherId == teacherId).AnyAsync(s => s.UserId != null);
+        }
+
+        private string GenerateRandomPassword()
+        {
+            // Generate a temporary password with specific criteria
+            const int passwordLength = 8; // Set desired password length
+            var random = new Random();
+
+            const string lowercase = "abcdefghijklmnopqrstuvwxyz";
+            const string uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            const string digits = "0123456789";
+            const string specialChars = "!@#$%^&*()-_=+[]{}|;:,.<>?";
+
+            // Ensure at least one of each required character type
+            var password = new StringBuilder();
+            password.Append(lowercase[random.Next(lowercase.Length)]);
+            password.Append(uppercase[random.Next(uppercase.Length)]);
+            password.Append(digits[random.Next(digits.Length)]);
+            password.Append(specialChars[random.Next(specialChars.Length)]);
+
+            // Fill the rest of the password length with random characters
+            var allChars = lowercase + uppercase + digits + specialChars;
+            for (int i = 4; i < passwordLength; i++)
+            {
+                password.Append(allChars[random.Next(allChars.Length)]);
+            }
+
+            // Shuffle the password to ensure randomness
+            var result = password.ToString().ToCharArray();
+            return new string(result.OrderBy(x => random.Next()).ToArray());
         }
 
 

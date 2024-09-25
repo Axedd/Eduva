@@ -6,6 +6,7 @@ namespace SchoolSystem.Interfaces
     {
         Task<string> GenerateUsername();
         Task<List<StudentRoleViewModel>> GetStudentsWithRolesAsync();
+        Task<string> GenerateTempPassword(string userId);
         Task<bool> isValidUserStudent(long studentId);
         Task<bool> isValidUserTeacher(long teacherId);
     }

@@ -33,7 +33,7 @@ namespace SchoolSystem.Pages.StudentClasses
                 return NotFound();
             }
 
-            Students = StudentClass.Students.ToList();
+            Students = StudentClass.Students.OrderBy(s => s.FirstName).ToList();
 
             return Page();
         }
