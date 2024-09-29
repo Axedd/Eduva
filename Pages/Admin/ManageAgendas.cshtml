@@ -1,0 +1,16 @@
+﻿@page
+@model SchoolSystem.Pages.Admin.ManageAgendasModel
+@{
+
+}
+
+
+
+<ul>
+    @foreach (var studentStudentClasses in Model.StudentClasses)
+    {
+        <li>
+            <a asp-page="AddEditAgenda" asp-route-studentClassId="@studentStudentClasses.StudentClassId">@studentStudentClasses.ClassName</a>
+        </li>
+    }
+</ul>

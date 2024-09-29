@@ -1,0 +1,36 @@
+﻿@page
+@model SchoolSystem.Pages.Admin.AddEditAgendaModel
+@{
+}
+
+
+
+@if(Model.ClassName != null)
+{
+	<h1>@Model.ClassName - Agendas</h1>
+
+
+	<ul>
+		@foreach (var subject in Model.StudentClassSubjects)
+		{
+			<li>@subject.Subject.SubjectName - @subject.Teacher.FirstName @subject.Teacher.LastName</li>
+		}
+	</ul>
+} else
+{
+	<h1>Class Not Found</h1>
+}
+
+
+@if (Model.NewAgenda != null)
+{
+	<h1>Agenda Chosen</h1>
+	<h3>@Model.NewAgenda.Subject.SubjectName</h3> 
+	<h4>@Model.NewAgenda.StudentClass.ClassName</h4>
+
+	<p>@Model.NewAgenda.Teacher.FirstName @Model.NewAgenda.Teacher.LastName</p>
+
+} else
+{
+	<h1>No agenda chosen</h1>
+}

@@ -1,11 +1,12 @@
 ﻿using SchoolSystem.Data;
 using SchoolSystem.Models;
 using Microsoft.EntityFrameworkCore;
+using SchoolSystem.Interfaces;
 
 namespace SchoolSystem.Services
 {
-    public class SubjectService
-    {
+    public class SubjectService : ISubjectService
+	{
         private ApplicationDbContext _context;
         private Random _random;
 
@@ -71,5 +72,20 @@ namespace SchoolSystem.Services
 
         }
 
-    }
+        public async Task<StudentClassSubjects> GetStudentClassSubjectById(int studentClassId, long subjectId)
+        {
+            return await _context.StudentClassSubjects
+                .Include(scs => scs.Teacher)
+                .Include(scs => scs.Subject)
+                .Where(scs => scs.StudentClassId == studentClassId && scs.SubjectId == subjectId)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<Subject> GetSubjectByIdAsync(long subjectId)
+        {
+            return await _context.Subjects.Where(s => s.SubjectId == subjectId).FirstOrDefaultAsync();
+        }
+
+
+	}
 }

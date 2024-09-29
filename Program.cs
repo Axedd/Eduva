@@ -60,6 +60,7 @@ builder.Services.AddScoped<IStudentClassService, StudentClassService>();
 builder.Services.AddScoped<ITeacherService, TeacherService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IClassService, ClassService>();
+builder.Services.AddScoped<ISubjectService, SubjectService>();
 
 
 var app = builder.Build();

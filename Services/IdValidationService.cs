@@ -27,5 +27,16 @@ namespace SchoolSystem.Services
         {
             return await _context.StudentClasses.AnyAsync(sc => sc.StudentClassId == studentClassId);
         }
+
+        public async Task<bool> IsValidSubjectId(long subjectId)
+        {
+            return await _context.Subjects.AnyAsync(s => s.SubjectId == subjectId);
+        }
+
+        public async Task<bool> IsValidStudentClassSubject(long studentClassId, long subjectId)
+        {
+            return  true;
+        }
+
     }
 }

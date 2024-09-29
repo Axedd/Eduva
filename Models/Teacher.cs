@@ -18,7 +18,8 @@ namespace SchoolSystem.Models
 
         public ICollection<SubjectTeachers> SubjectTeachers { get; set; } = new List<SubjectTeachers>();
         public ICollection<StudentClassSubjects> StudentClassSubjects { get; set; }
-    }
+		public ICollection<Agenda> Agendas { get; set; }
+	}
 
     public class TeacherDto
     {

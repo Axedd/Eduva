@@ -20,10 +20,12 @@ namespace SchoolSystem.Data
         public DbSet<Teacher> Teachers { get; set; }
         public DbSet<UsernameCount> UsernameCounts { get; set; }
         public DbSet<Role> Roles { get; set; }
+        public DbSet<Agenda> Agenda { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
 
             // StudentClassSubjects relationships
             builder.Entity<StudentClassSubjects>()
@@ -74,6 +76,25 @@ namespace SchoolSystem.Data
             builder.Entity<ApplicationUser>()
             .ToTable("AspNetUsers") // Ensure the table name is correct
             .HasKey(u => u.Id); // Specify that Id is the primary key
+
+            builder.Entity<Agenda>(entity =>
+            {
+                entity.HasKey(a => a.AgendaId);
+
+                entity.HasOne(a => a.Subject)
+                    .WithMany(s => s.Agendas)
+                    .HasForeignKey(a => a.SubjectId);
+
+
+                entity.HasOne(a => a.StudentClass)
+                    .WithMany(sc => sc.Agendas)
+                    .HasForeignKey(a => a.StudentClassId);
+
+				entity.HasOne(a => a.Teacher)
+					.WithMany(sc => sc.Agendas)
+					.HasForeignKey(a => a.TeacherId);
+			});
+                
         }
     }
 }

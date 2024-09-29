@@ -8,5 +8,6 @@
         // Navigation property
         public ICollection<Student> Students { get; set; }
         public ICollection<StudentClassSubjects> StudentClassSubjects { get; set; }
+        public ICollection<Agenda> Agendas { get; set; }
     }
 }
