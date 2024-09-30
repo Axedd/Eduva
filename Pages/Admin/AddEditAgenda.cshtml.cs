@@ -80,18 +80,6 @@ namespace SchoolSystem.Pages.Admin
                 NewAgenda.StudentClassId = StudentClassSubject.StudentClassId;
                 NewAgenda.StudentClass = studentClass; // Ensure this is set correctly
                 NewAgenda.TeacherId = StudentClassSubject.Teacher.TeacherId;
-
-                // Initialize DateTime properties, if needed
-                if (NewAgenda.StartDateTime == default(DateTime))
-                {
-                    // Set to a default or a valid DateTime
-                    NewAgenda.StartDateTime = DateTime.Now; // Or some other valid date
-                }
-                if (NewAgenda.EndDateTime == default(DateTime))
-                {
-                    // Set to a default or a valid DateTime
-                    NewAgenda.EndDateTime = NewAgenda.StartDateTime.AddHours(1); // For example, add 1 hour
-                }
             }
             else
             {
