@@ -5,7 +5,8 @@ namespace SchoolSystem.Interfaces
     public interface IAgendaService
     {
 
-        Task AddAgenda(Agenda agenda);
+        Task AddAgendaAsync(Agenda agenda);
+        Task<long> GenerateAgendaIdAsync();
 
     }
 }

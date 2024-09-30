@@ -13,7 +13,9 @@
 	<ul>
 		@foreach (var subject in Model.StudentClassSubjects)
 		{
-			<li>@subject.Subject.SubjectName - @subject.Teacher.FirstName @subject.Teacher.LastName</li>
+			<li>
+				<a asp-page="AddEditAgenda" asp-route-studentClassId="@subject.StudentClassId" asp-route-subjectId="@subject.SubjectId">@subject.Subject.SubjectName</a>
+			</li>
 		}
 	</ul>
 } else
@@ -24,11 +26,49 @@
 
 @if (Model.NewAgenda != null)
 {
-	<h1>Agenda Chosen</h1>
-	<h3>@Model.NewAgenda.Subject.SubjectName</h3> 
-	<h4>@Model.NewAgenda.StudentClass.ClassName</h4>
+    <form method="post">
+        <input type="hidden" name="NewAgenda.SubjectId" value="@Model.StudentClassSubject.SubjectId" />
+        <input type="hidden" name="NewAgenda.StudentClassId" value="@Model.StudentClassSubject.StudentClassId" />
 
-	<p>@Model.NewAgenda.Teacher.FirstName @Model.NewAgenda.Teacher.LastName</p>
+        <div class="form-group row">
+            <label for="StudentClass" class="col-sm-2 col-form-label">Class</label>
+            <div class="col-sm-10">
+                <span class="form-control-plaintext" id="inputClassName">@Model.NewAgenda.StudentClass.ClassName</span>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label for="StudentClass" class="col-sm-2 col-form-label">Subject</label>
+            <div class="col-sm-10">
+                <span class="form-control-plaintext" id="inputSubjectName">@Model.NewAgenda.Subject.SubjectName</span>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label for="StudentClass" class="col-sm-2 col-form-label">Teacher</label>
+            <div class="col-sm-10">
+                <span class="form-control-plaintext" id="inputTeacherName">@Model.NewAgenda.Teacher.FirstName @Model.NewAgenda.Teacher.LastName</span>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label for="StartDateTime" class="col-sm-2 col-form-label">Start time</label>
+            <div class="col-sm-10">
+                <input type="datetime-local" name="NewAgenda.StartDateTime" class="form-control" id="StartDateTime" value="" />
+                <span asp-validation-for="NewAgenda.StartDateTime" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label for="EndDateTime" class="col-sm-2 col-form-label">End time</label>
+            <div class="col-sm-10">
+                <input type="datetime-local" name="NewAgenda.EndDateTime" class="form-control" id="EndDateTime" value="" />
+                <span asp-validation-for="NewAgenda.EndDateTime" class="text-danger"></span>
+            </div>
+        </div>
+
+        <button class="btn btn-primary">Add Agenda</button>
+    </form>
 
 } else
 {

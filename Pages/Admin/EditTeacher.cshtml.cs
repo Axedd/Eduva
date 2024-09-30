@@ -89,9 +89,8 @@ namespace SchoolSystem.Pages.Admin
             await _context.SaveChangesAsync();
 
 
-            // Redirect to the teachers page after successful assignment
-            return RedirectToPage("/Admin/Teachers");
-        }
+			return RedirectToPage(new { teacherId = Teacher.TeacherId });
+		}
 
     }
 }
