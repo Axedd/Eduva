@@ -1,84 +1,152 @@
 ﻿@page
-@model IndexModel
+@model SchoolSystem.Pages.Schedule.IndexModel
 @{
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!--
-    <style>
+<style>
     .schedule-header {
         background-color: #f8f9fa;
         border-bottom: 2px solid #dee2e6;
     }
+
+    .schedule-column {
+        display: flex;
+        flex-direction: column;
+    }
+
     .schedule-cell {
         border: 1px solid #dee2e6;
         padding: 5px;
-        height: 100%;
+        height: 120px; /* Height of one module */
+        box-sizing: border-box;
     }
+
     .schedule-time {
         font-weight: bold;
         color: #6c757d;
     }
+
+    .schedule-item-container {
+        position: absolute;
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+    }
+
     .schedule-item {
         background-color: #e9ecef;
         border-radius: 4px;
         padding: 5px;
-        margin-bottom: 5px;
+        font-size: 0.8em;
+        overflow: hidden;
+        flex: 1;
+        margin: 0 1px;
     }
-    .schedule-item:last-child {
-        margin-bottom: 0;
+
+    .module-cell {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 10px 5px;
+    }
+
+    .module-info {
+        font-size: 0.9em;
+    }
+
+    .module-time {
+        font-size: 0.8em;
+        color: #6c757d;
+    }
+
+    .day-column {
+        position: relative;
+    }
+
+    .full-height-item {
+        background-color: #d1ecf1;
+        border: 1px solid #bee5eb;
+        padding: 5px;
+        position: absolute;
+        width: calc(100% - 10px);
+        left: 5px;
+        font-size: 0.8em;
     }
 </style>
-
-
 <div class="container-fluid mt-3">
     <div class="row schedule-header">
         <div class="col">
-            <h2 class="text-center">Uge 37 - 2023</h2>
+            <h2 class="text-center">Week @Model.WeekNum - @Model.Week[0].Year</h2>
         </div>
     </div>
     <div class="row schedule-header text-center">
-        <div class="col">Mandag (11/9)</div>
-        <div class="col">Tirsdag (12/9)</div>
-        <div class="col">Onsdag (13/9)</div>
-        <div class="col">Torsdag (14/9)</div>
-        <div class="col">Fredag (15/9)</div>
+        <div class="col"></div>
+        @foreach (var date in Model.Week)
+        {
+            <div class="col">@date.DayOfWeek (@date.ToString("d/M"))</div>
+        }
     </div>
     <div class="row">
-        <div class="col schedule-cell">
-            <div class="schedule-item">3ms1 DA • JL • UV - 146 9. Sildig Opvaagnen II</div>
-            <div class="schedule-item">3ms1 MA • PA • UV - 043 Integralregning</div>
-            <div class="schedule-item">3ms1 MA • PA • UV - 043 Integralregning</div>
-            <div class="schedule-item">3ms1 MA • PA • UV - 043 Integralregning</div>
-            <div class="schedule-item">3ms1 MA • PA • UV - 043 Integralregning</div>
+        <div class="col p-0 schedule-column">
+            <div class="schedule-cell module-cell">
+                <div>
+                    <div class="module-info">1. modul</div>
+                    <div class="module-time">8:00 - 9:30</div>
+                </div>
+            </div>
+            <div class="schedule-cell module-cell">
+                <div>
+                    <div class="module-info">2. modul</div>
+                    <div class="module-time">10:00 - 11:30</div>
+                </div>
+            </div>
+            <div class="schedule-cell module-cell">
+                <div>
+                    <div class="module-info">3. modul</div>
+                    <div class="module-time">12:00 - 13:30</div>
+                </div>
+            </div>
+            <div class="schedule-cell module-cell">
+                <div>
+                    <div class="module-info">4. modul</div>
+                    <div class="module-time">13:45 - 15:15</div>
+                </div>
+            </div>
         </div>
-        <div class="col schedule-cell">
-            <div class="schedule-item">3ms1 MA • PA • UV - 043 Integralregning</div>
-        </div>
-        <div class="col schedule-cell">
-            <div class="schedule-item">3ms1 DA • JL • UV - 046 - Oikos 10. Sildig Opvaagnen III</div>
-        </div>
-        <div class="col schedule-cell">
-            <div class="schedule-item">3ms1 re • HG • UV - 148 Kvinder og ægteskab</div>
-        </div>
-        <div class="col schedule-cell">
-            <div class="schedule-item">3ms1 skolepulje • CB • UV - 142 Timen starter kl. 8:15</div>
-        </div>
+        @foreach (var date in Model.Week)
+        {
+            <div class="col p-0 schedule-column day-column">
+                <div class="schedule-cell"></div>
+                <div class="schedule-cell"></div>
+                <div class="schedule-cell"></div>
+                <div class="schedule-cell"></div>
+                @if (date.DayOfWeek == DayOfWeek.Thursday)
+                {
+                    <div class="full-height-item" style="top: 0; height: 435px;">
+                        TEST 1
+                    </div>
+                    <div class="schedule-item-container" style="top: 0; height: 340px;">
+                        <div class="schedule-item">
+                            TEST 2
+                        </div>
+                        <div class="schedule-item">
+                            TEST 3
+                        </div>
+                    </div>
+                    <div class="schedule-item-container" style="top: 240px; height: 70px;">
+                        <div class="schedule-item">
+                            TEST 4
+                        </div>
+                    </div>
+                    <div class="schedule-item-container" style="top: 360px; height: 75px;">
+                        <div class="schedule-item">
+                            TEST 5
+                        </div>
+                    </div>
+                    <div class="full-height-item" style="top: 435px; height: 90px;">
+                        TEST 6
+                    </div>
+                }
+            </div>
+        }
     </div>
-    <!-- Add more rows for other time slots -->
 </div>

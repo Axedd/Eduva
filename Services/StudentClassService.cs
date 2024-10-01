@@ -40,5 +40,7 @@ namespace SchoolSystem.Services
 				.Select(sc => sc.ClassName)
 				.FirstOrDefaultAsync();
 		}
+
+        
     }
 }

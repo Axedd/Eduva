@@ -7,6 +7,7 @@ namespace SchoolSystem.Interfaces
 
         Task AddAgendaAsync(Agenda agenda);
         Task<long> GenerateAgendaIdAsync();
+        Task<List<Agenda>> GetStudentClassAgendasAsync(long studentClassId);
 
     }
 }

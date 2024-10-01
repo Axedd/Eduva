@@ -52,6 +52,9 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 
 // Register authorization handlers
 builder.Services.AddSingleton<IAuthorizationHandler, HRMangerProbationRequirementHandler>();
+
+
+// Dependency Injection
 builder.Services.AddScoped<SubjectService>();
 builder.Services.AddScoped<Random>();
 builder.Services.AddScoped<IIdValidationService, IdValidationService>();
@@ -62,6 +65,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IClassService, ClassService>();
 builder.Services.AddScoped<ISubjectService, SubjectService>();
 builder.Services.AddScoped<IAgendaService, AgendaService>();
+builder.Services.AddScoped<IScheduleService, ScheduleService>();
 
 
 var app = builder.Build();

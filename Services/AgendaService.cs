@@ -36,6 +36,18 @@ namespace SchoolSystem.Services
             return generatedAgendaId;
         }
 
+        public async Task<List<Agenda>> GetStudentClassAgendasAsync(long studentClassId)
+        {
+            var agendas = await _context.Agenda
+                .Include(s => s.Subject)
+                .Include(s => s.Teacher)
+                .Include(s => s.StudentClass)
+                .Where(a => a.StudentClassId == studentClassId)
+                .ToListAsync();
+
+            return agendas;
+        }
+
 
     }
 }
