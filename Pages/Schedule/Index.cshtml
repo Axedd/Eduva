@@ -1,77 +1,51 @@
 ﻿@page
 @model SchoolSystem.Pages.Schedule.IndexModel
 @{
+    // Sample events data. You may fetch this from your model in a real application.
+    var events = new[]
+    {
+        new { Start = "08:00", End = "09:30", Course = "3ms1 MA • CG", Location = "UV - 047", Title = "" },
+        new { Start = "10:00", End = "11:30", Course = "3SP-5 • Te", Location = "UV - 014", Title = "La guerra civil española 12" },
+        new { Start = "12:00", End = "13:30", Course = "3if-2 • KØ", Location = "UV - 045", Title = "AppLab Projekt 2024" },
+        new { Start = "13:45", End = "15:15", Course = "3ms1 SA • CJ", Location = "UV - 147", Title = "" },
+        new { Start = "17:45", End = "20:15", Course = "3ms1 SA • CJ", Location = "UV - 147", Title = "" },
+        new { Start = "07:30", End = "08:10", Course = "Late Night Study", Location = "UV - 101", Title = "" }
+    };
 }
-<style>
-    .schedule-header {
-        background-color: #f8f9fa;
-        border-bottom: 2px solid #dee2e6;
-    }
 
-    .schedule-column {
-        display: flex;
-        flex-direction: column;
-    }
+@section Styles {
+    <style>
+        .schedule-header {
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+        }
 
-    .schedule-cell {
-        border: 1px solid #dee2e6;
-        padding: 5px;
-        height: 120px; /* Height of one module */
-        box-sizing: border-box;
-    }
+        .schedule-column {
+            display: flex;
+            flex-direction: column;
+        }
 
-    .schedule-time {
-        font-weight: bold;
-        color: #6c757d;
-    }
+        .schedule-cell {
+            border: 1px solid #dee2e6;
+            padding: 5px;
+            height: 120px; /* Height of one module */
+            box-sizing: border-box;
+            position: relative; /* Allow absolute positioning for child elements */
+        }
 
-    .schedule-item-container {
-        position: absolute;
-        width: 100%;
-        display: flex;
-        flex-direction: row;
-    }
+        .schedule-item {
+            background-color: #e9ecef;
+            border-radius: 4px;
+            padding: 5px;
+            font-size: 0.8em;
+            overflow: hidden;
+            position: absolute; /* Allow for dynamic positioning */
+            width: calc(100% - 10px); /* Full width minus padding */
+            left: 5px; /* Align to the left */
+        }
+    </style>
+}
 
-    .schedule-item {
-        background-color: #e9ecef;
-        border-radius: 4px;
-        padding: 5px;
-        font-size: 0.8em;
-        overflow: hidden;
-        flex: 1;
-        margin: 0 1px;
-    }
-
-    .module-cell {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        padding: 10px 5px;
-    }
-
-    .module-info {
-        font-size: 0.9em;
-    }
-
-    .module-time {
-        font-size: 0.8em;
-        color: #6c757d;
-    }
-
-    .day-column {
-        position: relative;
-    }
-
-    .full-height-item {
-        background-color: #d1ecf1;
-        border: 1px solid #bee5eb;
-        padding: 5px;
-        position: absolute;
-        width: calc(100% - 10px);
-        left: 5px;
-        font-size: 0.8em;
-    }
-</style>
 <div class="container-fluid mt-3">
     <div class="row schedule-header">
         <div class="col">
@@ -88,65 +62,153 @@
     <div class="row">
         <div class="col p-0 schedule-column">
             <div class="schedule-cell module-cell">
-                <div>
-                    <div class="module-info">1. modul</div>
-                    <div class="module-time">8:00 - 9:30</div>
-                </div>
+                <div class="module-info">1. modul</div>
+                <div class="module-time">8:00 - 9:30</div>
             </div>
             <div class="schedule-cell module-cell">
-                <div>
-                    <div class="module-info">2. modul</div>
-                    <div class="module-time">10:00 - 11:30</div>
-                </div>
+                <div class="module-info">2. modul</div>
+                <div class="module-time">10:00 - 11:30</div>
             </div>
             <div class="schedule-cell module-cell">
-                <div>
-                    <div class="module-info">3. modul</div>
-                    <div class="module-time">12:00 - 13:30</div>
-                </div>
+                <div class="module-info">3. modul</div>
+                <div class="module-time">12:00 - 13:30</div>
             </div>
             <div class="schedule-cell module-cell">
-                <div>
-                    <div class="module-info">4. modul</div>
-                    <div class="module-time">13:45 - 15:15</div>
-                </div>
+                <div class="module-info">4. modul</div>
+                <div class="module-time">13:45 - 15:15</div>
             </div>
         </div>
+
         @foreach (var date in Model.Week)
         {
             <div class="col p-0 schedule-column day-column">
-                <div class="schedule-cell"></div>
-                <div class="schedule-cell"></div>
-                <div class="schedule-cell"></div>
-                <div class="schedule-cell"></div>
-                @if (date.DayOfWeek == DayOfWeek.Thursday)
-                {
-                    <div class="full-height-item" style="top: 0; height: 435px;">
-                        TEST 1
-                    </div>
-                    <div class="schedule-item-container" style="top: 0; height: 340px;">
-                        <div class="schedule-item">
-                            TEST 2
-                        </div>
-                        <div class="schedule-item">
-                            TEST 3
-                        </div>
-                    </div>
-                    <div class="schedule-item-container" style="top: 240px; height: 70px;">
-                        <div class="schedule-item">
-                            TEST 4
-                        </div>
-                    </div>
-                    <div class="schedule-item-container" style="top: 360px; height: 75px;">
-                        <div class="schedule-item">
-                            TEST 5
-                        </div>
-                    </div>
-                    <div class="full-height-item" style="top: 435px; height: 90px;">
-                        TEST 6
-                    </div>
-                }
+                <div class="schedule-cell" data-time="08:00-09:30"></div>
+                <div class="schedule-cell" data-time="10:00-11:30"></div>
+                <div class="schedule-cell" data-time="12:00-13:30"></div>
+                <div class="schedule-cell" data-time="13:45-15:15"></div>
             </div>
         }
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        // Prepare event data for JavaScript
+        const events = @Html.Raw(Json.Serialize(events));
+
+        // Function to initialize layout after the DOM is ready
+        document.addEventListener("DOMContentLoaded", function () {
+            const { minTime, totalDuration } = findTimeRange(events);
+            const container = document.querySelector('.schedule-column:last-child');
+            const containerHeight = totalDuration; // Use total duration for container height
+            container.style.height = `${containerHeight}px`;
+
+            layoutEvents(events, container.clientWidth, minTime, totalDuration);
+        });
+
+        function calculatePosition(startTime, endTime, dayStart, totalDuration) {
+            const pixelsPerMinute = 1440 / totalDuration;
+
+            const [startHour, startMinute] = startTime.split(':').map(Number);
+            const [endHour, endMinute] = endTime.split(':').map(Number);
+
+            const startMinutes = startHour * 60 + startMinute - dayStart;
+            const endMinutes = endHour * 60 + endMinute - dayStart;
+
+            const top = startMinutes * pixelsPerMinute;
+            const height = (endMinutes - startMinutes) * pixelsPerMinute;
+
+            return { top, height };
+        }
+
+        function findTimeRange(events) {
+            let minTime = 24 * 60; // Max possible time
+            let maxTime = 0; // Min possible time
+
+            events.forEach(event => {
+                const [startHour, startMinute] = event.start.split(':').map(Number);
+                const [endHour, endMinute] = event.end.split(':').map(Number);
+
+                const startMinutes = startHour * 60 + startMinute;
+                const endMinutes = endHour * 60 + endMinute;
+
+                if (startMinutes < minTime) {
+                    minTime = startMinutes;
+                }
+                if (endMinutes > maxTime) {
+                    maxTime = endMinutes;
+                }
+            });
+
+            return { minTime, maxTime, totalDuration: maxTime - minTime };
+        }
+
+        function detectOverlaps(events) {
+            const columns = []; // Track which events are in each column
+
+            events.forEach(event => {
+                let placed = false;
+
+                for (let i = 0; i < columns.length; i++) {
+                    if (!hasOverlap(columns[i], event)) {
+                        columns[i].push(event);
+                        event.column = i;
+                        placed = true;
+                        break;
+                    }
+                }
+
+                if (!placed) {
+                    event.column = columns.length;
+                    columns.push([event]);
+                }
+            });
+        }
+
+        function hasOverlap(columnEvents, event) {
+            return columnEvents.some(columnEvent => overlaps(columnEvent, event));
+        }
+
+        function overlaps(event1, event2) {
+            const event1Start = toMinutes(event1.start);
+            const event1End = toMinutes(event1.end);
+            const event2Start = toMinutes(event2.start);
+            const event2End = toMinutes(event2.end);
+            return !(event1End <= event2Start || event1Start >= event2End);
+        }
+
+        function toMinutes(time) {
+            const [hour, minute] = time.split(':').map(Number);
+            return hour * 60 + minute;
+        }
+
+        function layoutEvents(events, containerWidth, minTime, totalDuration) {
+            detectOverlaps(events);
+            const maxColumns = Math.max(...events.map(e => e.column + 1)); // Max columns
+            const columnWidth = containerWidth / maxColumns;
+
+            events.forEach(event => {
+                const { top, height } = calculatePosition(event.start, event.end, minTime, totalDuration);
+                const div = document.createElement('div');
+                div.className = `schedule-item`;
+                div.style.top = `${top}px`;
+                div.style.height = `${height}px`;
+                div.style.width = `${columnWidth - 10}px`; // Adjust column width
+                div.style.left = `${event.column * columnWidth}px`; // Position correctly
+
+                // Find the corresponding schedule cell
+                const timeSlot = document.querySelector(`.schedule-cell[data-time="${event.start}-${event.end}"]`);
+                if (timeSlot) {
+                    timeSlot.appendChild(div);
+                }
+
+                div.innerHTML = `
+                            <div class="time">${event.start}-${event.end}</div>
+                            <div class="course">${event.course}</div>
+                            <div class="location">${event.location}</div>
+                            ${event.title ? `<div class="title">${event.title}</div>` : ''}
+                        `;
+            });
+        }
+    </script>
+}
