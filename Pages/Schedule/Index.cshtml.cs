@@ -21,16 +21,21 @@ namespace SchoolSystem.Pages.Schedule
         public int WeekNum { get; set; }
 
 
-        public async Task<IActionResult> OnGetAsync(long studentClassId)
+        public async Task<IActionResult> OnGetAsync(int studentClassId, int? week)
         {
             //Agendas = await _agendaService.GetStudentClassAgendasAsync(studentClassId);
-            var (weekNum, week) = await _scheduleService.GetCurrentWeekAsync();
+            var (weekNum, weekDays) = await _scheduleService.GetCurrentWeekAsync();
 
-            Week = week;
+            // Retrieve agendas for the current week
+            Agendas = await _scheduleService.GetAgendasForWeekAsync(studentClassId, week);
+
+
+            Week = weekDays;
             WeekNum = weekNum;
 
 
             return Page();
         }
+
     }
 }

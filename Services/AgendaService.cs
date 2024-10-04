@@ -48,6 +48,15 @@ namespace SchoolSystem.Services
             return agendas;
         }
 
+        public async Task<List<Agenda>> GetAgendasForClassInRangeAsync(int studentClassId, DateTime startDate, DateTime endDate)
+        {
+            return await _context.Agenda
+                .Where(a => a.StudentClassId == studentClassId &&
+                            a.StartDateTime >= startDate &&
+                            a.EndDateTime <= endDate)
+                .ToListAsync();
+        }
+
 
     }
 }
