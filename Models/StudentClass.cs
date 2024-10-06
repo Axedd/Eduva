@@ -10,4 +10,10 @@
         public ICollection<StudentClassSubjects> StudentClassSubjects { get; set; }
         public ICollection<Agenda> Agendas { get; set; }
     }
+
+    public class StudentClassDto
+    {
+        public int StudentClassId { get; set; }
+        public string? ClassName { get; set; }
+    }
 }

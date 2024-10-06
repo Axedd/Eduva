@@ -54,6 +54,19 @@ namespace SchoolSystem.Services
                 .Where(a => a.StudentClassId == studentClassId &&
                             a.StartDateTime >= startDate &&
                             a.EndDateTime <= endDate)
+                .Include(a => a.Subject) // Include the related Subject entity
+                .Select(a => new Agenda
+                {
+                    AgendaId = a.AgendaId,
+                    StartDateTime = a.StartDateTime,
+                    EndDateTime = a.EndDateTime,
+                    StudentClassId = a.StudentClassId,
+                    SubjectDto = new SubjectAgendaDto // Projecting the Subject entity to SubjectAgendaDto
+                    {
+                        SubjectId = a.Subject.SubjectId,
+                        SubjectName = a.Subject.SubjectName
+                    },
+                })
                 .ToListAsync();
         }
 

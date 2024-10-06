@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SchoolSystem.Models
 {
@@ -17,9 +18,13 @@ namespace SchoolSystem.Models
 
         public long SubjectId { get; set; }
         public Subject? Subject { get; set; }
+        [NotMapped]
+        public SubjectAgendaDto? SubjectDto { get; set; }
         public int StudentClassId { get; set; }
         public StudentClass? StudentClass { get; set; }
 		public long TeacherId { get; set; }
 		public Teacher? Teacher { get; set; }
-	}
+
+        
+    }
 }

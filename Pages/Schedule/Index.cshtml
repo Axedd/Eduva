@@ -1,15 +1,10 @@
 ﻿@page
 @model SchoolSystem.Pages.Schedule.IndexModel
 @{
-    // Sample test children data for demonstration
-    var testChildren = new List<(string Name, int Top)>
-    {
-        ("Child A", 10),   // Position at 10px
-        ("Child B", 40),   // Position at 40px
-        ("Child C", 70),   // Position at 70px
-        ("Child D", 100),  // Position at 100px
-        ("Child E", 130)   // Position at 130px
-    };
+
+
+    var agendasJson = System.Text.Json.JsonSerializer.Serialize(Model.Agendas);
+
 }
 
 @section Styles {
@@ -25,13 +20,14 @@
         }
 
         .schedule-column {
-            display: flex;
-            flex-direction: column; /* Each day as a single column */
-            flex: 1; /* Equal width for each column */
-            padding: 0 5px; /* Add some padding between columns */
-            border: 1px solid #dee2e6; /* Optional: add border to columns */
-            position: relative; /* Allow absolute positioning for children */
-        }
+    display: flex;
+    flex-direction: column; /* Each day as a single column */
+    flex: 1; /* Equal width for each column */
+    padding: 0 5px; /* Add some padding between columns */
+    border: 1px solid #dee2e6; /* Optional: add border to columns */
+    position: relative; /* Allow absolute positioning for children */
+    height: 900px; /* Adjust height as needed for earlier events (e.g., 04:00 to 15:15) */
+}
 
         .module-column {
             flex: 0 0 150px; /* Fixed width for the module column */
@@ -41,22 +37,26 @@
         .schedule-cell {
             border: 1px solid #dee2e6;
             padding: 5px;
-            height: 120px; /* Fixed height for each module */
+            height: 75px; /* Fixed height for each module */
             box-sizing: border-box;
             margin-bottom: 5px; /* Space between cells */
             position: relative; /* Allow for child positioning */
         }
 
         .schedule-item {
+            position: absolute;
             background-color: #e9ecef;
             border-radius: 4px;
             padding: 5px;
             font-size: 0.8em;
             overflow: hidden;
-            position: absolute; /* Allow for dynamic positioning */
-            width: calc(100% - 10px); /* Full width minus padding */
-            left: 5px; /* Align to the left */
-            transition: top 0.2s; /* Smooth position transitions */
+            width: calc(100% - 10px); /* Adjust for padding */
+            left: calc(3%); /* Add space on the left */
+            transition: top 0.2s;
+        }
+
+        .schedule-break {
+            height: 25px;
         }
     </style>
 }
@@ -82,14 +82,17 @@
                 <div class="module-info">1. modul</div>
                 <div class="module-time">8:00 - 9:30</div>
             </div>
+            <div class="schedule-break"></div>
             <div class="schedule-cell module-cell">
                 <div class="module-info">2. modul</div>
                 <div class="module-time">10:00 - 11:30</div>
             </div>
+                <div class="schedule-break"></div>
             <div class="schedule-cell module-cell">
                 <div class="module-info">3. modul</div>
                 <div class="module-time">12:00 - 13:30</div>
             </div>
+            <div class="schedule-break"></div>
             <div class="schedule-cell module-cell">
                 <div class="module-info">4. modul</div>
                 <div class="module-time">13:45 - 15:15</div>
@@ -98,12 +101,108 @@
 
         @foreach (var date in Model.Week)
         {
-            <div class="schedule-column day-column">
-                <div class="schedule-item" style="top: 90px;">TEST 1</div>
-                <div class="schedule-item" style="top: 180px;">TEST 2</div>
-                <div class="schedule-item" style="top: 270px;">TEST 3</div>
-                <div class="schedule-item" style="top: 270px;">TEST 4</div>
+            <div class="schedule-column day-column" data-date="@date.ToString("yyyy-MM-dd")">
+                <!-- Agenda items will be dynamically inserted here -->
             </div>
         }
     </div>
 </div>
+
+
+
+@section Scripts {
+    <script>
+        var agendas = @Html.Raw(agendasJson);
+    console.log("Agendas Data:", agendas);
+
+    document.addEventListener("DOMContentLoaded", function () {
+        addEvent(agendas);
+    });
+
+    function addEvent(agendas) {
+        if (!agendas || !Array.isArray(agendas)) {
+            console.error("Agendas is not a valid array:", agendas);
+            return;
+        }
+
+        // Group agendas by date
+        var agendasByDay = agendas.reduce((acc, agenda) => {
+            var dateKey = agenda.StartDateTime.split('T')[0];
+            acc[dateKey] = acc[dateKey] || [];
+            acc[dateKey].push(agenda);
+            return acc;
+        }, {});
+
+        Object.keys(agendasByDay).forEach(function (dateKey) {
+            var dayAgendas = agendasByDay[dateKey];
+            var overlappingGroups = findOverlappingGroups(dayAgendas);
+
+            overlappingGroups.forEach(function (group) {
+                var groupSize = group.length;
+                group.forEach(function (agenda, index) {
+                    var startTime = new Date(agenda.StartDateTime);
+                    var endTime = new Date(agenda.EndDateTime);
+
+                    var subjectName = agenda.SubjectDto ? agenda.SubjectDto.SubjectName : 'No Subject Assigned';
+
+                    // Calculate time offset and height based on start and end time
+                    var scheduleStartHour = 8; // Schedule starts at 8:00 AM
+                    var moduleHeight = 75;
+                    var minutesPerModule = 90;
+
+                    var startMinutesFromScheduleStart = ((startTime.getHours() - scheduleStartHour) * 60) + startTime.getMinutes();
+                    var durationMinutes = (endTime - startTime) / (1000 * 60);
+
+                    var topOffset = (startMinutesFromScheduleStart / minutesPerModule) * moduleHeight;
+                    var eventHeight = (durationMinutes / minutesPerModule) * moduleHeight;
+
+
+                    // Create a new div for the agenda item
+                    var scheduleItem = document.createElement('div');
+                    scheduleItem.className = 'schedule-item';
+                    scheduleItem.style.top = topOffset + 'px'; // Set the top position
+                    scheduleItem.style.height = eventHeight + 'px'; // Set the height based on duration
+                    scheduleItem.style.width = `calc(${100 / groupSize}% - 10px)`; // Set width based on group size
+                    scheduleItem.style.left = `calc(${(index * 100 / groupSize)}%)`; // Position them side by side
+                    scheduleItem.innerHTML = `
+                            <p>${subjectName}</p>
+                            <p>${startTime.getHours()}:${startTime.getMinutes().toString().padStart(2, '0')} - ${endTime.getHours()}:${endTime.getMinutes().toString().padStart(2, '0')}</p>
+                        `;
+                        // Append the new item to the corresponding day column
+                        var dayColumn = document.querySelector(`[data-date="${agenda.StartDateTime.split('T')[0]}"]`);
+                        if (dayColumn) {
+                            dayColumn.appendChild(scheduleItem);
+                        }
+                    });
+                });
+            });
+        }
+
+        // This function identifies groups of overlapping agendas for each day
+        function findOverlappingGroups(dayAgendas) {
+            var overlappingGroups = [];
+            dayAgendas.sort((a, b) => new Date(a.StartDateTime) - new Date(b.StartDateTime));
+
+            var currentGroup = [dayAgendas[0]];
+            for (var i = 1; i < dayAgendas.length; i++) {
+                var prevAgenda = dayAgendas[i - 1];
+                var currentAgenda = dayAgendas[i];
+
+                var prevEndTime = new Date(prevAgenda.EndDateTime);
+                var currentStartTime = new Date(currentAgenda.StartDateTime);
+
+                // Check if current agenda overlaps with the previous one
+                if (currentStartTime < prevEndTime) {
+                    currentGroup.push(currentAgenda);
+                } else {
+                    overlappingGroups.push(currentGroup);
+                    currentGroup = [currentAgenda];
+                }
+            }
+
+            // Add the last group
+            overlappingGroups.push(currentGroup);
+            return overlappingGroups;
+        }
+    </script>
+}

@@ -94,6 +94,8 @@ namespace SchoolSystem.Data
 					.WithMany(sc => sc.Agendas)
 					.HasForeignKey(a => a.TeacherId);
 			});
+
+
                 
         }
     }
