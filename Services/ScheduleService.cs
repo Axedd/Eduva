@@ -24,7 +24,7 @@ namespace SchoolSystem.Services
             List<DateTime> currentWeekDays = GetCurrentWeekDays();
 
             // Return both the week number and the list of weekdays
-            return (currentWeekNumber, currentWeekDays);
+            return (40, currentWeekDays);
         }
 
         public List<Agenda> Agendas { get; set; }
@@ -76,7 +76,7 @@ namespace SchoolSystem.Services
         private static List<DateTime> GetCurrentWeekDays()
         {
             List<DateTime> weekDays = new List<DateTime>();
-            DateTime today = DateTime.Today;
+            DateTime today = new DateTime(2024, 10, 5);
 
             // Get the difference between today and the previous Monday
             int diff = (7 + (today.DayOfWeek - DayOfWeek.Monday)) % 7;
