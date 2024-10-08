@@ -25,6 +25,23 @@ namespace SchoolSystem.Services
             await _context.SaveChangesAsync();
         }
 
+        public async Task UpdateScheduleModulePreferenceAsync(ScheduleModulePreferences preference)
+        {
+            // Check if the preference exists
+            var existingPreference = await _context.ScheduleModulePreferences
+                .FirstOrDefaultAsync(p => p.Id == preference.Id);
+
+            if (existingPreference != null)
+            {
+                await _context.ScheduleModulePreferences
+                    .Where(p => p.Id == preference.Id) 
+                    .ExecuteUpdateAsync(setter => setter
+                        .SetProperty(p => p.ModuleNumber, preference.ModuleNumber)
+                        .SetProperty(p => p.StartTime, preference.StartTime) 
+                        .SetProperty(p => p.EndTime, preference.EndTime)); 
+            }
+        }
+
         public async Task DeleteScheduleModulePreferenceAsync(int id)
         {
             _context.Remove(_context.ScheduleModulePreferences.Single(smp => smp.Id == id));

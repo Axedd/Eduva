@@ -7,5 +7,6 @@ namespace SchoolSystem.Interfaces
         Task<List<ScheduleModulePreferences>> GetScheduleModulePreferencesAsync();
         Task AddScheduleModulePreferenceAsync(ScheduleModulePreferences preference);
         Task DeleteScheduleModulePreferenceAsync(int id);
+        Task UpdateScheduleModulePreferenceAsync(ScheduleModulePreferences preference);
     }
 }

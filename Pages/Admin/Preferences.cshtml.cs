@@ -18,6 +18,7 @@ namespace SchoolSystem.Pages.Admin
         public ScheduleModulePreferences ScheduleModulePreference { get; set; }
 
         public List<ScheduleModulePreferences> ScheduleModulePreferences { get; set; }
+        public int ScheduleModuleEditId { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
         {
@@ -35,6 +36,22 @@ namespace SchoolSystem.Pages.Admin
             ScheduleModulePreferences = await _preferenceService.GetScheduleModulePreferencesAsync();
 
             return Page();
+        }
+
+        public async Task<IActionResult> OnPostEditScheduleModulePreferenceAsync(int id)
+        {
+            ScheduleModuleEditId = id;
+
+            ScheduleModulePreferences = await _preferenceService.GetScheduleModulePreferencesAsync();
+
+            return Page();
+        }
+
+        public async Task<IActionResult> OnPostSaveScheduleModulePreferenceAsync()
+        {
+            await _preferenceService.UpdateScheduleModulePreferenceAsync(ScheduleModulePreference);
+
+            return RedirectToPage();
         }
 
         public async Task<IActionResult> OnPostDeleteScheduleModulePreferenceAsync(int id)

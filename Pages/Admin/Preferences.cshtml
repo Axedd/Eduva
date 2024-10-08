@@ -26,19 +26,48 @@
             @foreach (var ModulePreference in Model.ScheduleModulePreferences)
             {
                 <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div class="flex-grow-1 me-3">
-                        <!-- Use flex-grow to take available space -->
-                        <strong>Module Number:</strong> @ModulePreference.ModuleNumber &nbsp; | &nbsp; <!-- Added separator -->
-                        <strong>Start Time:</strong> @ModulePreference.StartTime &nbsp; | &nbsp; <!-- Added separator -->
-                        <strong>End Time:</strong> @ModulePreference.EndTime
-                    </div>
-                    <div>
-                        <button class="btn btn-primary btn-sm me-2">Edit</button>
-                        <form method="post" asp-page-handler="DeleteScheduleModulePreference">
-                            <input type="hidden" name="id" value="@ModulePreference.Id" />
-                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                    @if (ModulePreference.Id == Model.ScheduleModuleEditId)
+                    {
+                        <form method="post" asp-page-handler="SaveScheduleModulePreference">
+                            <input type="hidden" name="ScheduleModulePreference.Id" value="@ModulePreference.Id" />
+
+                            <div class="flex-grow-1 me-3">
+                                <!-- Use flex-grow to take available space -->
+                                <strong>Module Number:</strong> <input type="number" name="ScheduleModulePreference.ModuleNumber" value="@ModulePreference.ModuleNumber" /> &nbsp; | &nbsp;
+                                <strong>Start Time:</strong> <input type="time" name="ScheduleModulePreference.StartTime" value="@ModulePreference.StartTime" /> &nbsp; | &nbsp
+                                <strong>End Time:</strong> <input type="time" name="ScheduleModulePreference.EndTime" value="@ModulePreference.EndTime" />
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-sm me-2">Save</button>
                         </form>
-                    </div>
+                        <div>
+                            <form method="get" asp-page-handler="">
+                                <button type="submit" class="btn btn-secondary btn-sm me-2">Cancel</button>
+                            </form>
+                            <form method="post" asp-page-handler="DeleteScheduleModulePreference">
+                                <input type="hidden" name="id" value="@ModulePreference.Id" />
+                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                            </form>
+                        </div>
+                    } else
+                    {
+                        <div class="flex-grow-1 me-3">
+                            <!-- Use flex-grow to take available space -->
+                            <strong>Module Number:</strong> @ModulePreference.ModuleNumber &nbsp; | &nbsp; <!-- Added separator -->
+                            <strong>Start Time:</strong> @ModulePreference.StartTime &nbsp; | &nbsp; <!-- Added separator -->
+                            <strong>End Time:</strong> @ModulePreference.EndTime
+                        </div>
+                        <div>
+                            <form method="post" asp-page-handler="EditScheduleModulePreference">
+                                <input type="hidden" name="id" value="@ModulePreference.Id" />
+                                <button type="submit" class="btn btn-primary btn-sm me-2">Edit</button>
+                            </form>
+                            <form method="post" asp-page-handler="DeleteScheduleModulePreference">
+                                <input type="hidden" name="id" value="@ModulePreference.Id" />
+                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                            </form>
+                        </div>
+                    }
+                    
                 </li>
             }
         </ul>
