@@ -3,62 +3,15 @@
 @{
 
 
-    var agendasJson = System.Text.Json.JsonSerializer.Serialize(Model.Agendas);
+    // Ensure pixelPerMinuteRatio is defined here or at the top
+    var pixelPerMinuteRatio = 1.7;
+    var totalMinutes = Model.GlobalLatestEndTime - Model.GlobalEarliestStartTime;
+    var containerHeight = totalMinutes * pixelPerMinuteRatio; // Calculate height in pixels
 
 }
 
 @section Styles {
-    <style>
-        .schedule-header {
-            background-color: #f8f9fa;
-            border-bottom: 2px solid #dee2e6;
-            margin-bottom: 10px; /* Space below header */
-        }
-
-        .schedule-container {
-            display: flex; /* Flexbox for the main container */
-        }
-
-        .schedule-column {
-    display: flex;
-    flex-direction: column; /* Each day as a single column */
-    flex: 1; /* Equal width for each column */
-    padding: 0 5px; /* Add some padding between columns */
-    border: 1px solid #dee2e6; /* Optional: add border to columns */
-    position: relative; /* Allow absolute positioning for children */
-    height: 600px; /* Adjust height as needed for earlier events (e.g., 04:00 to 15:15) */
-}
-
-        .module-column {
-            flex: 0 0 150px; /* Fixed width for the module column */
-            padding-right: 10px; /* Space between module column and day columns */
-        }
-
-        .schedule-cell {
-            border: 1px solid #dee2e6;
-            padding: 5px;
-            height: 75px; /* Fixed height for each module */
-            box-sizing: border-box;
-            margin-bottom: 5px; /* Space between cells */
-            position: relative; /* Allow for child positioning */
-        }
-
-        .schedule-item {
-            position: absolute;
-            background-color: #e9ecef;
-            border-radius: 4px;
-            padding: 5px;
-            font-size: 0.8em;
-            overflow: hidden;
-            width: calc(100% - 10px); /* Adjust for padding */
-            left: calc(3%); /* Add space on the left */
-            transition: top 0.2s;
-        }
-
-        .schedule-break {
-            height: 25px;
-        }
-    </style>
+    <link href="~/css/schedule.css?v=@DateTime.Now.Ticks" rel="stylesheet" type="text/css" />
 }
 
 <div class="container-fluid mt-3">
@@ -77,217 +30,81 @@
     <div class="schedule-container">
         <!-- Flex container for the schedule -->
         <div class="module-column">
+            @foreach (var ScheduleModulePreference in Model.ScheduleModulePreferences)
+            {
+                var totalMinutesFromEarliest = (ScheduleModulePreference.StartTime.Hour * 60 + ScheduleModulePreference.StartTime.Minute) - Model.GlobalEarliestStartTime;
+                var topPosition = System.Convert.ToInt32(totalMinutesFromEarliest * pixelPerMinuteRatio);
+
+                var startMinute = ScheduleModulePreference.StartTime.Minute;
+                var endMinute = ScheduleModulePreference.EndTime.Minute;
+
+                // Calculate total minutes for the start and end times
+                var startTotalMinutes = (ScheduleModulePreference.StartTime.Hour * 60) + startMinute; // Total minutes from start
+                var endTotalMinutes = (ScheduleModulePreference.EndTime.Hour * 60) + endMinute; // Total minutes from end
+
+                // Calculate duration in minutes
+                var durationInMinutes = endTotalMinutes - startTotalMinutes;
+
+                // Convert duration to pixels
+                var durationInPixels = System.Convert.ToInt32(durationInMinutes * pixelPerMinuteRatio);
+
+                <div class="schedule-cell module-cell" style="top: @($"{topPosition}px"); height:@($"{durationInPixels}px");">
+                    <div class="module-info">@($"{ScheduleModulePreference.ModuleNumber}.") modul</div>
+                    <div class="module-time">@ScheduleModulePreference.StartTime - @ScheduleModulePreference.EndTime</div>
+                </div>
+                
+            }
             <!-- Fixed column for modules -->
-            <div class="schedule-cell module-cell">
-                <div class="module-info">1. modul</div>
-                <div class="module-time">8:00 - 9:30</div>
-            </div>
-            <div class="schedule-break"></div>
-            <div class="schedule-cell module-cell">
-                <div class="module-info">2. modul</div>
-                <div class="module-time">10:00 - 11:30</div>
-            </div>
-                <div class="schedule-break"></div>
-            <div class="schedule-cell module-cell">
-                <div class="module-info">3. modul</div>
-                <div class="module-time">12:00 - 13:30</div>
-            </div>
-            <div class="schedule-break"></div>
-            <div class="schedule-cell module-cell">
-                <div class="module-info">4. modul</div>
-                <div class="module-time">13:45 - 15:15</div>
-            </div>
+            
         </div>
 
         @foreach (var date in Model.Week)
         {
-            <div class="schedule-column day-column" data-date="@date.ToString("yyyy-MM-dd")">
-                <!-- Agenda items will be dynamically inserted here -->
+            <div class="schedule-column day-column" data-date="@date.ToString("yyyy-MM-dd")" style="height:@($"{containerHeight}px");">
+                @if (Model.OverlappingGroupsByDay.ContainsKey(date.ToString("yyyy-MM-dd")))
+                {
+                    var dayGroups = Model.OverlappingGroupsByDay[date.ToString("yyyy-MM-dd")];
+                    foreach (var group in dayGroups)
+                    {
+                        var groupSize = group.Count;
+                        for (var i = 0; i < groupSize; i++)
+                        {
+                            var agenda = group[i];
+                            var startTime = agenda.StartDateTime;
+                            var endTime = agenda.EndDateTime;
+                            var subject = agenda.SubjectDto?.SubjectName ?? "No Subject Assigned";
+
+                            var startHour = startTime.Hour;
+                            var endHour = endTime.Hour;
+
+                            var startMinute = startTime.Minute;
+                            var endMinute = endTime.Minute;
+
+                            // Calculate total minutes for the start and end times
+                            var startTotalMinutes = (startHour * 60) + startMinute; // Total minutes from start
+                            var endTotalMinutes = (endHour * 60) + endMinute; // Total minutes from end
+
+                            // Calculate duration in minutes
+                            var durationInMinutes = endTotalMinutes - startTotalMinutes;
+
+                            // Convert duration to pixels
+                            var durationInPixels = System.Convert.ToInt32(durationInMinutes * pixelPerMinuteRatio);
+
+                            var totalMinutesFromEarliest = (startTime.Hour * 60 + startTime.Minute) - Model.GlobalEarliestStartTime;
+                            var topPosition = System.Convert.ToInt32(totalMinutesFromEarliest * pixelPerMinuteRatio);
+                            var widthPercentage = 100 / groupSize;
+                            var leftPosition = i * widthPercentage;
+
+
+
+                            <div class="schedule-item" style="top:@($"{topPosition}px"); height:@($"{durationInPixels}px"); width:calc(@widthPercentage% - 10px); left:@leftPosition%;">
+                                <p>@subject</p>
+                                <p>@startTime.ToString("HH:mm") - @endTime.ToString("HH:mm")</p>
+                            </div>
+                        }
+                    }
+                }
             </div>
         }
     </div>
 </div>
-
-
-
-@section Scripts {
-    <script>
-        var agendas = @Html.Raw(agendasJson);
-        Int16Array
-
-        document.addEventListener("DOMContentLoaded", function () {
-            addEvent(agendas)
-                .then(() => {
-                    console.log("All events have been added.");
-                    // You can add any additional logic here that should run after the events are added.
-                })
-                .catch(error => {
-                    console.error("Error adding events:", error);
-                });
-        });
-
-        function addEvent(agendas) {
-            return new Promise((resolve, reject) => {
-                if (!agendas || !Array.isArray(agendas) || agendas.length === 0) {
-                    console.error("Agendas is not a valid array or is empty:", agendas);
-                    reject("Invalid agendas");
-                    return;
-                }
-                console.log("Agendas:", agendas);
-
-                // Group the agendas by day
-                var agendasByDay = {};
-                agendas.forEach(function (agenda) {
-                    var date = agenda.StartDateTime.split('T')[0]; // Get the day part of the date
-                    if (!agendasByDay[date]) {
-                        agendasByDay[date] = [];
-                    }
-                    agendasByDay[date].push(agenda);
-                });
-
-                // Find the overall earliest start time across all days
-                var globalEarliestStartTime = findGlobalEarliestStartTime(agendas);
-                console.log("Global earliest start time:", globalEarliestStartTime);
-
-                // Find the latest end time across all days for proper column height adjustment
-                var globalLatestEndTime = findGlobalLatestEndTime(agendas);
-                console.log("Global latest end time:", globalLatestEndTime);
-
-                // Adjust the height of each schedule column to fit all events
-                var totalMinutes = (globalLatestEndTime - globalEarliestStartTime);
-                var containerHeight = (totalMinutes / 75) * 75; // Calculate new height based on the time range
-
-                if (containerHeight > 600) {
-                    document.querySelectorAll('.day-column').forEach(function (column) {
-                        column.style.height = `${containerHeight}px`; // Set new height for the column
-                    });
-                }
-
-                // Process each day
-                Object.keys(agendasByDay).forEach(function (date) {
-                    var dayAgendas = agendasByDay[date];
-                    var overlappingGroups = findOverlappingGroups(dayAgendas);
-
-                    // Process each overlapping group
-                    overlappingGroups.forEach(function (group) {
-                        var groupSize = group.length; // How many events overlap in this group?
-
-                        group.forEach(function (agenda, index) {
-                            var startTime = new Date(agenda.StartDateTime);
-                            var endTime = new Date(agenda.EndDateTime);
-
-                            // Check if the Subject is null
-                            var subjectName = agenda.SubjectDto ? agenda.SubjectDto.SubjectName : 'No Subject Assigned';
-                            console.log("Subject:", subjectName, "Start:", startTime, "End:", endTime);
-
-                            // Create a new div for the agenda item
-                            var scheduleItem = document.createElement('div');
-                            scheduleItem.className = 'schedule-item';
-                            scheduleItem.innerHTML = `
-                                <p>${subjectName}</p>
-                                <p>${startTime.getHours()}:${startTime.getMinutes().toString().padStart(2, '0')} -
-                                   ${endTime.getHours()}:${endTime.getMinutes().toString().padStart(2, '0')}</p>
-                            `;
-
-                            // Dynamically set the width and left positioning based on how many events are in this group
-                            var widthPercentage = 100 / groupSize; // Divide the width by the number of overlapping events
-                            scheduleItem.style.width = `calc(${widthPercentage}% - 10px)`; // Adjust for padding
-                            scheduleItem.style.left = `${index * widthPercentage}%`; // Position it based on its index in the group
-
-                            // Adjust top position based on the start time relative to the global earliest start time
-                            var totalMinutesFromEarliest = (startTime.getHours() * 60 + startTime.getMinutes()) - globalEarliestStartTime; // Minutes difference from earliest
-                            console.log("Minutes from earliest:", totalMinutesFromEarliest);
-                            var moduleHeight = 75; // Each module is 75px high
-                            scheduleItem.style.top = `${(totalMinutesFromEarliest / 75) * moduleHeight}px`; // Adjust top positioning
-                            console.log(`Setting height for ${date} to ${containerHeight}px`);
-
-                            // Append the new item to the corresponding day column
-                            var dayColumn = document.querySelector(`[data-date="${date}"]`);
-                            if (dayColumn) {
-                                dayColumn.appendChild(scheduleItem);
-                            }
-                        });
-                    });
-                });
-
-                // Resolve the promise once all events have been processed
-                resolve();
-            });
-        }
-
-        // Function to find the global earliest start time across all agendas based on time only
-        // Function to find the global earliest start time across all agendas
-        function findGlobalEarliestStartTime(agendas) {
-            let earliest = null;
-
-            agendas.forEach(function (agenda) {
-                const startTime = new Date(agenda.StartDateTime);
-
-                if (isNaN(startTime.getTime())) {
-                    console.error("Invalid date encountered:", agenda.StartDateTime);
-                    return;
-                }
-
-                // Create a comparable time value
-                const currentComparableTime = startTime.getHours() * 60 + startTime.getMinutes();
-
-                // Compare against the earliest time found
-                if (earliest === null || currentComparableTime < earliest) {
-                    earliest = currentComparableTime; // Store the earliest comparable time
-                }
-            });
-
-            return earliest; // Return the overall earliest start time as an integer (in minutes)
-        }
-
-        // Function to find the global latest end time across all agendas based on time only
-        function findGlobalLatestEndTime(agendas) {
-            let latest = null;
-
-            agendas.forEach(function (agenda) {
-                const endTime = new Date(agenda.EndDateTime);
-
-                if (isNaN(endTime.getTime())) {
-                    console.error("Invalid date encountered:", agenda.EndDateTime);
-                    return;
-                }
-
-                // Create a comparable time value
-                const currentComparableTime = endTime.getHours() * 60 + endTime.getMinutes();
-
-                // Compare against the latest time found
-                if (latest === null || currentComparableTime > latest) {
-                    latest = currentComparableTime; // Store the latest comparable time
-                }
-            });
-
-            return latest; // Return the overall latest end time as an integer (in minutes)
-        }
-        // Function to find overlapping groups of agendas for each day
-        function findOverlappingGroups(dayAgendas) {
-            var overlappingGroups = [];
-            dayAgendas.sort((a, b) => new Date(a.StartDateTime) - new Date(b.StartDateTime));
-
-            var currentGroup = [dayAgendas[0]];
-            for (var i = 1; i < dayAgendas.length; i++) {
-                var prevAgenda = dayAgendas[i - 1];
-                var currentAgenda = dayAgendas[i];
-
-                var prevEndTime = new Date(prevAgenda.EndDateTime);
-                var currentStartTime = new Date(currentAgenda.StartDateTime);
-
-                // Check if current agenda overlaps with the previous one
-                if (currentStartTime < prevEndTime) {
-                    currentGroup.push(currentAgenda);
-                } else {
-                    overlappingGroups.push(currentGroup);
-                    currentGroup = [currentAgenda];
-                }
-            }
-
-            // Add the last group
-            overlappingGroups.push(currentGroup);
-            return overlappingGroups;
-        }
-    </script>
-}

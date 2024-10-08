@@ -1,4 +1,5 @@
-﻿using SchoolSystem.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using SchoolSystem.Data;
 using SchoolSystem.Interfaces;
 using SchoolSystem.Models;
 using System.Globalization;
@@ -14,6 +15,11 @@ namespace SchoolSystem.Services
         {
             _context = context;
             _agendaService = agendaService;
+        }
+
+        public async Task<List<ScheduleModulePreferences>> GetScheduleModulePreferencesAsync()
+        {
+            return await _context.ScheduleModulePreferences.ToListAsync();
         }
 
         public async Task<(int WeekNumber, List<DateTime> WeekDays)> GetCurrentWeekAsync()

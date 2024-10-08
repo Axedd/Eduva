@@ -1,0 +1,51 @@
+﻿.schedule-header {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+    margin-bottom: 10px; /* Space below header */
+}
+
+.schedule-container {
+    display: flex; /* Flexbox for the main container */
+}
+
+.schedule-column {
+    display: flex;
+    flex-direction: column; /* Each day as a single column */
+    flex: 1; /* Equal width for each column */
+    padding: 0 5px; /* Add some padding between columns */
+    border: 1px solid #dee2e6; /* Optional: add border to columns */
+    position: relative; /* Allow absolute positioning for children */
+    height: 600px; /* Adjust height as needed for earlier events (e.g., 04:00 to 15:15) */
+}
+
+.module-column {
+    height: 600px; 
+    flex: 0 0 150px;
+    padding-right: 10px;
+    position: relative;
+}
+
+.schedule-cell {
+    border: 1px solid #dee2e6;
+    padding: 5px;
+    height: 75px; /* Fixed height for each module */
+    width: 120px;
+    box-sizing: border-box;
+    position: absolute; /* Allow for child positioning */
+}
+
+.schedule-item {
+    position: absolute;
+    background-color: #e9ecef;
+    border-radius: 4px;
+    padding: 5px;
+    font-size: 0.8em;
+    overflow: hidden;
+    width: calc(100% - 10px); /* Adjust for padding */
+    left: calc(3%); /* Add space on the left */
+    transition: top 0.2s;
+}
+
+.schedule-break {
+    height: 25px;
+}

@@ -21,6 +21,7 @@ namespace SchoolSystem.Data
         public DbSet<UsernameCount> UsernameCounts { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<Agenda> Agenda { get; set; }
+        public DbSet<ScheduleModulePreferences> ScheduleModulePreferences { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -94,6 +95,9 @@ namespace SchoolSystem.Data
 					.WithMany(sc => sc.Agendas)
 					.HasForeignKey(a => a.TeacherId);
 			});
+
+            builder.Entity<ScheduleModulePreferences>()
+                .HasKey(smp => smp.Id);
 
 
                 
