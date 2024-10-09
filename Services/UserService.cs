@@ -181,6 +181,47 @@ namespace SchoolSystem.Services
             }
         }
 
+        public async Task<List<TeacherRoleViewModel>> GetTeachersWithRolesAsync()
+        {
+            try
+            {
+                var teachers = await _context.Teachers
+                    .Where(s => s.UserId != null)
+                    .ToListAsync();
+
+                var teacherRoleViewModels = new List<TeacherRoleViewModel>();
+
+                foreach (var teacher in teachers)
+                {
+                    var user = await _context.Users.FirstOrDefaultAsync(a => a.Id == teacher.UserId);
+                    var roleNames = await _userManager.GetRolesAsync(user);
+
+                    var roles = roleNames.Select(roleName => new RoleViewModel
+                    {
+                        RoleId = roleName, 
+                        RoleName = roleName
+                    }).ToList();
+
+                    teacherRoleViewModels.Add(new TeacherRoleViewModel
+                    {
+                        TeacherId = teacher.TeacherId,
+                        UserId = teacher.UserId,
+                        UserName = user?.UserName,
+                        HasPassword = user.PasswordHash != null,
+                        Roles = roles
+                    });
+                }
+
+                return teacherRoleViewModels;
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (or rethrow for debugging)
+                Console.WriteLine(ex.Message);
+                throw; // Optional: rethrow to see the stack trace
+            }
+        }
+
         public async Task<bool> isValidUserStudent(long studentId)
         {
             return await _context.Students.Where(t => t.StudentId == studentId).AnyAsync(s => s.UserId != null);

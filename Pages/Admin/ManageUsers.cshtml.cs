@@ -26,12 +26,16 @@ namespace SchoolSystem.Pages.Admin
         public List<Student> Students { get; set; }
         public List<StudentRoleViewModel> StudentRoleViewModels { get; set; } = new List<StudentRoleViewModel>();
 
+        public List<TeacherRoleViewModel> TeacherRoleViewModels { get; set; } = new List<TeacherRoleViewModel>();
+
         public string TempPassword { get; private set; }
 
 
         public async Task<IActionResult> OnGetAsync()
         {
             StudentRoleViewModels = await _userService.GetStudentsWithRolesAsync();
+            TeacherRoleViewModels = await _userService.GetTeachersWithRolesAsync();
+
             return Page();
         }
 
@@ -43,8 +47,8 @@ namespace SchoolSystem.Pages.Admin
                 TempPassword = tempPassword; // Store the generated password
             }
 
-            // Always refresh the student roles after generating a password
             StudentRoleViewModels = await _userService.GetStudentsWithRolesAsync();
+            TeacherRoleViewModels = await _userService.GetTeachersWithRolesAsync();
             return Page();
         }
     }

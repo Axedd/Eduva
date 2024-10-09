@@ -17,6 +17,10 @@
 @if (Model.AgendaDetails != null)
 {
     <h1>@Model.AgendaDetails.SubjectDto.SubjectName</h1>
+    
+    
+    <p>Notes: @Model.AgendaDetails.Note</p>
+    <p>HomeWork: @Model.AgendaDetails.HomeWork</p>
 } else
 {
     <div class="container-fluid mt-3">

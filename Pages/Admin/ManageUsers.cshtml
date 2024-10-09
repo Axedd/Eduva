@@ -4,8 +4,11 @@
 
 }
 
-<a href="/admin/ManageStudents">Register new user</a>
 
+
+<br />
+<h3>Students</h3>
+<a href="/admin/ManageStudents">Register new student</a>
 <table class="table">
     <thead>
         <tr>
@@ -59,6 +62,67 @@
         }
     </tbody>
 </table>
+
+<br />
+<h3>Teachers</h3>
+<a href="/admin/ManageTeachers">Register new teacher</a>
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Teacher ID</th>
+            <th scope="col">User ID</th>
+            <th scope="col">User Name</th>
+            <th scope="col">Password</th>
+            <th scope="col">Roles</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.TeacherRoleViewModels != null && Model.TeacherRoleViewModels.Any())
+        {
+            @foreach (var teacher in Model.TeacherRoleViewModels)
+            {
+                <tr>
+                    <th scope="row">@teacher.TeacherId</th>
+                    <td>@teacher.UserId</td>
+                    <td>@teacher.UserName</td>
+                    @if (teacher.HasPassword)
+                    {
+                        <td>True</td>
+                    }
+                    else
+                    {
+                        <td>
+                            <form method="post" asp-page-handler="GenerateTempPassword">
+                                <input type="hidden" name="userId" value="@teacher.UserId" />
+                                <button type="submit">Generate password</button>
+                            </form>
+                        </td>
+                    }
+                    <td>
+                        @if (teacher.Roles != null && teacher.Roles.Any())
+                        {
+                            @string.Join(", ", teacher.Roles.Select(r => r.RoleName))
+                        }
+                        else
+                        {
+                            <span>No Roles</span>
+                        }
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="5">No students found.</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+
+
 
 @if (!string.IsNullOrEmpty(Model.TempPassword))
 {
