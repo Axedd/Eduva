@@ -8,9 +8,19 @@ namespace SchoolSystem.Services
     public class StudentClassService : IStudentClassService
     {
         private readonly ApplicationDbContext _context;
+
         public StudentClassService(ApplicationDbContext context)
         {
             _context = context;
+        }
+
+
+        public async Task<int> GetStudentClassIdByUserId(string userId)
+        {
+            return await _context.Students
+                .Where(s => s.UserId == userId)
+                .Select(a => a.StudentClassId ?? 0) // Provide a default value of 0 if StudentClassId is null
+                .FirstOrDefaultAsync();
         }
 
         public async Task<List<StudentClass>> GetStudentClassesAsync()

@@ -2,18 +2,23 @@
 using SchoolSystem.Models;
 using Microsoft.EntityFrameworkCore;
 using SchoolSystem.Interfaces;
+using System.Security.Claims;
 
 namespace SchoolSystem.Services
 {
     public class StudentService : IStudentService
     {
         private ApplicationDbContext _context;
+        private readonly IStudentClassService _studentClassService;
         private Random _random;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public StudentService(ApplicationDbContext context, Random random)
+        public StudentService(ApplicationDbContext context, Random random, IHttpContextAccessor httpContextAccessor, IStudentClassService studentClassService)
         {
             _context = context;
             _random = random;
+            _httpContextAccessor = httpContextAccessor;
+            _studentClassService = studentClassService;
         }    
         
         public async Task<List<Student>> GetAllStudents()
@@ -24,6 +29,16 @@ namespace SchoolSystem.Services
         public async Task<List<Student>> GetAllRegisteredStudents()
         {
             return await _context.Students.Where(s => s.UserId != null).ToListAsync();
+        }
+
+        public async Task<int> GetClassIdOfStudentAsync()
+        {
+            var user = _httpContextAccessor.HttpContext?.User;
+            var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            int studentClassId = await _studentClassService.GetStudentClassIdByUserId(userId);
+
+            return studentClassId;
         }
 
 

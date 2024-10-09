@@ -10,10 +10,12 @@ namespace SchoolSystem.Pages.Schedule
     {
         private readonly IAgendaService _agendaService;
         private readonly IScheduleService _scheduleService;
-        public IndexModel(IAgendaService agendaService, IScheduleService scheduleService)
+        private readonly IStudentService _studentService;
+        public IndexModel(IAgendaService agendaService, IScheduleService scheduleService, IStudentService studentService)
         {
             _agendaService = agendaService;
             _scheduleService = scheduleService;
+            _studentService = studentService;
         }
 
         public List<Agenda> Agendas { get; set; }
@@ -26,7 +28,7 @@ namespace SchoolSystem.Pages.Schedule
         public List<ScheduleModulePreferences> ScheduleModulePreferences { get; set; }
         public Agenda AgendaDetails { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int studentClassId, int? week, long? agendaId)
+        public async Task<IActionResult> OnGetAsync(int? studentClassId, int? week, long? agendaId)
         {
             if (agendaId.HasValue)
             {
@@ -34,24 +36,32 @@ namespace SchoolSystem.Pages.Schedule
                 return Page();
             } else
             {
+                if (!studentClassId.HasValue)
+                {
+                    studentClassId = await _studentService.GetClassIdOfStudentAsync();
+                }
+
                 // Get current week and agendas
                 var (weekNum, weekDays) = await _scheduleService.GetCurrentWeekAsync();
-                Agendas = await _scheduleService.GetAgendasForWeekAsync(studentClassId, week);
+                Agendas = await _scheduleService.GetAgendasForWeekAsync(studentClassId.Value, week);
 
                 ScheduleModulePreferences = await _scheduleService.GetScheduleModulePreferencesAsync();
 
-                // Group agendas by day
-                AgendasByDay = GroupAgendasByDay(Agendas);
-
-                // Find the global earliest and latest times
-                GlobalEarliestStartTime = await FindGlobalEarliestStartTime(Agendas);
-                GlobalLatestEndTime = FindGlobalLatestEndTime(Agendas);
-
-                // Find overlapping groups for each day
-                OverlappingGroupsByDay = new Dictionary<string, List<List<Agenda>>>();
-                foreach (var day in AgendasByDay.Keys)
+                if (Agendas.Count > 0)
                 {
-                    OverlappingGroupsByDay[day] = FindOverlappingGroups(AgendasByDay[day]);
+                    // Group agendas by day
+                    AgendasByDay = GroupAgendasByDay(Agendas);
+
+                    // Find the global earliest and latest times
+                    GlobalEarliestStartTime = await FindGlobalEarliestStartTime(Agendas);
+                    GlobalLatestEndTime = FindGlobalLatestEndTime(Agendas);
+
+                    // Find overlapping groups for each day
+                    OverlappingGroupsByDay = new Dictionary<string, List<List<Agenda>>>();
+                    foreach (var day in AgendasByDay.Keys)
+                    {
+                        OverlappingGroupsByDay[day] = FindOverlappingGroups(AgendasByDay[day]);
+                    }
                 }
 
                 Week = weekDays;
