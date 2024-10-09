@@ -22,15 +22,23 @@ namespace SchoolSystem.Services
             return await _context.ScheduleModulePreferences.ToListAsync();
         }
 
-        public async Task<(int WeekNumber, List<DateTime> WeekDays)> GetCurrentWeekAsync()
+        public async Task<(int WeekNumber, List<DateTime> WeekDays)> GetCurrentWeekAsync(int? weekNum)
         {
             DateTime today = DateTime.Today;
-            int currentWeekNumber = GetWeekNumberOfYear(today);
+            int currentWeekNumber = 0;
 
-            List<DateTime> currentWeekDays = GetCurrentWeekDays();
+            if (weekNum != null)
+            {
+                currentWeekNumber = weekNum.Value;
+            } else
+            {
+                currentWeekNumber = GetWeekNumberOfYear(today);
+            }
+
+            List<DateTime> currentWeekDays = GetCurrentWeekDays(weekNum);
 
             // Return both the week number and the list of weekdays
-            return (40, currentWeekDays);
+            return (currentWeekNumber, currentWeekDays);
         }
 
         public List<Agenda> Agendas { get; set; }
@@ -79,15 +87,34 @@ namespace SchoolSystem.Services
             return startOfWeek;
         }
 
-        private static List<DateTime> GetCurrentWeekDays()
+        private static List<DateTime> GetCurrentWeekDays(int? weekNum)
         {
             List<DateTime> weekDays = new List<DateTime>();
-            DateTime today = new DateTime(2024, 10, 5);
+            DateTime startOfWeek;
 
-            // Get the difference between today and the previous Monday
-            int diff = (7 + (today.DayOfWeek - DayOfWeek.Monday)) % 7;
-            DateTime startOfWeek = today.AddDays(-1 * diff); // Monday of the current week
+            if (weekNum != null)
+            {
+                // Get the first day of the current year
+                DateTime firstDayOfYear = new DateTime(DateTime.Now.Year, 1, 1);
 
+                // Calculate the first Monday of the year
+                int daysOffset = DayOfWeek.Monday - firstDayOfYear.DayOfWeek;
+                DateTime firstMonday = firstDayOfYear.AddDays(daysOffset);
+
+                // Calculate the start of the desired week
+                startOfWeek = firstMonday.AddDays((weekNum.Value - 1) * 7);
+            }
+            else
+            {
+                // Use the current date (today)
+                DateTime today = DateTime.Today;
+
+                // Calculate the start of the current week (Monday)
+                int diff = (7 + (today.DayOfWeek - DayOfWeek.Monday)) % 7;
+                startOfWeek = today.AddDays(-diff); // Monday of the current week
+            }
+
+            // Add the days for the week (Monday to Sunday)
             for (int i = 0; i < 7; i++)
             {
                 weekDays.Add(startOfWeek.AddDays(i));

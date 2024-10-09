@@ -1,14 +1,12 @@
 ﻿@page
 @model SchoolSystem.Pages.Schedule.IndexModel
 @{
-
-
     // Ensure pixelPerMinuteRatio is defined here or at the top
     var pixelPerMinuteRatio = 1.7;
     var totalMinutes = Model.GlobalLatestEndTime - Model.GlobalEarliestStartTime;
     if (totalMinutes < 1)
     {
-        totalMinutes = 1200;
+        totalMinutes = 600; // Default minutes for empty schedule
     }
     var containerHeight = totalMinutes * pixelPerMinuteRatio; // Calculate height in pixels
 

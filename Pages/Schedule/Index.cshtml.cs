@@ -42,7 +42,14 @@ namespace SchoolSystem.Pages.Schedule
                 }
 
                 // Get current week and agendas
-                var (weekNum, weekDays) = await _scheduleService.GetCurrentWeekAsync();
+                var (weekNum, weekDays) = await _scheduleService.GetCurrentWeekAsync(week);
+                
+                
+                if (week == null)
+                {
+                    week = weekNum;
+                }
+                Console.WriteLine(week);
                 Agendas = await _scheduleService.GetAgendasForWeekAsync(studentClassId.Value, week);
 
                 ScheduleModulePreferences = await _scheduleService.GetScheduleModulePreferencesAsync();
