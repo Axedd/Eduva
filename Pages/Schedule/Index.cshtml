@@ -14,97 +14,108 @@
     <link href="~/css/schedule.css?v=@DateTime.Now.Ticks" rel="stylesheet" type="text/css" />
 }
 
-<div class="container-fluid mt-3">
-    <div class="row schedule-header">
-        <div class="col">
-            <h2 class="text-center">Week @Model.WeekNum - @Model.Week[0].Year</h2>
+@if (Model.AgendaDetails != null)
+{
+    <h1>@Model.AgendaDetails.SubjectDto.SubjectName</h1>
+} else
+{
+    <div class="container-fluid mt-3">
+        <div class="row schedule-header">
+            <div class="col">
+                <h2 class="text-center">Week @Model.WeekNum - @Model.Week[0].Year</h2>
+            </div>
         </div>
-    </div>
-    <div class="row schedule-header text-center">
-        <div class="col"></div>
-        @foreach (var date in Model.Week)
-        {
-            <div class="col">@date.DayOfWeek (@date.ToString("d/M"))</div>
-        }
-    </div>
-    <div class="schedule-container">
-        <!-- Flex container for the schedule -->
-        <div class="module-column">
-            @foreach (var ScheduleModulePreference in Model.ScheduleModulePreferences)
+        <div class="row schedule-header text-center">
+            <div class="col"></div>
+            @foreach (var date in Model.Week)
             {
-                var totalMinutesFromEarliest = (ScheduleModulePreference.StartTime.Hour * 60 + ScheduleModulePreference.StartTime.Minute) - Model.GlobalEarliestStartTime;
-                var topPosition = System.Convert.ToInt32(totalMinutesFromEarliest * pixelPerMinuteRatio);
-
-                var startMinute = ScheduleModulePreference.StartTime.Minute;
-                var endMinute = ScheduleModulePreference.EndTime.Minute;
-
-                // Calculate total minutes for the start and end times
-                var startTotalMinutes = (ScheduleModulePreference.StartTime.Hour * 60) + startMinute; // Total minutes from start
-                var endTotalMinutes = (ScheduleModulePreference.EndTime.Hour * 60) + endMinute; // Total minutes from end
-
-                // Calculate duration in minutes
-                var durationInMinutes = endTotalMinutes - startTotalMinutes;
-
-                // Convert duration to pixels
-                var durationInPixels = System.Convert.ToInt32(durationInMinutes * pixelPerMinuteRatio);
-
-                <div class="schedule-cell module-cell" style="top: @($"{topPosition}px"); height:@($"{durationInPixels}px");">
-                    <div class="module-info">@($"{ScheduleModulePreference.ModuleNumber}.") modul</div>
-                    <div class="module-time">@ScheduleModulePreference.StartTime - @ScheduleModulePreference.EndTime</div>
-                </div>
-                
+                <div class="col">@date.DayOfWeek (@date.ToString("d/M"))</div>
             }
-            <!-- Fixed column for modules -->
-            
         </div>
-
-        @foreach (var date in Model.Week)
-        {
-            <div class="schedule-column day-column" data-date="@date.ToString("yyyy-MM-dd")" style="height:@($"{containerHeight}px");">
-                @if (Model.OverlappingGroupsByDay.ContainsKey(date.ToString("yyyy-MM-dd")))
+        <div class="schedule-container">
+            <!-- Flex container for the schedule -->
+            <div class="module-column">
+                @foreach (var ScheduleModulePreference in Model.ScheduleModulePreferences)
                 {
-                    var dayGroups = Model.OverlappingGroupsByDay[date.ToString("yyyy-MM-dd")];
-                    foreach (var group in dayGroups)
+                    var totalMinutesFromEarliest = (ScheduleModulePreference.StartTime.Hour * 60 + ScheduleModulePreference.StartTime.Minute) - Model.GlobalEarliestStartTime;
+                    var topPosition = System.Convert.ToInt32(totalMinutesFromEarliest * pixelPerMinuteRatio);
+
+                    var startMinute = ScheduleModulePreference.StartTime.Minute;
+                    var endMinute = ScheduleModulePreference.EndTime.Minute;
+
+                    // Calculate total minutes for the start and end times
+                    var startTotalMinutes = (ScheduleModulePreference.StartTime.Hour * 60) + startMinute; // Total minutes from start
+                    var endTotalMinutes = (ScheduleModulePreference.EndTime.Hour * 60) + endMinute; // Total minutes from end
+
+                    // Calculate duration in minutes
+                    var durationInMinutes = endTotalMinutes - startTotalMinutes;
+
+                    // Convert duration to pixels
+                    var durationInPixels = System.Convert.ToInt32(durationInMinutes * pixelPerMinuteRatio);
+
+                    <div class="schedule-cell module-cell" style="top: @($"{topPosition}px"); height:@($"{durationInPixels}px");">
+                        <div class="module-info">@($"{ScheduleModulePreference.ModuleNumber}.") modul</div>
+                        <div class="module-time">@ScheduleModulePreference.StartTime - @ScheduleModulePreference.EndTime</div>
+                    </div>
+
+                }
+                <!-- Fixed column for modules -->
+
+            </div>
+
+            @foreach (var date in Model.Week)
+            {
+                <div class="schedule-column day-column" data-date="@date.ToString("yyyy-MM-dd")" style="height:@($"{containerHeight}px");">
+                    @if (Model.OverlappingGroupsByDay.ContainsKey(date.ToString("yyyy-MM-dd")))
                     {
-                        var groupSize = group.Count;
-                        for (var i = 0; i < groupSize; i++)
+                        var dayGroups = Model.OverlappingGroupsByDay[date.ToString("yyyy-MM-dd")];
+                        foreach (var group in dayGroups)
                         {
-                            var agenda = group[i];
-                            var startTime = agenda.StartDateTime;
-                            var endTime = agenda.EndDateTime;
-                            var subject = agenda.SubjectDto?.SubjectName ?? "No Subject Assigned";
+                            var groupSize = group.Count;
+                            for (var i = 0; i < groupSize; i++)
+                            {
+                                var agenda = group[i];
+                                var startTime = agenda.StartDateTime;
+                                var endTime = agenda.EndDateTime;
+                                var subject = agenda.SubjectDto?.SubjectName ?? "No Subject Assigned";
+                                var agendaId = agenda.AgendaId;
 
-                            var startHour = startTime.Hour;
-                            var endHour = endTime.Hour;
+                                var startHour = startTime.Hour;
+                                var endHour = endTime.Hour;
 
-                            var startMinute = startTime.Minute;
-                            var endMinute = endTime.Minute;
+                                var startMinute = startTime.Minute;
+                                var endMinute = endTime.Minute;
 
-                            // Calculate total minutes for the start and end times
-                            var startTotalMinutes = (startHour * 60) + startMinute; // Total minutes from start
-                            var endTotalMinutes = (endHour * 60) + endMinute; // Total minutes from end
+                                // Calculate total minutes for the start and end times
+                                var startTotalMinutes = (startHour * 60) + startMinute; // Total minutes from start
+                                var endTotalMinutes = (endHour * 60) + endMinute; // Total minutes from end
 
-                            // Calculate duration in minutes
-                            var durationInMinutes = endTotalMinutes - startTotalMinutes;
+                                // Calculate duration in minutes
+                                var durationInMinutes = endTotalMinutes - startTotalMinutes;
 
-                            // Convert duration to pixels
-                            var durationInPixels = System.Convert.ToInt32(durationInMinutes * pixelPerMinuteRatio);
+                                // Convert duration to pixels
+                                var durationInPixels = System.Convert.ToInt32(durationInMinutes * pixelPerMinuteRatio);
 
-                            var totalMinutesFromEarliest = (startTime.Hour * 60 + startTime.Minute) - Model.GlobalEarliestStartTime;
-                            var topPosition = System.Convert.ToInt32(totalMinutesFromEarliest * pixelPerMinuteRatio);
-                            var widthPercentage = 100 / groupSize;
-                            var leftPosition = i * widthPercentage;
+                                var totalMinutesFromEarliest = (startTime.Hour * 60 + startTime.Minute) - Model.GlobalEarliestStartTime;
+                                var topPosition = System.Convert.ToInt32(totalMinutesFromEarliest * pixelPerMinuteRatio);
+                                var widthPercentage = 100 / groupSize;
+                                var leftPosition = i * widthPercentage;
 
 
 
-                            <div class="schedule-item" style="top:@($"{topPosition}px"); height:@($"{durationInPixels}px"); width:calc(@widthPercentage% - 10px); left:@leftPosition%;">
-                                <p>@subject</p>
-                                <p>@startTime.ToString("HH:mm") - @endTime.ToString("HH:mm")</p>
-                            </div>
+                                <a asp-action="" asp-route-agendaId="@agendaId">
+                                    <div class="schedule-item" style="top:@($"{topPosition}px"); height:@($"{durationInPixels}px"); width:calc(@widthPercentage% - 10px); left:@leftPosition%;">
+                                        <p>@subject</p>
+                                        <p>@startTime.ToString("HH:mm") - @endTime.ToString("HH:mm")</p>
+                                    </div>
+                                </a>
+                            }
                         }
                     }
-                }
-            </div>
-        }
+                </div>
+            }
+        </div>
     </div>
-</div>
+
+}
+

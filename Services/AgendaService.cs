@@ -48,6 +48,27 @@ namespace SchoolSystem.Services
             return agendas;
         }
 
+        public async Task<Agenda> GetAgendaByAgendaIdAsync(long agendaId)
+        {
+            return await _context.Agenda
+                .Where(a => a.AgendaId == agendaId)
+                .Include(a => a.Subject) // Include the related Subject entity
+                .Include(a => a.Teacher)
+                .Select(a => new Agenda
+                {
+                    AgendaId = a.AgendaId,
+                    StartDateTime = a.StartDateTime,
+                    EndDateTime = a.EndDateTime,
+                    StudentClassId = a.StudentClassId,
+                    SubjectDto = new SubjectAgendaDto // Projecting the Subject entity to SubjectAgendaDto
+                    {
+                        SubjectId = a.Subject.SubjectId,
+                        SubjectName = a.Subject.SubjectName
+                    },
+                })
+                .FirstOrDefaultAsync() ?? new Agenda();
+        }
+
         public async Task<List<Agenda>> GetAgendasForClassInRangeAsync(int studentClassId, DateTime startDate, DateTime endDate)
         {
             return await _context.Agenda

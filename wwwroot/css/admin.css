@@ -1,14 +1,36 @@
 ﻿body {
     background-color: #F5FFF5;
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-h2 {
+h1 {
     color: #003366;
-    border-bottom: 2px solid #008C8C;
-    padding-bottom: 10px;
+    text-align: center;
+    margin-bottom: 30px;
+    font-weight: bold;
+    font-size: 2em;
 }
 
+.admin-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    background-color: #fff;
+    border: 1px solid #003366;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.profile-img {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid #003366;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Container styles */
 .form-container {
     max-width: 800px;
     margin: 0 auto;
@@ -16,6 +38,40 @@ h2 {
     background-color: #FFFFFF;
     border: 1px solid #003366;
     border-radius: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 20px;
+}
+.form-fields {
+    flex: 2 1 400px; /* Make form fields take more space */
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+button {
+    display: block;
+    margin: 20px 0 0;
+    padding: 10px 20px;
+    background-color: #008C8C;
+    border: none;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+
+.form-control, .form-select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #003366;
+    border-radius: 4px;
+}
+
+.profile-section {
+    flex: 1 1 120px; /* Keep image container size responsive */
+    text-align: center;
 }
 
 .form-group {
@@ -25,24 +81,18 @@ h2 {
 label {
     color: #333333;
     font-weight: bold;
+    margin-bottom: 5px;
+    display: block;
 }
 
-.form-control {
-    border: 1px solid #003366;
-    padding: 10px;
-    border-radius: 4px;
-    font-size: 14px;
-}
+
 
     .form-control:focus {
         border-color: #008C8C;
         box-shadow: 0 0 5px rgba(0, 140, 140, 0.5);
+        outline: none;
     }
 
-.text-danger {
-    color: #d9534f;
-    font-size: 12px;
-}
 
 .btn-primary {
     background-color: #008C8C;
@@ -51,6 +101,8 @@ label {
     padding: 10px 20px;
     font-size: 16px;
     border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
     .btn-primary:hover {
@@ -58,10 +110,31 @@ label {
         color: #FFFFFF;
     }
 
-.alert-success {
-    background-color: #dff0d8;
-    color: #3c763d;
-    padding: 10px;
-    border-radius: 4px;
+.profile-picture {
+    text-align: center;
     margin-bottom: 20px;
+}
+
+.row {
+    display: flex;
+    align-items: center;
+}
+
+.col-sm-2 {
+    flex: 2;
+}
+
+.col-sm-10 {
+    flex: 10;
+}
+
+@media (max-width: 768px) {
+    .row {
+        flex-direction: column;
+    }
+
+    .col-sm-2, .col-sm-10 {
+        flex: 1;
+        width: 100%;
+    }
 }

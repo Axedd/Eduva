@@ -53,6 +53,15 @@ namespace SchoolSystem.Pages.Admin
 
         public async Task<IActionResult> OnPostAsync()
         {
+            if (!ModelState.IsValid)
+            {
+                Student = await _context.Students
+               .Include(sc => sc.StudentClass)
+               .FirstOrDefaultAsync(s => s.StudentId == Student!.StudentId);
+                StudentClasses = await _studentClassService.GetStudentClassesAsync();
+                return Page();
+            }
+
             if (Student == null || !await _idValidationService.IsValidStudentIdAsync(Student.StudentId))
             {
                 _logger.LogWarning("Invalid or null student ID.");
@@ -88,6 +97,8 @@ namespace SchoolSystem.Pages.Admin
             try
             {
                 await _context.SaveChangesAsync();
+
+                TempData["SuccessMessage"] = "Student details updated successfully!";
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -99,7 +110,7 @@ namespace SchoolSystem.Pages.Admin
                 throw;
             }
 
-            return RedirectToPage("/Admin/managestudents");
+            return RedirectToPage(new {studentId = Student.StudentId});
         }
     }
 }
