@@ -7,5 +7,6 @@ namespace SchoolSystem.Interfaces
         Task<List<ScheduleModulePreferences>> GetScheduleModulePreferencesAsync();
         Task<(int WeekNumber, List<DateTime> WeekDays)> GetCurrentWeekAsync(int? week);
         Task<List<Agenda>> GetAgendasForWeekAsync(int studentClassId, int? weekNum);
+        Task<List<Agenda>> GetTeacherAgendasAsync(long teacherId, int? weekNum);
     }
 }

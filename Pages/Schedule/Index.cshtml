@@ -20,7 +20,11 @@
 {
     <h1>@Model.AgendaDetails.SubjectDto.SubjectName</h1>
     
-    
+    @if (Model.UserRole == "Teacher")
+    {
+        <h5>Is Teacher: True</h5>
+    }
+
     <p>Notes: @Model.AgendaDetails.Note</p>
     <p>HomeWork: @Model.AgendaDetails.HomeWork</p>
 }

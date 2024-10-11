@@ -6,6 +6,13 @@
 
 <h2>@ViewData["Title"]</h2>
 
+@if (TempData["LoginError"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["LoginError"];
+    </div>
+}
+
 <section id="loginForm">
     <form asp-route-returnUrl="@Model.ReturnUrl" method="post">
         <div class="form-group">

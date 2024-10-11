@@ -45,6 +45,24 @@ namespace SchoolSystem.Services
 
         public async Task<List<Agenda>> GetAgendasForWeekAsync(int studentClassId, int? weekNum)
         {
+            var (weekStart, weekEnd) = GetWeekDays(weekNum);
+
+            // Retrieve agendas for the specified week
+            Agendas = await _agendaService.GetAgendasForClassInRangeAsync(studentClassId, weekStart, weekEnd);
+            return Agendas;
+        }
+
+        public async Task<List<Agenda>> GetTeacherAgendasAsync(long teacherId, int? weekNum)
+        {
+            var (weekStart, weekEnd) = GetWeekDays(weekNum);
+
+            // Retrieve agendas for the specified week
+            Agendas = await _agendaService.GetTeacherAgendasInRangeAsync(teacherId, weekStart, weekEnd);
+            return Agendas;
+        }
+
+        private (DateTime weekStart, DateTime weekEnd) GetWeekDays(int? weekNum)
+        {
             DateTime weekStart;
             DateTime weekEnd;
 
@@ -57,7 +75,7 @@ namespace SchoolSystem.Services
 
                 // Adjust to the nearest Monday
                 int dayOfWeek = (int)weekStart.DayOfWeek;
-                if (dayOfWeek != 0) // 0 = Sunday
+                if (dayOfWeek != 1) // 1 = Monday
                 {
                     weekStart = weekStart.AddDays(-(dayOfWeek - 1)); // Move back to Monday
                 }
@@ -71,9 +89,8 @@ namespace SchoolSystem.Services
             // Calculate the end date for the week
             weekEnd = weekStart.AddDays(6);
 
-            // Retrieve agendas for the specified week
-            Agendas = await _agendaService.GetAgendasForClassInRangeAsync(studentClassId, weekStart, weekEnd);
-            return Agendas;
+            // Return both the start and end dates
+            return (weekStart, weekEnd);
         }
 
         private DateTime GetStartOfCurrentWeek()

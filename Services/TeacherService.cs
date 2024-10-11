@@ -27,6 +27,11 @@ namespace SchoolSystem.Services
             return teacher;
         }
 
+        public async Task<long> GetTeacherByUserId(string userId)
+        {
+            return await _context.Teachers.Where(t => t.UserId == userId).Select(t => t.TeacherId).FirstOrDefaultAsync();
+        }
+
         public async Task UpdateTeacherAsync(Teacher teacher)
         {
             _context.Teachers.Update(teacher);

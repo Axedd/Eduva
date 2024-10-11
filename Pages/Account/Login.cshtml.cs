@@ -59,6 +59,7 @@ namespace SchoolSystem.Pages.Account
                     else
                     {
                         ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                        TempData["LoginError"] = "Wrong Username or Password";
                         return Page();
                     }
                 }

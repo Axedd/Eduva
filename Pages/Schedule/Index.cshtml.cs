@@ -11,14 +11,22 @@ namespace SchoolSystem.Pages.Schedule
         private readonly IAgendaService _agendaService;
         private readonly IScheduleService _scheduleService;
         private readonly IStudentService _studentService;
-        public IndexModel(IAgendaService agendaService, IScheduleService scheduleService, IStudentService studentService)
+        private readonly IUserService _userService;
+        private readonly ITeacherService _teacherService;
+        public IndexModel(IAgendaService agendaService, 
+            IScheduleService scheduleService, 
+            IStudentService studentService, 
+            IUserService userService,
+            ITeacherService teacherService)
         {
             _agendaService = agendaService;
             _scheduleService = scheduleService;
             _studentService = studentService;
+            _userService = userService;
+            _teacherService = teacherService;
         }
 
-        public List<Agenda> Agendas { get; set; }
+        public List<Agenda> Agendas { get; set; } = new List<Agenda>();
         public List<DateTime> Week { get; set; }
         public int WeekNum { get; set; }
         public Dictionary<string, List<Agenda>> AgendasByDay { get; set; }
@@ -27,8 +35,9 @@ namespace SchoolSystem.Pages.Schedule
         public Dictionary<string, List<List<Agenda>>> OverlappingGroupsByDay { get; set; }
         public List<ScheduleModulePreferences> ScheduleModulePreferences { get; set; }
         public Agenda AgendaDetails { get; set; }
+        public string UserRole { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int? studentClassId, int? week, long? agendaId)
+        public async Task<IActionResult> OnGetAsync(int? studentClassId, long? teacherId, int? week, long? agendaId)
         {
             if (agendaId.HasValue)
             {
@@ -43,14 +52,29 @@ namespace SchoolSystem.Pages.Schedule
 
                 // Get current week and agendas
                 var (weekNum, weekDays) = await _scheduleService.GetCurrentWeekAsync(week);
+
                 
                 
                 if (week == null)
                 {
                     week = weekNum;
                 }
-                Console.WriteLine(week);
-                Agendas = await _scheduleService.GetAgendasForWeekAsync(studentClassId.Value, week);
+
+                UserRole = _userService.GetUserRole();
+
+                if (UserRole == "Teacher" || teacherId.HasValue)
+                {
+                    var UserId = _userService.GetUserId();
+                    if (!teacherId.HasValue)
+                    {
+                        teacherId = await _teacherService.GetTeacherByUserId(UserId);
+                    }
+
+                    Agendas = await _scheduleService.GetTeacherAgendasAsync(teacherId.Value, week);
+                } else if (UserRole == "Student")
+                {
+                    Agendas = await _scheduleService.GetAgendasForWeekAsync(studentClassId.Value, week);
+                }
 
                 ScheduleModulePreferences = await _scheduleService.GetScheduleModulePreferencesAsync();
 

@@ -91,6 +91,31 @@ namespace SchoolSystem.Services
                 .ToListAsync();
         }
 
+        public async Task<List<Agenda>> GetTeacherAgendasInRangeAsync(long teacherId, DateTime startDate, DateTime endDate)
+        {
+            Console.WriteLine($"TeacherID: {teacherId}");
+            Console.WriteLine($"StartDate: {startDate}");
+            Console.WriteLine($"EndDate: {endDate}");
+            return await _context.Agenda
+               .Where(a => a.TeacherId == teacherId &&
+                           a.StartDateTime >= startDate &&
+                           a.EndDateTime <= endDate)
+               .Include(a => a.Subject) // Include the related Subject entity
+               .Select(a => new Agenda
+               {
+                   AgendaId = a.AgendaId,
+                   StartDateTime = a.StartDateTime,
+                   EndDateTime = a.EndDateTime,
+                   StudentClassId = a.StudentClassId,
+                   SubjectDto = new SubjectAgendaDto // Projecting the Subject entity to SubjectAgendaDto
+                   {
+                       SubjectId = a.Subject.SubjectId,
+                       SubjectName = a.Subject.SubjectName
+                   },
+               })
+               .ToListAsync();
+        }
+
 
     }
 }

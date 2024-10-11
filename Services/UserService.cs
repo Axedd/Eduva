@@ -7,6 +7,7 @@ using SchoolSystem.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Text;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 
 namespace SchoolSystem.Services
 {
@@ -15,16 +16,19 @@ namespace SchoolSystem.Services
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public UserService(
             ApplicationDbContext context,
             UserManager<ApplicationUser> userManager,
-            RoleManager<IdentityRole> roleManager
+            RoleManager<IdentityRole> roleManager,
+            IHttpContextAccessor httpContextAccessor
             )
         {
             _context = context;
             _userManager = userManager;
             _roleManager = roleManager;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<string> GenerateUsername()
@@ -180,6 +184,23 @@ namespace SchoolSystem.Services
                 throw; // Optional: rethrow to see the stack trace
             }
         }
+
+
+        public string GetUserRole()
+        {
+            var user = _httpContextAccessor.HttpContext?.User;
+            var role = user!.FindFirst(ClaimTypes.Role)?.Value;
+            return role ?? string.Empty;
+        }
+
+        public string GetUserId()
+        {
+            var user = _httpContextAccessor.HttpContext?.User;
+            var userId = user!.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            return userId ?? string.Empty;
+        }
+
+
 
         public async Task<List<TeacherRoleViewModel>> GetTeachersWithRolesAsync()
         {
