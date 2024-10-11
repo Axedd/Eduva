@@ -68,6 +68,11 @@ namespace SchoolSystem.Services
                         SubjectId = a.Subject.SubjectId,
                         SubjectName = a.Subject.SubjectName
                     },
+                    StudentClassDto = new StudentClassDto
+                    {
+                        StudentClassId = a.StudentClassId,
+                        ClassName = a.StudentClass.ClassName
+                    }
                 })
                 .FirstOrDefaultAsync() ?? new Agenda();
         }

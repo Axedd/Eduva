@@ -1,6 +1,7 @@
 ﻿@page
 @model SchoolSystem.Pages.Schedule.IndexModel
 @{
+
     // Ensure pixelPerMinuteRatio is defined here or at the top
     var pixelPerMinuteRatio = 1.7;
     var minTotalMinutes = 600;
@@ -19,44 +20,59 @@
 
 @if (Model.AgendaDetails != null)
 {
-    <h1>@Model.AgendaDetails.SubjectDto.SubjectName</h1>
-
-    @if (Model.EditMode)
-    {
-        <!-- Edit Mode: Render form for editing the agenda -->
-        <form method="post" asp-page-handler="UpdateAgenda">
-            <input type="hidden" name="AgendaUpdate.AgendaId" value="@Model.AgendaDetails.AgendaId" />
-
-            <div class="form-group">
-                <label for="Note">Note</label>
-                <textarea id="Note" name="AgendaUpdate.Note" class="form-control">@Model.AgendaDetails.Note</textarea>
-            </div>
-
-            <div class="form-group">
-                <label for="Homework">Homework</label>
-                <textarea id="Homework" name="AgendaUpdate.Homework" class="form-control">@Model.AgendaDetails.HomeWork</textarea>
-            </div>
-
-            <button type="submit" class="btn btn-success">Save Changes</button>
-            <a href="@Url.Page("index", new { agendaid = Model.AgendaDetails.AgendaId })" class="btn btn-secondary">Cancel</a>
-        </form>
-    }
-    else
-    {
-        <!-- View Mode: Display the agenda details -->
-        <div id="AgendaInfo">
-            <h6><strong>Note</strong></h6>
-            <p>@Model.AgendaDetails.Note</p>
-
-            <h6><strong>Homework</strong></h6>
-            <p>@Model.AgendaDetails.HomeWork</p>
+    <div class="card agenda-card shadow-sm">
+        <div class="card-header text-center bg-primary text-white">
+            <h2 class="mb-0">@Model.AgendaDetails.StudentClassDto.ClassName - @Model.AgendaDetails.SubjectDto.SubjectName</h2>
         </div>
+        <div class="card-body p-4">
 
-        @if (Model.UserRole == "Teacher" && Model.IsAgendaTeacher == true)
-        {
-            <a href="@Url.Page("index", new { agendaid = Model.AgendaDetails.AgendaId, editmode = true })" class="btn btn-primary">Edit Agenda</a>
-        }
-    }
+            @if (Model.EditMode)
+            {
+                <!-- Edit Mode: Render form for editing the agenda -->
+                <form method="post" asp-page-handler="UpdateAgenda">
+                    <input type="hidden" name="AgendaUpdate.AgendaId" value="@Model.AgendaDetails.AgendaId" />
+
+                    <div class="form-group">
+                        <label for="Note">Note</label>
+                        <textarea id="Note" name="AgendaUpdate.Note" class="form-control">@Model.AgendaDetails.Note</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="Homework">Homework</label>
+                        <textarea id="Homework" name="AgendaUpdate.HomeWork" class="form-control">@Model.AgendaDetails.HomeWork</textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-success">Save Changes</button>
+                    <a href="@Url.Page("index", new { agendaid = Model.AgendaDetails.AgendaId })" class="btn btn-secondary">Cancel</a>
+                </form>
+            }
+            else
+            {
+                <!-- View Mode: Display the agenda details -->
+                <div id="AgendaInfo" class="p-3">
+                    <div class="mb-4">
+                        <h6 class="font-weight-bold"><i class="fas fa-info-circle"></i> Note</h6>
+                        <p class="pl-3">@Html.Raw(Model.AgendaDetails.Note)</p>
+                    </div>
+
+                    <div class="mb-4">
+                        <h4 class="font-weight-bold text-danger"><i class="fas fa-book"></i> Homework</h4>
+                        <p class="pl-3">@Html.Raw(Model.AgendaDetails.HomeWork)</p>
+                    </div>
+                </div>
+
+                @if (Model.UserRole == "Teacher" && Model.IsAgendaTeacher == true)
+                {
+                    <div class="text-right">
+                        <!-- Discreet Edit Icon -->
+                        <a href="@Url.Page("index", new { agendaid = Model.AgendaDetails.AgendaId, editmode = true })" title="Edit Agenda">
+                            <i class="fa-solid fa-pen-to-square fa-lg"></i>
+                        </a>
+                    </div>
+                }
+            }
+        </div>
+    </div>
 }
 else
 {
@@ -175,3 +191,18 @@ else
 
 }
 
+
+@section Scripts {
+    <script src="https://cdn.tiny.cloud/1/@Model.TinyMceApiKey/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
+
+    <script>
+        tinymce.init({
+            selector: 'textarea',
+            menubar: false,  // Hide the menubar if not needed
+            plugins: 'link image code',
+            toolbar: 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | link',
+            content_css: '//www.tiny.cloud/css/codepen.min.css',
+            height: 300
+        });
+    </script>
+}

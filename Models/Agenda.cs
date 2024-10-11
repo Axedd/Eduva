@@ -22,9 +22,10 @@ namespace SchoolSystem.Models
         public SubjectAgendaDto? SubjectDto { get; set; }
         public int StudentClassId { get; set; }
         public StudentClass? StudentClass { get; set; }
+        [NotMapped]
+        public StudentClassDto? StudentClassDto { get; set; }
 		public long TeacherId { get; set; }
 		public Teacher? Teacher { get; set; }
 
-        
     }
 }

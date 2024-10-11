@@ -13,17 +13,20 @@ namespace SchoolSystem.Pages.Schedule
         private readonly IStudentService _studentService;
         private readonly IUserService _userService;
         private readonly ITeacherService _teacherService;
+        private readonly IConfiguration _configuration;
         public IndexModel(IAgendaService agendaService, 
             IScheduleService scheduleService, 
             IStudentService studentService, 
             IUserService userService,
-            ITeacherService teacherService)
+            ITeacherService teacherService,
+            IConfiguration configuration)
         {
             _agendaService = agendaService;
             _scheduleService = scheduleService;
             _studentService = studentService;
             _userService = userService;
             _teacherService = teacherService;
+            _configuration = configuration;
         }
 
         public List<Agenda> Agendas { get; set; } = new List<Agenda>();
@@ -42,9 +45,13 @@ namespace SchoolSystem.Pages.Schedule
         [BindProperty]
         public Agenda AgendaUpdate { get; set; }
 
+        public string TinyMceApiKey { get; private set; }
+
+
         public async Task<IActionResult> OnGetAsync(int? studentClassId, long? teacherId, int? week, long? agendaId, bool? editmode = false)
         {
             UserRole = _userService.GetUserRole();
+            TinyMceApiKey = _configuration["TinyMCE:ApiKey"]!;
 
             if (agendaId.HasValue)
             {
@@ -124,12 +131,20 @@ namespace SchoolSystem.Pages.Schedule
                 return Page();
             }
 
+            if (!string.IsNullOrWhiteSpace(AgendaUpdate.Note) && !string.IsNullOrWhiteSpace(AgendaUpdate.HomeWork))
+            {
+                var sanitizer = new Ganss.Xss.HtmlSanitizer();
+                AgendaUpdate.Note = sanitizer.Sanitize(AgendaUpdate.Note);
+                AgendaUpdate.HomeWork = sanitizer.Sanitize(AgendaUpdate.HomeWork);
+            }
+
             await _agendaService.UpdateAgendaAsync(AgendaUpdate.AgendaId, AgendaUpdate);
+
 
             return RedirectToPage(new { agendaId = AgendaUpdate.AgendaId });
         }
 
-        
+
 
         private Dictionary<string, List<Agenda>> GroupAgendasByDay(List<Agenda> agendas)
         {
