@@ -36,12 +36,31 @@ namespace SchoolSystem.Pages.Schedule
         public List<ScheduleModulePreferences> ScheduleModulePreferences { get; set; }
         public Agenda AgendaDetails { get; set; }
         public string UserRole { get; set; }
+        public bool IsAgendaTeacher { get; set; }
+       
+        public bool EditMode { get; set; }
+        [BindProperty]
+        public Agenda AgendaUpdate { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int? studentClassId, long? teacherId, int? week, long? agendaId)
+        public async Task<IActionResult> OnGetAsync(int? studentClassId, long? teacherId, int? week, long? agendaId, bool? editmode = false)
         {
+            UserRole = _userService.GetUserRole();
+
             if (agendaId.HasValue)
             {
+
                 AgendaDetails = await _agendaService.GetAgendaByAgendaIdAsync(agendaId.Value);
+
+                var UserId = _userService.GetUserId();
+                if (!teacherId.HasValue)
+                {
+                    teacherId = await _teacherService.GetTeacherByUserId(UserId);
+                }
+
+                EditMode = editmode.GetValueOrDefault(false);
+
+                IsAgendaTeacher = AgendaDetails.TeacherId == teacherId;
+
                 return Page();
             } else
             {
@@ -52,15 +71,11 @@ namespace SchoolSystem.Pages.Schedule
 
                 // Get current week and agendas
                 var (weekNum, weekDays) = await _scheduleService.GetCurrentWeekAsync(week);
-
-                
                 
                 if (week == null)
                 {
                     week = weekNum;
                 }
-
-                UserRole = _userService.GetUserRole();
 
                 if (UserRole == "Teacher" || teacherId.HasValue)
                 {
@@ -99,10 +114,22 @@ namespace SchoolSystem.Pages.Schedule
                 WeekNum = weekNum;
             }
 
-          
-
             return Page();
         }
+
+        public async Task<IActionResult> OnPostUpdateAgendaAsync()
+        {
+            if (!ModelState.IsValid)
+            {
+                return Page();
+            }
+
+            await _agendaService.UpdateAgendaAsync(AgendaUpdate.AgendaId, AgendaUpdate);
+
+            return RedirectToPage(new { agendaId = AgendaUpdate.AgendaId });
+        }
+
+        
 
         private Dictionary<string, List<Agenda>> GroupAgendasByDay(List<Agenda> agendas)
         {

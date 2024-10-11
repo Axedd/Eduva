@@ -79,6 +79,7 @@ namespace SchoolSystem.Pages.Admin
                 NewAgenda.SubjectId = StudentClassSubject.SubjectId;
                 NewAgenda.StudentClassId = StudentClassSubject.StudentClassId;
                 NewAgenda.StudentClass = studentClass; // Ensure this is set correctly
+
                 NewAgenda.TeacherId = StudentClassSubject.Teacher.TeacherId;
             }
             else

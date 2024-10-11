@@ -3,8 +3,9 @@
 @{
     // Ensure pixelPerMinuteRatio is defined here or at the top
     var pixelPerMinuteRatio = 1.7;
+    var minTotalMinutes = 600;
     var totalMinutes = Model.GlobalLatestEndTime - Model.GlobalEarliestStartTime;
-    if (totalMinutes < 1)
+    if (totalMinutes < 1 || totalMinutes < minTotalMinutes)
     {
         totalMinutes = 600; // Default minutes for empty schedule
     }
@@ -19,14 +20,43 @@
 @if (Model.AgendaDetails != null)
 {
     <h1>@Model.AgendaDetails.SubjectDto.SubjectName</h1>
-    
-    @if (Model.UserRole == "Teacher")
-    {
-        <h5>Is Teacher: True</h5>
-    }
 
-    <p>Notes: @Model.AgendaDetails.Note</p>
-    <p>HomeWork: @Model.AgendaDetails.HomeWork</p>
+    @if (Model.EditMode)
+    {
+        <!-- Edit Mode: Render form for editing the agenda -->
+        <form method="post" asp-page-handler="UpdateAgenda">
+            <input type="hidden" name="AgendaUpdate.AgendaId" value="@Model.AgendaDetails.AgendaId" />
+
+            <div class="form-group">
+                <label for="Note">Note</label>
+                <textarea id="Note" name="AgendaUpdate.Note" class="form-control">@Model.AgendaDetails.Note</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="Homework">Homework</label>
+                <textarea id="Homework" name="AgendaUpdate.Homework" class="form-control">@Model.AgendaDetails.HomeWork</textarea>
+            </div>
+
+            <button type="submit" class="btn btn-success">Save Changes</button>
+            <a href="@Url.Page("index", new { agendaid = Model.AgendaDetails.AgendaId })" class="btn btn-secondary">Cancel</a>
+        </form>
+    }
+    else
+    {
+        <!-- View Mode: Display the agenda details -->
+        <div id="AgendaInfo">
+            <h6><strong>Note</strong></h6>
+            <p>@Model.AgendaDetails.Note</p>
+
+            <h6><strong>Homework</strong></h6>
+            <p>@Model.AgendaDetails.HomeWork</p>
+        </div>
+
+        @if (Model.UserRole == "Teacher" && Model.IsAgendaTeacher == true)
+        {
+            <a href="@Url.Page("index", new { agendaid = Model.AgendaDetails.AgendaId, editmode = true })" class="btn btn-primary">Edit Agenda</a>
+        }
+    }
 }
 else
 {

@@ -60,6 +60,9 @@ namespace SchoolSystem.Services
                     StartDateTime = a.StartDateTime,
                     EndDateTime = a.EndDateTime,
                     StudentClassId = a.StudentClassId,
+                    TeacherId = a.TeacherId,
+                    Note = a.Note,
+                    HomeWork = a.HomeWork,
                     SubjectDto = new SubjectAgendaDto // Projecting the Subject entity to SubjectAgendaDto
                     {
                         SubjectId = a.Subject.SubjectId,
@@ -114,6 +117,15 @@ namespace SchoolSystem.Services
                    },
                })
                .ToListAsync();
+        }
+
+        public async Task UpdateAgendaAsync(long agendaId, Agenda agendaDetails)
+        {
+            await _context.Agenda
+                   .Where(a => a.AgendaId == agendaId)
+                   .ExecuteUpdateAsync(setter => setter
+                       .SetProperty(p => p.Note, agendaDetails.Note)
+                       .SetProperty(p => p.HomeWork, agendaDetails.HomeWork));
         }
 
 

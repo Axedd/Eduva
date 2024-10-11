@@ -12,5 +12,7 @@ namespace SchoolSystem.Interfaces
         Task<List<Agenda>> GetTeacherAgendasInRangeAsync(long teacherId, DateTime startDate, DateTime endDate);
         Task<Agenda> GetAgendaByAgendaIdAsync(long agendaId);
 
+        Task UpdateAgendaAsync(long agendaId, Agenda agendaDetails);
+
     }
 }
