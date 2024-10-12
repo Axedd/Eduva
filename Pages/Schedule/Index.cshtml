@@ -104,10 +104,8 @@ else
                         totalMinutesFromEarliest = (ScheduleModulePreference.StartTime.Hour * 60 + ScheduleModulePreference.StartTime.Minute) - Model.GlobalEarliestStartTime;
                     }
 
-                    
                     var topPosition = System.Convert.ToInt32(totalMinutesFromEarliest * pixelPerMinuteRatio);
 
-                    Console.WriteLine(Model.GlobalEarliestStartTime);
 
                     var startMinute = ScheduleModulePreference.StartTime.Minute;
                     var endMinute = ScheduleModulePreference.EndTime.Minute;

@@ -6,6 +6,7 @@ using System;
 
 namespace SchoolSystem.Pages.Schedule
 {
+
     public class IndexModel : PageModel
     {
         private readonly IAgendaService _agendaService;
@@ -115,6 +116,10 @@ namespace SchoolSystem.Pages.Schedule
                     {
                         OverlappingGroupsByDay[day] = FindOverlappingGroups(AgendasByDay[day]);
                     }
+                } else
+                {
+                    GlobalEarliestStartTime = await FindGlobalEarliestStartTime();
+                    GlobalLatestEndTime = 1024;
                 }
 
                 Week = weekDays;
@@ -163,17 +168,34 @@ namespace SchoolSystem.Pages.Schedule
             return agendasByDay;
         }
 
-        private async Task<int> FindGlobalEarliestStartTime(List<Agenda> agendas)
+        private async Task<int> FindGlobalEarliestStartTime(List<Agenda>? agendas = null)
         {
+            // Get schedule preferences from the service
             ScheduleModulePreferences = await _scheduleService.GetScheduleModulePreferencesAsync();
-            int earliestAgendaStartTime = agendas.Min(a => a.StartDateTime.Hour * 60 + a.StartDateTime.Minute); 
-            foreach (var preference in ScheduleModulePreferences)
-            {
-                int preferenceMinutes = preference.StartTime.Hour * 60 + preference.StartTime.Minute;
 
-                if (earliestAgendaStartTime > preferenceMinutes)
+            int earliestAgendaStartTime;
+
+            // If 'agendas' is null or empty, use default value from ScheduleModulePreferences
+            if (agendas == null || !agendas.Any())
+            {
+                // Use default start time from ScheduleModulePreferences
+                earliestAgendaStartTime = ScheduleModulePreferences[0].StartTime.Hour * 60 + ScheduleModulePreferences[0].StartTime.Minute;
+                Console.WriteLine(earliestAgendaStartTime);
+            }
+            else
+            {
+                // Calculate the earliest agenda start time from the provided agendas
+                earliestAgendaStartTime = agendas.Min(a => a.StartDateTime.Hour * 60 + a.StartDateTime.Minute);
+
+                // Compare with preferences and find the earliest start time
+                foreach (var preference in ScheduleModulePreferences)
                 {
-                    earliestAgendaStartTime = preferenceMinutes;
+                    int preferenceMinutes = preference.StartTime.Hour * 60 + preference.StartTime.Minute;
+
+                    if (earliestAgendaStartTime > preferenceMinutes)
+                    {
+                        earliestAgendaStartTime = preferenceMinutes;
+                    }
                 }
             }
 

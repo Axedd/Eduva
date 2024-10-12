@@ -16,11 +16,22 @@ builder.Services.AddAuthorization(options =>
         policy.RequireRole("Admin")); // Define your policy
 });
 
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
+    options.AddPolicy("TeacherPolicy", policy => policy.RequireRole("Teacher"));
+    options.AddPolicy("StudentPolicy", policy => policy.RequireRole("Student"));
+
+    options.AddPolicy("TeacherOrAdminOrStudentPolicy", policy =>
+        policy.RequireRole("Teacher", "Admin", "Student"));
+});
+
 
 // Add services to the container.
 builder.Services.AddRazorPages(options =>
 {
     options.Conventions.AuthorizeFolder("/Admin", "AdminPolicy"); // Apply the policy to all pages in /Admin
+    options.Conventions.AuthorizeFolder("/Schedule", "TeacherOrAdminOrStudentPolicy");
 });
 
 // Configure services

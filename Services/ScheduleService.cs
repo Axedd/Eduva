@@ -19,7 +19,7 @@ namespace SchoolSystem.Services
 
         public async Task<List<ScheduleModulePreferences>> GetScheduleModulePreferencesAsync()
         {
-            return await _context.ScheduleModulePreferences.ToListAsync();
+            return await _context.ScheduleModulePreferences.OrderBy(smp => smp.StartTime).ToListAsync();
         }
 
         public async Task<(int WeekNumber, List<DateTime> WeekDays)> GetCurrentWeekAsync(int? weekNum)
