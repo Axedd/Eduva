@@ -5,50 +5,57 @@
 }
 
 
-<select id="teacher-selector" class="form-control">
-	@foreach (var Teacher in Model.Teachers)
-	{
-		<option value="@Teacher.TeacherId">@Teacher.FirstName @Teacher.LastName</option>
-	}
-</select>
+@if (Model.TeacherId != null)
+{
 
-
-<div class="container mt-4 admin-profile-container">
-    <div class="row">
-        <!-- Profile Image Column -->
-        <div class="col-md-4 text-center">
-            <img id="profile-image" class="profile-image" src="/students/default.jpg" alt="Profile Picture" onerror="this.onerror=null; this.src='/students/default.jpg';">
-        </div>
-        <!-- Student Data Column -->
-        <div class="col-md-8 profile-info" id="profile-info">
-            <ul id="teacher-info">
-                <li><strong>Name:</strong> </li>
-                <li><strong>Gender:</strong> </li>
-            </ul>
-        </div>
-    </div>
-</div>
-
-
-@section Scripts {
-    <script>
-        document.getElementById('teacher-selector').addEventListener('change', function () {
-            var TeacherId = this.value;
-            console.log("Selected Teacher ID:", TeacherId);
-
-            if (TeacherId && TeacherId !== "Select a teacher") {
-                fetch(`/Admin/ManageTeachers?handler=GetTeacherInfo&teacherId=` + TeacherId)
-                    .then(response => response.json())
-                    .then(teacher => {
-                        console.log(teacher);
-                        document.getElementById('profile-image').src = teacher.profilePicturePath || '/students/default.jpg';
-                        document.getElementById('teacher-info').innerHTML = `
-                        <li><strong>Name:</strong> ${teacher.firstName} ${teacher.lastName}</li>
-                        ${!teacher.userId ? `<button class="btn btn-secondary me-2" onclick="location.href='/Admin/RegisterUser?teacherId=${teacher.teacherId}'">Register</button>` : ''}
-                        <button class="btn btn-primary" onclick="location.href='/Admin/EditTeacher?teacherId=${teacher.teacherId}'">Edit</button>`;
-                    })
-                    .catch(error => console.error('Error fetching teacher:', error));
+    <table class="table">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">StudentClass Id</th>
+                <th scope="col">Class Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var studentClass in Model.TeacherDetails.StudentClassSubjectsDto)
+            {
+                <tr>
+                    <td>@studentClass.StudentClassDto.StudentClassId</td>
+                    <td>@studentClass.StudentClassDto.ClassName</td>
+                </tr>
             }
-        });
-    </script>
+        </tbody>
+    </table>
+} 
+else
+{
+
+    <table class="table">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">Teacher id</th>
+                <th scope="col">First Name</th>
+                <th scope="col">Last Name</th>
+                <th scope="col">Subjects</th>
+                <th scope="col">Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var Teacher in Model.SubjectTeachersDtos)
+            {
+                <tr>
+                    <th scope="row">@Teacher.TeacherId</th>
+                    <td>@Teacher.FirstName</td>
+                    <td>@Teacher.LastName</td>
+                    <td>
+                        @foreach (var Subject in Teacher.Subjects)
+                        {
+                            @Subject.Subject.SubjectName <br />
+                        }
+                    </td>
+                    <td><a href="#">View</a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
 }

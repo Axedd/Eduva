@@ -13,6 +13,13 @@ namespace SchoolSystem.Models
        
     }
 
+    public class SubjectDto
+    {
+        public long SubjectId { get; set; }
+        public string SubjectName { get; set; }
+    }
+
+
     public class SubjectAgendaDto
     {
         public long SubjectId { get; set; }

@@ -1,5 +1,6 @@
 ﻿using SchoolSystem.Models;
 using System.ComponentModel.DataAnnotations;
+using static SchoolSystem.Models.StudentClassSubjects;
 
 namespace SchoolSystem.Models
 {
@@ -27,6 +28,8 @@ namespace SchoolSystem.Models
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string ProfilePicturePath { get; set; }
+        public ICollection<StudentClassSubjectsDto>? StudentClassSubjectsDto { get; set; }
+        public ICollection<SubjectTeachersDto>? Subjects { get; set; }
     }
 
     public class SubjectTeacherDto
@@ -34,4 +37,5 @@ namespace SchoolSystem.Models
         public long SubjectId { get; set; }
         public TeacherDto Teacher { get; set; }
     }
+
 }
