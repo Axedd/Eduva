@@ -33,69 +33,114 @@ namespace SchoolSystem.Services
             return await _context.Teachers.Where(t => t.UserId == userId).Select(t => t.TeacherId).FirstOrDefaultAsync();
         }
 
-        public async Task<TeacherDto> GetTeachersWithStudentClassesAsync(long teacherId)
+        public async Task<TeacherDto> GetTeacherWithStudentClassesAsync(long teacherId, bool includeSubjects = false)
         {
-            return await _context.Teachers
+            var query = _context.Teachers
                 .Where(t => t.TeacherId == teacherId)
                 .Include(t => t.StudentClassSubjects)
-                    .ThenInclude(scs => scs.Subject) // Include the Subject through StudentClassSubjects
+                    .ThenInclude(scs => scs.Subject); // Always include StudentClassSubjects and related Subject
+
+            if (includeSubjects)
+            {
+                query = query.Include(t => t.SubjectTeachers)
+                             .ThenInclude(st => st.Subject); // Optionally include subjects if needed
+            }
+
+            var teacher = await query
                 .Select(t => new TeacherDto
                 {
                     TeacherId = t.TeacherId,
                     FirstName = t.FirstName,
                     LastName = t.LastName,
                     ProfilePicturePath = t.ProfilePicturePath,
+                    // Map StudentClassSubjectsDto
                     StudentClassSubjectsDto = t.StudentClassSubjects.Select(scs => new StudentClassSubjectsDto
                     {
                         StudentClassId = scs.StudentClassId,
                         SubjectId = scs.SubjectId,
                         TeacherId = scs.TeacherId,
-                        Subject = new SubjectDto // Ensure this is a SubjectDto, not Subject
+                        Subject = new SubjectDto
                         {
                             SubjectId = scs.Subject.SubjectId,
-                            SubjectName = scs.Subject.SubjectName // Correctly map to SubjectDto
+                            SubjectName = scs.Subject.SubjectName
                         },
                         StudentClassDto = new StudentClassDto
                         {
                             StudentClassId = scs.StudentClassId,
                             ClassName = scs.StudentClass.ClassName
                         }
-                    }).ToList()
-                }).FirstOrDefaultAsync();
+                    }).ToList(),
+                    // Optionally map Subjects
+                    Subjects = includeSubjects ? t.SubjectTeachers.Select(st => new SubjectTeachersDto
+                    {
+                        SubjectId = st.SubjectId,
+                        TeacherId = st.TeacherId,
+                        Subject = new SubjectDto
+                        {
+                            SubjectId = st.Subject.SubjectId,
+                            SubjectName = st.Subject.SubjectName
+                        }
+                    }).ToList() : null
+                })
+                .FirstOrDefaultAsync();
+
+            // Handle case when teacher is not found
+            if (teacher == null)
+            {
+                // You could throw an exception, return null, or handle it as per your logic
+                throw new KeyNotFoundException("Teacher not found");
+            }
+
+            return teacher;
         }
 
-        public async Task<List<TeacherDto>> GetAllTeachersWithSubjectsAsync()
+        public async Task<List<TeacherDto>> GetTeachersAsync(bool includeSubjects, bool includeStudentClasses)
         {
-            try
+            var query = _context.Teachers.AsQueryable();
+
+            if (includeSubjects)
             {
-                return await _context.Teachers
-                    .Include(t => t.SubjectTeachers) // Include the SubjectTeachers relationship
-                        .ThenInclude(st => st.Subject) // Include the Subject details
-                    .Select(t => new TeacherDto
+                query = query.Include(t => t.SubjectTeachers)
+                             .ThenInclude(st => st.Subject);
+            }
+
+            if (includeStudentClasses)
+            {
+                query = query.Include(t => t.StudentClassSubjects)
+                             .ThenInclude(scs => scs.Subject);
+            }
+
+            return await query
+                .Select(t => new TeacherDto
+                {
+                    TeacherId = t.TeacherId,
+                    FirstName = t.FirstName,
+                    LastName = t.LastName,
+                    ProfilePicturePath = t.ProfilePicturePath,
+                    Subjects = includeSubjects ? t.SubjectTeachers.Select(st => new SubjectTeachersDto
                     {
-                        TeacherId = t.TeacherId,
-                        FirstName = t.FirstName,
-                        LastName = t.LastName,
-                        ProfilePicturePath = t.ProfilePicturePath,
-                        Subjects = t.SubjectTeachers.Select(st => new SubjectTeachersDto
+                        SubjectId = st.SubjectId,
+                        TeacherId = st.TeacherId,
+                        Subject = new SubjectDto
                         {
-                            SubjectId = st.SubjectId,
-                            TeacherId = st.TeacherId,
-                            Subject = new SubjectDto // Map the Subject to SubjectDto
-                            {
-                                SubjectId = st.Subject.SubjectId,
-                                SubjectName = st.Subject.SubjectName
-                            }
-                        }).ToList() // List of SubjectTeachersDto with Subject info
-                    })
-                    .OrderBy(t => t.FirstName) // Order by First Name
-                    .ToListAsync();
-            }
-            catch (Exception ex)
-            {
-                // Log the exception 
-                throw; // or handle the error as appropriate for your application
-            }
+                            SubjectId = st.Subject.SubjectId,
+                            SubjectName = st.Subject.SubjectName
+                        }
+                    }).ToList() : null,
+                    StudentClassSubjectsDto = includeStudentClasses ? t.StudentClassSubjects.Select(scs => new StudentClassSubjectsDto
+                    {
+                        StudentClassId = scs.StudentClassId,
+                        SubjectId = scs.SubjectId,
+                        TeacherId = scs.TeacherId,
+                        Subject = new SubjectDto
+                        {
+                            SubjectId = scs.Subject.SubjectId,
+                            SubjectName = scs.Subject.SubjectName
+                        }
+                    }).ToList() : null
+                })
+                .OrderBy(t => t.FirstName)
+                .ToListAsync();
         }
 
 

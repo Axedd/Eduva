@@ -29,12 +29,12 @@ namespace SchoolSystem.Pages.Admin
 
 				if (teacherId != null)
 				{
-					TeacherDetails = await _teacherService.GetTeachersWithStudentClassesAsync(teacherId.Value);
+					TeacherDetails = await _teacherService.GetTeacherWithStudentClassesAsync(teacherId.Value, true);
                     TeacherId = teacherId.Value;
 
                 } else
 				{
-                    SubjectTeachersDtos = await _teacherService.GetAllTeachersWithSubjectsAsync();
+                    SubjectTeachersDtos = await _teacherService.GetTeachersAsync(true, false);
                 }
 
 				

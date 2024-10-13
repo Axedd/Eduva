@@ -8,23 +8,28 @@
 @if (Model.TeacherId != null)
 {
 
+    <h2>Teacher: @Model.TeacherDetails.FirstName @Model.TeacherDetails.LastName</h2>
+
     <table class="table">
         <thead class="thead-dark">
             <tr>
                 <th scope="col">StudentClass Id</th>
                 <th scope="col">Class Name</th>
+                <th scope="col">Subject Name</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var studentClass in Model.TeacherDetails.StudentClassSubjectsDto)
+            @foreach (var scs in Model.TeacherDetails.StudentClassSubjectsDto)
             {
                 <tr>
-                    <td>@studentClass.StudentClassDto.StudentClassId</td>
-                    <td>@studentClass.StudentClassDto.ClassName</td>
+                    <td>@scs.StudentClassDto.StudentClassId</td> <!-- Student Class ID -->
+                    <td>@scs.StudentClassDto.ClassName</td> <!-- Class Name -->
+                    <td>@scs.Subject.SubjectName</td> <!-- Subject Name -->
                 </tr>
             }
         </tbody>
     </table>
+    <a asp-page="EditTeacher" asp-route-teacherid="@Model.TeacherDetails.TeacherId" class="btn btn-primary">Edit Teacher</a>
 } 
 else
 {
@@ -52,10 +57,11 @@ else
                             @Subject.Subject.SubjectName <br />
                         }
                     </td>
-                    <td><a href="#">View</a></td>
+                    <td><a asp-page="ManageTeachers" asp-route-teacherid="@Teacher.TeacherId">View</a></td>
                 </tr>
             }
         </tbody>
     </table>
+
 
 }

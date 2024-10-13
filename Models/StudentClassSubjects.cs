@@ -21,5 +21,10 @@
 
         }
 
+        public class StudentClassSubjectDto
+        {
+            public SubjectDto? SubjectDto { get; set; }
+        }
+
     }
 }
