@@ -38,5 +38,10 @@ namespace SchoolSystem.Services
             return  true;
         }
 
+        public async Task<bool> IsValidAgendaId(long agendaId)
+        {
+            return _context.Agenda.Where(a => a.AgendaId == agendaId).Any();
+        }
+
     }
 }

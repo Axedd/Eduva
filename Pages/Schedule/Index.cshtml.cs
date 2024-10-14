@@ -15,12 +15,14 @@ namespace SchoolSystem.Pages.Schedule
         private readonly IUserService _userService;
         private readonly ITeacherService _teacherService;
         private readonly IConfiguration _configuration;
+        private readonly IIdValidationService _idValidationService;
         public IndexModel(IAgendaService agendaService, 
             IScheduleService scheduleService, 
             IStudentService studentService, 
             IUserService userService,
             ITeacherService teacherService,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            IIdValidationService idValidationService)
         {
             _agendaService = agendaService;
             _scheduleService = scheduleService;
@@ -28,6 +30,7 @@ namespace SchoolSystem.Pages.Schedule
             _userService = userService;
             _teacherService = teacherService;
             _configuration = configuration;
+            _idValidationService = idValidationService;
         }
 
         public List<Agenda> Agendas { get; set; } = new List<Agenda>();
@@ -56,6 +59,11 @@ namespace SchoolSystem.Pages.Schedule
 
             if (agendaId.HasValue)
             {
+
+                if (!await _idValidationService.IsValidAgendaId(agendaId.Value))
+                {
+                    return RedirectToPage("/Errors/NotFound"); // Redirect to the custom 404 page
+                }
 
                 AgendaDetails = await _agendaService.GetAgendaByAgendaIdAsync(agendaId.Value);
 
@@ -94,7 +102,7 @@ namespace SchoolSystem.Pages.Schedule
                     }
 
                     Agendas = await _scheduleService.GetTeacherAgendasAsync(teacherId.Value, week);
-                } else if (UserRole == "Student")
+                } else if (UserRole == "Student" || UserRole == "Admin")
                 {
                     Agendas = await _scheduleService.GetAgendasForWeekAsync(studentClassId.Value, week);
                 }

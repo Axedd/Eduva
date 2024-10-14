@@ -21,7 +21,7 @@
             <label for="FirstName" class="col-sm-2 col-form-label">First Name</label>
             <div class="col-sm-10">
                 <input type="text" name="Student.FirstName" class="form-control" id="inputFirstName" />
-                <span asp-validation-for="Student.FirstName" class="text-danger"></span>
+                <span asp-validation-for="NewStudent.FirstName" class="text-danger"></span>
             </div>
         </div>
 
@@ -29,7 +29,7 @@
             <label for="LastName" class="col-sm-2 col-form-label">Last Name</label>
             <div class="col-sm-10">
                 <input type="text" name="Student.LastName" class="form-control" id="inputLastName" />
-                <span asp-validation-for="Student.LastName" class="text-danger"></span>
+                <span asp-validation-for="NewStudent.LastName" class="text-danger"></span>
             </div>
         </div>
 
@@ -37,7 +37,7 @@
             <label for="DateOfBirth" class="col-sm-2 col-form-label">Date of Birth</label>
             <div class="col-sm-10">
                 <input type="date" id="DateOfBirth" name="Student.DateOfBirth" class="form-control" />
-                <span asp-validation-for="Student.DateOfBirth" class="text-danger"></span>
+                <span asp-validation-for="NewStudent.DateOfBirth" class="text-danger"></span>
             </div>
         </div>
 
@@ -50,7 +50,7 @@
                     <option>Female</option>
                     <option>Other</option>
                 </select>
-                <span asp-validation-for="Student.Gender" class="text-danger"></span>
+                <span asp-validation-for="NewStudent.Gender" class="text-danger"></span>
             </div>
         </div>
 

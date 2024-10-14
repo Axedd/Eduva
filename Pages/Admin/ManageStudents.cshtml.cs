@@ -35,10 +35,10 @@ namespace SchoolSystem.Pages.Admin
         public async Task<IActionResult> OnGetAsync(int? classId, long? studentId)
         {
             StudentClasses = await _classService.GetAllClassesAsync();
-            
+
             if (StudentClasses.Count == 0)
             {
-                return NotFound();
+                return NotFound("No classes found.");
             }
 
             if (classId.HasValue)

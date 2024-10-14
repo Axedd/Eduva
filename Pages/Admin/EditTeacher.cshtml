@@ -3,48 +3,85 @@
 @{
 }
 
+<style>
+    /* Scoped to a specific form or container */
+.teacher-form .assigned-subjects-list li:nth-child(even) {
+    background-color: #f0f0f0; /* Light grey background */
+}
+
+.teacher-form .assigned-subjects-list li {
+    background-color: #f8f9fa; /* Default background */
+    border: 1px solid #ddd;
+    padding: 0.75rem 1.25rem;
+    font-size: 1rem;
+}
+    .list-group {
+        padding-left: 0;
+        margin-bottom: 1rem;
+        border-radius: 0.25rem;
+    }
+
+    .list-group-item {
+        background-color: #f8f9fa;
+        border: 1px solid #ddd;
+        padding: 0.75rem 1.25rem;
+        font-size: 1rem;
+    }
+</style>
 
 
-<h1>Edit Teacher Details</h1>
+<h1 class="mb-4">Update Teacher Information</h1>
 
 <form method="post">
     <input type="hidden" name="Teacher.TeacherId" value="@Model.Teacher.TeacherId" />
+
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div> <!-- Displays model errors -->
 
     <div class="form-group row">
         <label for="FirstName" class="col-sm-2 col-form-label">First Name</label>
         <div class="col-sm-10">
             <input type="text" name="Teacher.FirstName" class="form-control" id="inputFirstName" value="@Model.Teacher.FirstName" />
         </div>
-    </div><br />
+    </div>
+    <br />
 
     <div class="form-group row">
         <label for="LastName" class="col-sm-2 col-form-label">Last Name</label>
         <div class="col-sm-10">
             <input type="text" name="Teacher.LastName" class="form-control" id="inputLastName" value="@Model.Teacher.LastName" />
         </div>
-    </div><br />
+    </div>
+    <br />
 
     <div class="form-group row">
-        <label class="col-sm-2 col-form-label">Subjects</label>
+        <label class="col-sm-2 col-form-label">Assigned Subjects</label>
         <div class="col-sm-10">
-            <select class="form-control" name="SelectedTeacherSubjectId">
-                @foreach (var Subject in Model.Teacher.SubjectTeachers)
+            <ul class="list-group">
+                @foreach (var subjectTeacher in Model.Teacher.SubjectTeachers)
                 {
-                    <option>@Subject.Subject.SubjectName</option>
+                    <li class="list-group-item">
+                        @subjectTeacher.Subject.SubjectName
+                        <button type="button" class="btn btn-danger btn-sm float-end"
+                                onclick="removeSubject('@subjectTeacher.Subject.SubjectId')">
+                            Remove
+                        </button>
+                    </li>
                 }
-            </select>
+            </ul>
         </div>
-    </div><br />
+    </div>
+    <br />
 
     <div class="form-group row">
-        <label class="col-sm-2 col-form-label">Subject List</label>
+        <label for="SelectedSubjectId" class="col-sm-2 col-form-label">Subject List</label>
         <div class="col-sm-8">
-            <select class="form-control" name="SelectedSubjectId">
+            <select class="form-control" name="SelectedSubjectId" asp-for="SelectedSubjectId">
                 @foreach (var Subject in Model.Subjects)
                 {
                     <option value="@Subject.SubjectId">@Subject.SubjectName</option>
                 }
             </select>
+            <span asp-validation-for="SelectedSubjectId" class="text-danger"></span> <!-- Displays error for this specific field -->
         </div>
         <div class="col-sm-2">
             <button type="submit" formaction="@Url.Page("EditTeacher", "AssignTeacherSubject")" class="btn btn-primary btn-sm">Assign Subject</button>
