@@ -14,7 +14,6 @@ namespace SchoolSystem.Pages.Schedule
         private readonly IStudentService _studentService;
         private readonly IUserService _userService;
         private readonly ITeacherService _teacherService;
-        private readonly IConfiguration _configuration;
         private readonly IIdValidationService _idValidationService;
         private readonly IStudentClassService _studentClassService;
         public IndexModel(IAgendaService agendaService, 
@@ -31,7 +30,6 @@ namespace SchoolSystem.Pages.Schedule
             _studentService = studentService;
             _userService = userService;
             _teacherService = teacherService;
-            _configuration = configuration;
             _idValidationService = idValidationService;
             _studentClassService = studentClassService;
         }
@@ -52,48 +50,15 @@ namespace SchoolSystem.Pages.Schedule
         [BindProperty]
         public Agenda AgendaUpdate { get; set; }
 
-        public string TinyMceApiKey { get; private set; }
-
         public bool ShowStudentList {  get; set; }
 
-        public List<StudentDto> Students { get; set; }
 
 
-        public async Task<IActionResult> OnGetAsync(int? studentClassId, long? teacherId, int? week, long? agendaId, bool? editmode = false, bool studentList = false)
+        public async Task<IActionResult> OnGetAsync(int? studentClassId, long? teacherId, int? week, long? agendaId, bool? editmode = false)
         {
-            UserRole = _userService.GetUserRole();
-            TinyMceApiKey = _configuration["TinyMCE:ApiKey"]!;
+                UserRole = _userService.GetUserRole();
+            
 
-            if (studentList == true)
-            {
-                ShowStudentList = true;
-                Students = await _studentClassService.GetAllStudentsFromClassIdAsync(studentClassId.Value);
-                return Page();
-            }
-
-            if (agendaId.HasValue)
-            {
-
-                if (!await _idValidationService.IsValidAgendaId(agendaId.Value))
-                {
-                    return RedirectToPage("/Errors/NotFound"); // Redirect to the custom 404 page
-                }
-
-                AgendaDetails = await _agendaService.GetAgendaByAgendaIdAsync(agendaId.Value);
-
-                var UserId = _userService.GetUserId();
-                if (!teacherId.HasValue)
-                {
-                    teacherId = await _teacherService.GetTeacherByUserId(UserId);
-                }
-
-                EditMode = editmode.GetValueOrDefault(false);
-
-                IsAgendaTeacher = AgendaDetails.TeacherId == teacherId;
-
-                return Page();
-            } else
-            {
                 if (!studentClassId.HasValue)
                 {
                     studentClassId = await _studentService.GetClassIdOfStudentAsync();
@@ -146,29 +111,8 @@ namespace SchoolSystem.Pages.Schedule
 
                 Week = weekDays;
                 WeekNum = weekNum;
-            }
 
             return Page();
-        }
-
-        public async Task<IActionResult> OnPostUpdateAgendaAsync()
-        {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
-
-            if (!string.IsNullOrWhiteSpace(AgendaUpdate.Note) && !string.IsNullOrWhiteSpace(AgendaUpdate.HomeWork))
-            {
-                var sanitizer = new Ganss.Xss.HtmlSanitizer();
-                AgendaUpdate.Note = sanitizer.Sanitize(AgendaUpdate.Note);
-                AgendaUpdate.HomeWork = sanitizer.Sanitize(AgendaUpdate.HomeWork);
-            }
-
-            await _agendaService.UpdateAgendaAsync(AgendaUpdate.AgendaId, AgendaUpdate);
-
-
-            return RedirectToPage(new { agendaId = AgendaUpdate.AgendaId });
         }
 
 

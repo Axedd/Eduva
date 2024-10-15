@@ -1,0 +1,14 @@
+﻿@page
+@model SchoolSystem.Pages.SubNavs.StudentClassListModel
+@{
+}
+
+
+<ul>
+    @foreach (var student in Model.Students)
+    {
+        <li>
+            @student.FirstName @student.LastName
+        </li>
+    }
+</ul>

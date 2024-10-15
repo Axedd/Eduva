@@ -13,6 +13,8 @@ namespace SchoolSystem.Interfaces
         Task<Agenda> GetAgendaByAgendaIdAsync(long agendaId);
 
         Task UpdateAgendaAsync(long agendaId, Agenda agendaDetails);
+        string SanitizeAgenda(string textToSanitize);
 
+        string GetTinyMceApiKey();
     }
 }

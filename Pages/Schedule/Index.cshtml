@@ -18,202 +18,116 @@
     <link href="~/css/schedule.css?v=@DateTime.Now.Ticks" rel="stylesheet" type="text/css" />
 }
 
-@if (Model.AgendaDetails != null)
-{
-    <div class="card agenda-card shadow-sm">
-        <div class="card-header text-center bg-primary text-white">
-            <h2 class="mb-0">@Model.AgendaDetails.StudentClassDto.ClassName - @Model.AgendaDetails.SubjectDto.SubjectName</h2>
-        </div>
-        <div class="card-body p-4">
 
-            @if (Model.EditMode)
-            {
-                <!-- Edit Mode: Render form for editing the agenda -->
-                <form method="post" asp-page-handler="UpdateAgenda">
-                    <input type="hidden" name="AgendaUpdate.AgendaId" value="@Model.AgendaDetails.AgendaId" />
 
-                    <div class="form-group">
-                        <label for="Note">Note</label>
-                        <textarea id="Note" name="AgendaUpdate.Note" class="form-control">@Model.AgendaDetails.Note</textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="Homework">Homework</label>
-                        <textarea id="Homework" name="AgendaUpdate.HomeWork" class="form-control">@Model.AgendaDetails.HomeWork</textarea>
-                    </div>
-
-                    <button type="submit" class="btn btn-success">Save Changes</button>
-                    <a href="@Url.Page("index", new { agendaid = Model.AgendaDetails.AgendaId })" class="btn btn-secondary">Cancel</a>
-                </form>
-            }
-            else
-            {
-                <a asp-page-handler="" asp-route-studentClassId="@Model.AgendaDetails.StudentClassId" asp-route-studentList="true">Student List</a>
-
-                <!-- View Mode: Display the agenda details -->
-                <div id="AgendaInfo" class="p-3">
-                    <div class="mb-4">
-                        <h6 class="font-weight-bold"><i class="fas fa-info-circle"></i> Note</h6>
-                        <p class="pl-3">@Html.Raw(Model.AgendaDetails.Note)</p>
-                    </div>
-
-                    <div class="mb-4">
-                        <h4 class="font-weight-bold text-danger"><i class="fas fa-book"></i> Homework</h4>
-                        <p class="pl-3">@Html.Raw(Model.AgendaDetails.HomeWork)</p>
-                    </div>
-                </div>
-
-                @if (Model.UserRole == "Teacher" && Model.IsAgendaTeacher == true)
-                {
-                    <div class="text-right">
-                        <!-- Discreet Edit Icon -->
-                        <a href="@Url.Page("index", new { agendaid = Model.AgendaDetails.AgendaId, editmode = true })" title="Edit Agenda">
-                            <i class="fa-solid fa-pen-to-square fa-lg"></i>
-                        </a>
-                    </div>
-                }
-            }
+<div class="container-fluid mt-3">
+    <div class="row schedule-header">
+        <div class="col">
+            <h2 class="text-center">Week @Model.WeekNum - @Model.Week[0].Year</h2>
         </div>
     </div>
-}
-else if (Model.ShowStudentList == true)
-{
-    <ul>
-        @foreach (var student in Model.Students)
+    <div class="row schedule-header text-center">
+        <div class="col"></div>
+        @foreach (var date in Model.Week)
         {
-            <li>
-                @student.FirstName @student.LastName
-            </li>
+            <div class="col">@date.DayOfWeek (@date.ToString("d/M"))</div>
         }
-    </ul>
-}
-else
-{
-    <div class="container-fluid mt-3">
-        <div class="row schedule-header">
-            <div class="col">
-                <h2 class="text-center">Week @Model.WeekNum - @Model.Week[0].Year</h2>
-            </div>
-        </div>
-        <div class="row schedule-header text-center">
-            <div class="col"></div>
-            @foreach (var date in Model.Week)
+    </div>
+    <div class="schedule-container">
+        <!-- Flex container for the schedule -->
+        <div class="module-column">
+            @foreach (var ScheduleModulePreference in Model.ScheduleModulePreferences)
             {
-                <div class="col">@date.DayOfWeek (@date.ToString("d/M"))</div>
-            }
-        </div>
-        <div class="schedule-container">
-            <!-- Flex container for the schedule -->
-            <div class="module-column">
-                @foreach (var ScheduleModulePreference in Model.ScheduleModulePreferences)
+                int totalMinutesFromEarliest = 0;
+
+                if (Model.GlobalEarliestStartTime < 1)
                 {
-                    int totalMinutesFromEarliest = 0;
-
-                    if (Model.GlobalEarliestStartTime < 1)
-                    {
-                        totalMinutesFromEarliest = (ScheduleModulePreference.StartTime.Hour * 60 + ScheduleModulePreference.StartTime.Minute) - 8 * 60;
-                    } else
-                    {
-                        totalMinutesFromEarliest = (ScheduleModulePreference.StartTime.Hour * 60 + ScheduleModulePreference.StartTime.Minute) - Model.GlobalEarliestStartTime;
-                    }
-
-                    var topPosition = System.Convert.ToInt32(totalMinutesFromEarliest * pixelPerMinuteRatio);
-
-
-                    var startMinute = ScheduleModulePreference.StartTime.Minute;
-                    var endMinute = ScheduleModulePreference.EndTime.Minute;
-
-                    // Calculate total minutes for the start and end times
-                    var startTotalMinutes = (ScheduleModulePreference.StartTime.Hour * 60) + startMinute; // Total minutes from start
-                    var endTotalMinutes = (ScheduleModulePreference.EndTime.Hour * 60) + endMinute; // Total minutes from end
-
-                    // Calculate duration in minutes
-                    var durationInMinutes = endTotalMinutes - startTotalMinutes;
-
-                    // Convert duration to pixels
-                    var durationInPixels = System.Convert.ToInt32(durationInMinutes * pixelPerMinuteRatio);
-
-                    <div class="schedule-cell module-cell" style="top: @($"{topPosition}px"); height:@($"{durationInPixels}px");">
-                        <div class="module-info">@($"{ScheduleModulePreference.ModuleNumber}.") modul</div>
-                        <div class="module-time">@ScheduleModulePreference.StartTime - @ScheduleModulePreference.EndTime</div>
-                    </div>
-
+                    totalMinutesFromEarliest = (ScheduleModulePreference.StartTime.Hour * 60 + ScheduleModulePreference.StartTime.Minute) - 8 * 60;
                 }
-                <!-- Fixed column for modules -->
+                else
+                {
+                    totalMinutesFromEarliest = (ScheduleModulePreference.StartTime.Hour * 60 + ScheduleModulePreference.StartTime.Minute) - Model.GlobalEarliestStartTime;
+                }
 
-            </div>
+                var topPosition = System.Convert.ToInt32(totalMinutesFromEarliest * pixelPerMinuteRatio);
 
-            @foreach (var date in Model.Week)
-            {
-                <div class="schedule-column day-column" data-date="@date.ToString("yyyy-MM-dd")" style="height:@($"{containerHeight}px");">
-                    @if (@Model.Agendas.Count > 0)
+
+                var startMinute = ScheduleModulePreference.StartTime.Minute;
+                var endMinute = ScheduleModulePreference.EndTime.Minute;
+
+                // Calculate total minutes for the start and end times
+                var startTotalMinutes = (ScheduleModulePreference.StartTime.Hour * 60) + startMinute; // Total minutes from start
+                var endTotalMinutes = (ScheduleModulePreference.EndTime.Hour * 60) + endMinute; // Total minutes from end
+
+                // Calculate duration in minutes
+                var durationInMinutes = endTotalMinutes - startTotalMinutes;
+
+                // Convert duration to pixels
+                var durationInPixels = System.Convert.ToInt32(durationInMinutes * pixelPerMinuteRatio);
+
+                <div class="schedule-cell module-cell" style="top: @($"{topPosition}px"); height:@($"{durationInPixels}px");">
+                    <div class="module-info">@($"{ScheduleModulePreference.ModuleNumber}.") modul</div>
+                    <div class="module-time">@ScheduleModulePreference.StartTime - @ScheduleModulePreference.EndTime</div>
+                </div>
+
+            }
+            <!-- Fixed column for modules -->
+
+        </div>
+
+        @foreach (var date in Model.Week)
+        {
+            <div class="schedule-column day-column" data-date="@date.ToString("yyyy-MM-dd")" style="height:@($"{containerHeight}px");">
+                @if (@Model.Agendas.Count > 0)
+                {
+                    @if (Model.OverlappingGroupsByDay.ContainsKey(date.ToString("yyyy-MM-dd")))
                     {
-                        @if (Model.OverlappingGroupsByDay.ContainsKey(date.ToString("yyyy-MM-dd")))
+                        var dayGroups = Model.OverlappingGroupsByDay[date.ToString("yyyy-MM-dd")];
+                        foreach (var group in dayGroups)
                         {
-                            var dayGroups = Model.OverlappingGroupsByDay[date.ToString("yyyy-MM-dd")];
-                            foreach (var group in dayGroups)
+                            var groupSize = group.Count;
+                            for (var i = 0; i < groupSize; i++)
                             {
-                                var groupSize = group.Count;
-                                for (var i = 0; i < groupSize; i++)
-                                {
-                                    var agenda = group[i];
-                                    var startTime = agenda.StartDateTime;
-                                    var endTime = agenda.EndDateTime;
-                                    var subject = agenda.SubjectDto?.SubjectName ?? "No Subject Assigned";
-                                    var agendaId = agenda.AgendaId;
+                                var agenda = group[i];
+                                var startTime = agenda.StartDateTime;
+                                var endTime = agenda.EndDateTime;
+                                var subject = agenda.SubjectDto?.SubjectName ?? "No Subject Assigned";
+                                var agendaId = agenda.AgendaId;
 
-                                    var startHour = startTime.Hour;
-                                    var endHour = endTime.Hour;
+                                var startHour = startTime.Hour;
+                                var endHour = endTime.Hour;
 
-                                    var startMinute = startTime.Minute;
-                                    var endMinute = endTime.Minute;
+                                var startMinute = startTime.Minute;
+                                var endMinute = endTime.Minute;
 
-                                    // Calculate total minutes for the start and end times
-                                    var startTotalMinutes = (startHour * 60) + startMinute; // Total minutes from start
-                                    var endTotalMinutes = (endHour * 60) + endMinute; // Total minutes from end
+                                // Calculate total minutes for the start and end times
+                                var startTotalMinutes = (startHour * 60) + startMinute; // Total minutes from start
+                                var endTotalMinutes = (endHour * 60) + endMinute; // Total minutes from end
 
-                                    // Calculate duration in minutes
-                                    var durationInMinutes = endTotalMinutes - startTotalMinutes;
+                                // Calculate duration in minutes
+                                var durationInMinutes = endTotalMinutes - startTotalMinutes;
 
-                                    // Convert duration to pixels
-                                    var durationInPixels = System.Convert.ToInt32(durationInMinutes * pixelPerMinuteRatio);
+                                // Convert duration to pixels
+                                var durationInPixels = System.Convert.ToInt32(durationInMinutes * pixelPerMinuteRatio);
 
-                                    var totalMinutesFromEarliest = (startTime.Hour * 60 + startTime.Minute) - Model.GlobalEarliestStartTime;
-                                    var topPosition = System.Convert.ToInt32(totalMinutesFromEarliest * pixelPerMinuteRatio);
-                                    var widthPercentage = 100 / groupSize;
-                                    var leftPosition = i * widthPercentage;
+                                var totalMinutesFromEarliest = (startTime.Hour * 60 + startTime.Minute) - Model.GlobalEarliestStartTime;
+                                var topPosition = System.Convert.ToInt32(totalMinutesFromEarliest * pixelPerMinuteRatio);
+                                var widthPercentage = 100 / groupSize;
+                                var leftPosition = i * widthPercentage;
 
 
 
-                                    <a asp-action="" asp-route-agendaId="@agendaId">
-                                        <div class="schedule-item" style="top:@($"{topPosition}px"); height:@($"{durationInPixels}px"); width:calc(@widthPercentage% - 10px); left:@leftPosition%;">
-                                            <p>@subject</p>
-                                            <p>@startTime.ToString("HH:mm") - @endTime.ToString("HH:mm")</p>
-                                        </div>
-                                    </a>
-                                }
+                                <a asp-page="/Events/Index" asp-route-agendaId="@agendaId">
+                                    <div class="schedule-item" style="top:@($"{topPosition}px"); height:@($"{durationInPixels}px"); width:calc(@widthPercentage% - 10px); left:@leftPosition%;">
+                                        <p>@subject</p>
+                                        <p>@startTime.ToString("HH:mm") - @endTime.ToString("HH:mm")</p>
+                                    </div>
+                                </a>
                             }
                         }
-                    } 
-                </div>
-            }
-        </div>
+                    }
+                }
+            </div>
+        }
     </div>
-
-}
-
-
-@section Scripts {
-    <script src="https://cdn.tiny.cloud/1/@Model.TinyMceApiKey/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
-
-    <script>
-        tinymce.init({
-            selector: 'textarea',
-            menubar: false,  // Hide the menubar if not needed
-            plugins: 'link image code',
-            toolbar: 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | link',
-            content_css: '//www.tiny.cloud/css/codepen.min.css',
-            height: 300
-        });
-    </script>
-}
+</div>

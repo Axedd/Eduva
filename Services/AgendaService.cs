@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using SchoolSystem.Configurations;
 using SchoolSystem.Data;
 using SchoolSystem.Interfaces;
 using SchoolSystem.Models;
@@ -11,11 +13,19 @@ namespace SchoolSystem.Services
         private readonly ApplicationDbContext _context;
         private Random _random;
         private readonly ILogger<AgendaService> _logger;
-        public AgendaService(ApplicationDbContext context, Random random, ILogger<AgendaService> logger)
+
+        private readonly string _tinyMceApiKey;
+        public AgendaService(ApplicationDbContext context, Random random, ILogger<AgendaService> logger, IOptions<TinyMceSettings> tinyMceSettings)
         {
             _context = context;
             _random = random;
             _logger = logger;
+            _tinyMceApiKey = tinyMceSettings.Value.ApiKey;
+        }
+
+        public string GetTinyMceApiKey()
+        {
+            return _tinyMceApiKey;  // Only exposed within the service
         }
 
 
@@ -208,6 +218,10 @@ namespace SchoolSystem.Services
             }
         }
 
-
+        public string SanitizeAgenda(string textToSanitize)
+        {
+            var sanitizer = new Ganss.Xss.HtmlSanitizer();
+            return sanitizer.Sanitize(textToSanitize);
+        }
     }
 }

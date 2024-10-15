@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using SchoolSystem.Interfaces;
 using SchoolSystem.Services;
+using SchoolSystem.Configurations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -80,6 +81,11 @@ builder.Services.AddScoped<ISubjectService, SubjectService>();
 builder.Services.AddScoped<IAgendaService, AgendaService>();
 builder.Services.AddScoped<IScheduleService, ScheduleService>();
 builder.Services.AddScoped<IPreferenceService, PreferenceService>();
+
+
+// API key Injection for "TinyMCE"
+builder.Services.Configure<TinyMceSettings>(builder.Configuration.GetSection("TinyMCE"));
+
 
 var app = builder.Build();
 
