@@ -9,6 +9,7 @@ namespace SchoolSystem.Interfaces
         Task<List<StudentClassSubjects>> GetStudentClassSubjectsAsync(long studentClassId);
         Task<string?> GetStudentClassName(long studentClassId);
         Task<StudentClass> GetStudentClassByIdAsync(long studentClassId);
+        Task<List<StudentDto>> GetAllStudentsFromClassIdAsync(long studentClassId);
 
 	}
 }

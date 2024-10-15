@@ -33,6 +33,24 @@ namespace SchoolSystem.Services
             return await _context.StudentClasses.Where(sc => sc.StudentClassId == studentClassId).FirstOrDefaultAsync();
         }
 
+        public async Task<List<StudentDto>> GetAllStudentsFromClassIdAsync(long studentClassId)
+        {
+            return await _context.StudentClasses
+                .Where(sc => sc.StudentClassId == studentClassId)
+                .Include(sc => sc.Students)
+                .SelectMany(sc => sc.Students)
+                .Select(st => new StudentDto
+                {
+                    StudentId = st.StudentId,
+                    FirstName = st.FirstName,
+                    LastName = st.LastName,
+                    ProfilePicturePath = st.ProfilePicturePath,
+                
+                })
+                .OrderBy(s => s.FirstName)
+                .ToListAsync();
+        }
+
         public async Task<List<StudentClassSubjects>> GetStudentClassSubjectsAsync(long studentClassId)
         {
             return await _context.StudentClassSubjects

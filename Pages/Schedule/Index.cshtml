@@ -48,6 +48,8 @@
             }
             else
             {
+                <a asp-page-handler="" asp-route-studentClassId="@Model.AgendaDetails.StudentClassId" asp-route-studentList="true">Student List</a>
+
                 <!-- View Mode: Display the agenda details -->
                 <div id="AgendaInfo" class="p-3">
                     <div class="mb-4">
@@ -73,6 +75,17 @@
             }
         </div>
     </div>
+}
+else if (Model.ShowStudentList == true)
+{
+    <ul>
+        @foreach (var student in Model.Students)
+        {
+            <li>
+                @student.FirstName @student.LastName
+            </li>
+        }
+    </ul>
 }
 else
 {

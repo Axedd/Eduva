@@ -26,4 +26,12 @@ namespace SchoolSystem.Models
         public int? StudentClassId { get; set; }
         public StudentClass? StudentClass { get; set; }
     }
+
+    public class StudentDto
+    {
+        public long StudentId { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string? ProfilePicturePath { get; set; }
+    }
 }

@@ -16,13 +16,15 @@ namespace SchoolSystem.Pages.Schedule
         private readonly ITeacherService _teacherService;
         private readonly IConfiguration _configuration;
         private readonly IIdValidationService _idValidationService;
+        private readonly IStudentClassService _studentClassService;
         public IndexModel(IAgendaService agendaService, 
             IScheduleService scheduleService, 
             IStudentService studentService, 
             IUserService userService,
             ITeacherService teacherService,
             IConfiguration configuration,
-            IIdValidationService idValidationService)
+            IIdValidationService idValidationService,
+            IStudentClassService studentClassService)
         {
             _agendaService = agendaService;
             _scheduleService = scheduleService;
@@ -31,6 +33,7 @@ namespace SchoolSystem.Pages.Schedule
             _teacherService = teacherService;
             _configuration = configuration;
             _idValidationService = idValidationService;
+            _studentClassService = studentClassService;
         }
 
         public List<Agenda> Agendas { get; set; } = new List<Agenda>();
@@ -51,11 +54,22 @@ namespace SchoolSystem.Pages.Schedule
 
         public string TinyMceApiKey { get; private set; }
 
+        public bool ShowStudentList {  get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int? studentClassId, long? teacherId, int? week, long? agendaId, bool? editmode = false)
+        public List<StudentDto> Students { get; set; }
+
+
+        public async Task<IActionResult> OnGetAsync(int? studentClassId, long? teacherId, int? week, long? agendaId, bool? editmode = false, bool studentList = false)
         {
             UserRole = _userService.GetUserRole();
             TinyMceApiKey = _configuration["TinyMCE:ApiKey"]!;
+
+            if (studentList == true)
+            {
+                ShowStudentList = true;
+                Students = await _studentClassService.GetAllStudentsFromClassIdAsync(studentClassId.Value);
+                return Page();
+            }
 
             if (agendaId.HasValue)
             {
