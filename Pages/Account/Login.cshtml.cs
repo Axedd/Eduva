@@ -50,6 +50,19 @@ namespace SchoolSystem.Pages.Account
 
                     if (result.Succeeded)
                     {
+                        // Add claims if they do not already exist
+                        var claims = await _userManager.GetClaimsAsync(user);
+
+                        if (!claims.Any(c => c.Type == "FirstName"))
+                        {
+                            await _userManager.AddClaimAsync(user, new Claim("FirstName", user.FirstName));
+                        }
+
+                        if (!claims.Any(c => c.Type == "LastName"))
+                        {
+                            await _userManager.AddClaimAsync(user, new Claim("LastName", user.LastName));
+                        }
+
                         return LocalRedirect(returnUrl);
                     }
                     if (result.IsLockedOut)

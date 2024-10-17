@@ -38,14 +38,57 @@
                 </div>
             </div>
         </nav>
+
+        @if (!ViewContext.RouteData.Values["page"].ToString().Contains("/Account"))
+        {
+            // Initialize studentId and teacherId as nullable long
+            long? studentId = null;
+            long? teacherId = null;
+
+            // Check if ViewData contains the keys before accessing
+            if (ViewData.ContainsKey("StudentId") && ViewData["StudentId"] is long)
+            {
+                studentId = (long)ViewData["StudentId"];
+            }
+
+            if (ViewData.ContainsKey("TeacherId"))
+            {
+                teacherId = ViewData["TeacherId"] as long?;
+            }
+
+            // Default actualId to 0
+            long actualId = 0;
+
+            // Assign actualId based on the presence of studentId or teacherId
+            if (studentId.HasValue)
+            {
+                actualId = studentId.Value; // Assign value if studentId is not null
+            }
+            else if (teacherId.HasValue)
+            {
+                actualId = teacherId.Value; // Assign value if teacherId is not null
+            }
+
+            // Determine the userType based on the presence of studentId or teacherId
+            string? userType = null;
+
+            if (actualId != 0)
+            {
+                userType = studentId.HasValue ? "Student" : "Teacher";
+            }
+
+            // Invoke the component with actualId and userType
+            @await Component.InvokeAsync("UserHeaderInfo", new { id = actualId, type = userType });
+        }
+
+
     </header>
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
-
-
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

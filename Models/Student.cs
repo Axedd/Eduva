@@ -34,4 +34,11 @@ namespace SchoolSystem.Models
         public string LastName { get; set; }
         public string? ProfilePicturePath { get; set; }
     }
+
+    public class StudentHeaderDto
+    {
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public StudentClassDto Class { get; set; }
+    }
 }

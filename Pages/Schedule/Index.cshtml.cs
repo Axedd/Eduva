@@ -2,12 +2,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using SchoolSystem.Interfaces;
 using SchoolSystem.Models;
+using SchoolSystem.Pages.Shared;
 using System;
 
 namespace SchoolSystem.Pages.Schedule
 {
 
-    public class IndexModel : PageModel
+    public class IndexModel : BaseService
     {
         private readonly IAgendaService _agendaService;
         private readonly IScheduleService _scheduleService;
@@ -23,7 +24,8 @@ namespace SchoolSystem.Pages.Schedule
             ITeacherService teacherService,
             IConfiguration configuration,
             IIdValidationService idValidationService,
-            IStudentClassService studentClassService)
+            IStudentClassService studentClassService,
+            ILogger<BaseService> logger) : base(logger)
         {
             _agendaService = agendaService;
             _scheduleService = scheduleService;
@@ -54,12 +56,15 @@ namespace SchoolSystem.Pages.Schedule
 
 
 
-        public async Task<IActionResult> OnGetAsync(int? studentClassId, long? teacherId, int? week, long? agendaId, bool? editmode = false)
+        public async Task<IActionResult> OnGetAsync(int? studentClassId, long? teacherId, int? week, long? agendaId, bool? editmode = false, long? studentId = null)
         {
-                UserRole = _userService.GetUserRole();
-            
+            UserRole = _userService.GetUserRole();
 
-                if (!studentClassId.HasValue)
+            ViewData["StudentId"] = studentId == null ? null : studentId;
+            ViewData["TeacherId"] = teacherId == null ? null : teacherId;
+
+            
+            if (!studentClassId.HasValue)
                 {
                     studentClassId = await _studentService.GetClassIdOfStudentAsync();
                 }

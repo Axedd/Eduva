@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Text;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
+using static SchoolSystem.Models.User;
 
 namespace SchoolSystem.Services
 {
@@ -17,18 +18,21 @@ namespace SchoolSystem.Services
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ILogger<UserService> _logger;
 
         public UserService(
             ApplicationDbContext context,
             UserManager<ApplicationUser> userManager,
             RoleManager<IdentityRole> roleManager,
-            IHttpContextAccessor httpContextAccessor
+            IHttpContextAccessor httpContextAccessor,
+            ILogger<UserService> logger
             )
         {
             _context = context;
             _userManager = userManager;
             _roleManager = roleManager;
             _httpContextAccessor = httpContextAccessor;
+            _logger = logger;
         }
 
         public async Task<string> GenerateUsername()
@@ -188,16 +192,106 @@ namespace SchoolSystem.Services
 
         public string GetUserRole()
         {
-            var user = _httpContextAccessor.HttpContext?.User;
+            var user = GetUser();
             var role = user!.FindFirst(ClaimTypes.Role)?.Value;
             return role ?? string.Empty;
         }
 
         public string GetUserId()
         {
-            var user = _httpContextAccessor.HttpContext?.User;
+            var user = GetUser();
             var userId = user!.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             return userId ?? string.Empty;
+        }
+
+        public UserHeaderDto GetTeacherHeaderInfo(string userId = null, long? teacherId = null)
+        {
+            var query = _context.Teachers.AsQueryable();
+
+            if (!string.IsNullOrEmpty(userId))
+            {
+                query = query.Where(t => t.UserId == userId);
+            }
+            else if (teacherId.HasValue)
+            {
+                query = query.Where(t => t.TeacherId == teacherId.Value);
+            }
+
+
+            var teacherInfo = query.Select(t => new UserHeaderDto
+            {
+                FirstName = t.FirstName,
+                LastName = t.LastName,
+                ProfilePicturePath = t.ProfilePicturePath
+            }).FirstOrDefault();
+
+            return teacherInfo ?? new UserHeaderDto();
+        }
+
+        public UserHeaderDto GetStudentHeaderInfo(string userId = null, long? studentId = null)
+        {
+            var query = _context.Students.AsQueryable();
+
+            if (!string.IsNullOrEmpty(userId))
+            {
+                query = query.Where(s => s.UserId == userId);
+            }
+            else if (studentId.HasValue)
+            {
+                query = query.Where(s => s.StudentId == studentId.Value);
+            }
+
+            var studentInfo = query.Include(s => s.StudentClass)
+                .Select(s => new UserHeaderDto
+                {
+                    FirstName = s.FirstName,
+                    LastName = s.LastName,
+                    ProfilePicturePath = s.ProfilePicturePath,
+                    StudentClass = new StudentClassDto
+                    {
+                        StudentClassId = s.StudentClass.StudentClassId,
+                        ClassName = s.StudentClass.ClassName
+                    }
+                }).FirstOrDefault();
+
+            if (studentInfo == null)
+            {
+                // Log the issue if no student was found
+                _logger.LogWarning($"Student with ID {studentId} not found.");
+            }
+
+            return studentInfo ?? new UserHeaderDto(); // Return default UserHeaderDto if no match
+        }
+
+        public UserHeaderDto GetUserHeaderInfo()
+        {
+            var userId = GetUserId();
+            var userRole = GetUserRole();
+
+            if (userRole == "Admin")
+            {
+                return new UserHeaderDto
+                {
+                    FirstName = "Admin",
+                };
+            }
+
+
+            if (userRole == "Teacher")
+            {
+                return GetTeacherHeaderInfo(userId: userId); // Use userId for teacher
+            }
+            else if (userRole == "Student")
+            {
+                return GetStudentHeaderInfo(userId: userId); // Use userId for student
+            }
+
+            return null;
+        }
+
+        private ClaimsPrincipal GetUser()
+        {
+            return _httpContextAccessor.HttpContext?.User;
         }
 
 

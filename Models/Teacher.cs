@@ -32,6 +32,13 @@ namespace SchoolSystem.Models
         public ICollection<SubjectTeachersDto>? Subjects { get; set; }
     }
 
+    public class TeacherHeaderDto
+    {
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string ProfilePicturePath { get; set; }
+    }
+
     public class SubjectTeacherDto
     {
         public long SubjectId { get; set; }

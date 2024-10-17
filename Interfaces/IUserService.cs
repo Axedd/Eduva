@@ -1,4 +1,6 @@
 ﻿using SchoolSystem.Models;
+using System.Security.Claims;
+using static SchoolSystem.Models.User;
 
 namespace SchoolSystem.Interfaces
 {
@@ -13,5 +15,8 @@ namespace SchoolSystem.Interfaces
 
         string GetUserRole();
         string GetUserId();
+        UserHeaderDto GetTeacherHeaderInfo(string userId = null, long? teacherId = null);
+        UserHeaderDto GetStudentHeaderInfo(string userId = null, long? studentId = null);
+        UserHeaderDto GetUserHeaderInfo();
     }
 }

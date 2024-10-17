@@ -29,6 +29,9 @@ namespace SchoolSystem.Pages.Admin
 
         public async Task<IActionResult> OnGetAsync()
         {
+            ViewData["CurrentPage"] = "Home"; // Set to the name of the current page
+            ViewData["UserRole"] = "Admin"; // Set user's role (e.g., Admin, User)
+            ViewData["FullName"] = "John Doe"; // Set user's full name
             StudentClasses = await _studentClassService.GetStudentClassesAsync();
             return Page();
         }

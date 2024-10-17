@@ -1,0 +1,79 @@
+﻿@using SchoolSystem.Models
+@model User.UserHeaderDto
+
+<style>
+    .user-header {
+        display: flex; /* Use flexbox to align items horizontally */
+        align-items: center; /* Center vertically */
+        margin: 0 auto 10px; /* Center horizontally and add space below */
+        padding: 10px; /* Add uniform padding */
+        max-width: 1200px; /* Set a max width to align with page content */
+        box-sizing: border-box;
+    }
+
+    .profile-picture {
+        margin-right: 10px; /* Space between picture and user info */
+        width: 50px; /* Set a fixed width for the profile picture */
+        height: 75px; /* Set a taller height */
+        overflow: hidden; /* Ensure the image stays within bounds */
+        border-radius: 50%; /* Optional: make the picture circular */
+    }
+
+    .profile-picture img {
+        width: 100%; /* Make the image fill the container */
+        height: auto; /* Maintain aspect ratio */
+        object-fit: cover; /* Cover the entire area without stretching */
+    }
+
+    .user-info h1 {
+        margin: 0; /* Remove default margin */
+    }
+
+    .user-info .navigation {
+        margin-top: 5px; /* Space between name and navigation links */
+    }
+
+    .user-info .navigation a {
+        margin-right: 15px; /* Space between navigation links */
+        text-decoration: none; /* Remove underline */
+        color: #007bff; /* Link color */
+     }
+
+     .user-info .navigation a:hover {
+        text-decoration: underline; /* Underline on hover */
+     }
+</style>
+
+
+<div class="user-header">
+    <div class="profile-picture">
+        <img src="@Model.ProfilePicturePath" alt="Profile Picture" />
+    </div>
+    <div class="user-info">
+        <h5>
+            @if (Model.FirstName == "Admin")
+            {
+                <span>Admin</span>
+            }
+            else if (!string.IsNullOrEmpty(Model.FirstName) && !string.IsNullOrEmpty(Model.LastName))
+            {
+                <span>@Model.FirstName @Model.LastName</span>
+            }
+            else
+            {
+                <span>No Name Available</span>
+            }
+
+            @if (Model.StudentClass != null && !string.IsNullOrEmpty(Model.StudentClass.ClassName))
+            {
+                @Model.StudentClass.ClassName
+            }
+        </h5>
+        <div class="navigation">
+            <a asp-area="" asp-page="/Index">Home</a>
+            <a asp-area="" asp-page="/Schedule/Index">Schedule</a>
+            <a href="#">Study plan</a>
+            <a href="#">Absence</a>
+        </div>
+    </div>
+</div>
