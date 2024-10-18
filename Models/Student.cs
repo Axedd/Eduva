@@ -9,6 +9,7 @@ namespace SchoolSystem.Models
         private string _firstName;
         private string _lastName;
         private string _gender;
+        private string _profilePicturePath;
 
         public long StudentId { get; set; }
 
@@ -34,7 +35,11 @@ namespace SchoolSystem.Models
 
         public DateTime JoinedDate { get; set; }
 
-        public string? ProfilePicturePath { get; set; }
+        public string? ProfilePicturePath
+        {
+            get => string.IsNullOrWhiteSpace(_profilePicturePath) ? "/students/default.jpg" : _profilePicturePath;
+            set => _profilePicturePath = value;
+        }
 
         [Required(ErrorMessage = "Gender is required")]
         public string Gender

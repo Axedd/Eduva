@@ -12,13 +12,19 @@ namespace SchoolSystem.Services
         private readonly IStudentClassService _studentClassService;
         private Random _random;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IIdValidationService _idValidationService;
 
-        public StudentService(ApplicationDbContext context, Random random, IHttpContextAccessor httpContextAccessor, IStudentClassService studentClassService)
+        public StudentService(ApplicationDbContext context, 
+            Random random, 
+            IHttpContextAccessor httpContextAccessor, 
+            IStudentClassService studentClassService,
+            IIdValidationService idValidationService)
         {
             _context = context;
             _random = random;
             _httpContextAccessor = httpContextAccessor;
             _studentClassService = studentClassService;
+            _idValidationService = idValidationService;
         }    
         
         public async Task<List<Student>> GetAllStudents()
@@ -31,14 +37,26 @@ namespace SchoolSystem.Services
             return await _context.Students.Where(s => s.UserId != null).ToListAsync();
         }
 
-        public async Task<int> GetClassIdOfStudentAsync()
+        public async Task<int> GetClassIdOfStudentAsync(string? userId = null, long? studentId = null)
         {
-            var user = _httpContextAccessor.HttpContext?.User;
-            var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            // Check for valid input
+            if (studentId.HasValue && studentId.Value <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(studentId), studentId.Value, "Invalid student ID.");
+            }
 
-            int studentClassId = await _studentClassService.GetStudentClassIdByUserId(userId);
+            // If studentId is provided, try to retrieve the StudentClassId using studentId
+            if (studentId.HasValue && await _idValidationService.IsValidStudentIdAsync(studentId.Value))
+            {
+                return await _studentClassService.GetStudentClassIdAsync(studentId: studentId.Value);
+            }
+            // If userId is provided and studentId is not valid or not provided, try to retrieve the StudentClassId using userId
+            else if (!string.IsNullOrWhiteSpace(userId))
+            {
+                return await _studentClassService.GetStudentClassIdAsync(userId: userId);
+            }
 
-            return studentClassId;
+            return 0; // Return 0 if neither studentId nor userId is valid
         }
 
 

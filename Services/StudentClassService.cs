@@ -16,11 +16,22 @@ namespace SchoolSystem.Services
         }
 
 
-        public async Task<int> GetStudentClassIdByUserId(string userId)
+        public async Task<int> GetStudentClassIdAsync(string userId = null, long? studentId = null)
         {
-            return await _context.Students
-                .Where(s => s.UserId == userId)
-                .Select(a => a.StudentClassId ?? 0) // Provide a default value of 0 if StudentClassId is null
+            var query = _context.Students.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(userId))
+            {
+                query = query.Where(s => s.UserId == userId);
+            }
+
+            if (studentId.HasValue)
+            {
+                query = query.Where(s => s.StudentId == studentId.Value);
+            }
+
+            return await query
+                .Select(s => s.StudentClassId ?? 0) // Default to 0 if StudentClassId is null
                 .FirstOrDefaultAsync();
         }
 

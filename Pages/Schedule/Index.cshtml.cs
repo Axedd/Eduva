@@ -56,66 +56,66 @@ namespace SchoolSystem.Pages.Schedule
 
 
 
-        public async Task<IActionResult> OnGetAsync(int? studentClassId, long? teacherId, int? week, long? agendaId, bool? editmode = false, long? studentId = null)
+        public async Task<IActionResult> OnGetAsync(int? studentClassId, long? teacherId, int? week, long? studentId = null)
         {
             UserRole = _userService.GetUserRole();
+            var userId = _userService.GetUserId();
 
             ViewData["StudentId"] = studentId == null ? null : studentId;
             ViewData["TeacherId"] = teacherId == null ? null : teacherId;
-            
-            
+
+            // Attempt to retrieve studentClassId based on provided parameters
             if (!studentClassId.HasValue)
-                {
-                    studentClassId = await _studentService.GetClassIdOfStudentAsync();
-                }
+            {
+                studentClassId = studentId.HasValue
+                    ? await _studentService.GetClassIdOfStudentAsync(studentId: studentId.Value)
+                    : (UserRole != "Teacher" ? await _studentService.GetClassIdOfStudentAsync(userId: userId) : (int?)null);
+            }
 
-                // Get current week and agendas
-                var (weekNum, weekDays) = await _scheduleService.GetCurrentWeekAsync(week);
-                
-                if (week == null)
-                {
-                    week = weekNum;
-                }
+            // Get current week and agendas
+            var (weekNum, weekDays) = await _scheduleService.GetCurrentWeekAsync(week);
+            week ??= weekNum; // If week is null, use the current week number
 
-                if (UserRole == "Teacher" || teacherId.HasValue)
-                {
-                    var UserId = _userService.GetUserId();
-                    if (!teacherId.HasValue)
-                    {
-                        teacherId = await _teacherService.GetTeacherByUserId(UserId);
-                    }
+            if (UserRole == "Teacher" || teacherId.HasValue)
+            {
+                teacherId ??= await _teacherService.GetTeacherByUserId(userId);
 
+                if (teacherId.HasValue)
+                {
                     Agendas = await _scheduleService.GetTeacherAgendasAsync(teacherId.Value, week);
-                } else if (UserRole == "Student" || UserRole == "Admin")
+                }
+            }
+            else if (UserRole == "Student" || UserRole == "Admin") // Admin = just for development enviorment
+            {
+                if (studentClassId.HasValue)
                 {
                     Agendas = await _scheduleService.GetAgendasForWeekAsync(studentClassId.Value, week);
                 }
+            }
 
-                ScheduleModulePreferences = await _scheduleService.GetScheduleModulePreferencesAsync();
+            ScheduleModulePreferences = await _scheduleService.GetScheduleModulePreferencesAsync();
 
-                if (Agendas.Count > 0)
+            if (Agendas.Count > 0)
+            {
+                // Group agendas by day and find times
+                AgendasByDay = GroupAgendasByDay(Agendas);
+                GlobalEarliestStartTime = await FindGlobalEarliestStartTime(Agendas);
+                GlobalLatestEndTime = FindGlobalLatestEndTime(Agendas);
+                OverlappingGroupsByDay = new Dictionary<string, List<List<Agenda>>>();
+
+                foreach (var day in AgendasByDay.Keys)
                 {
-                    // Group agendas by day
-                    AgendasByDay = GroupAgendasByDay(Agendas);
-
-                    // Find the global earliest and latest times
-                    GlobalEarliestStartTime = await FindGlobalEarliestStartTime(Agendas);
-                    GlobalLatestEndTime = FindGlobalLatestEndTime(Agendas);
-
-                    // Find overlapping groups for each day
-                    OverlappingGroupsByDay = new Dictionary<string, List<List<Agenda>>>();
-                    foreach (var day in AgendasByDay.Keys)
-                    {
-                        OverlappingGroupsByDay[day] = FindOverlappingGroups(AgendasByDay[day]);
-                    }
-                } else
-                {
-                    GlobalEarliestStartTime = await FindGlobalEarliestStartTime();
-                    GlobalLatestEndTime = 1024;
+                    OverlappingGroupsByDay[day] = FindOverlappingGroups(AgendasByDay[day]);
                 }
+            }
+            else
+            {
+                GlobalEarliestStartTime = await FindGlobalEarliestStartTime();
+                GlobalLatestEndTime = 1024; // Default value if no agendas
+            }
 
-                Week = weekDays;
-                WeekNum = weekNum;
+            Week = weekDays;
+            WeekNum = weekNum;
 
             return Page();
         }
