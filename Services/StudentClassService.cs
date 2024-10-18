@@ -2,6 +2,7 @@
 using SchoolSystem.Models;
 using Microsoft.EntityFrameworkCore;
 using SchoolSystem.Interfaces;
+using static SchoolSystem.Models.Student;
 
 namespace SchoolSystem.Services
 {

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using SchoolSystem.Interfaces;
 using SchoolSystem.Models;
+using static SchoolSystem.Models.Student;
 
 namespace SchoolSystem.Pages.SubNavs
 {

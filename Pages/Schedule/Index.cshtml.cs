@@ -62,7 +62,7 @@ namespace SchoolSystem.Pages.Schedule
 
             ViewData["StudentId"] = studentId == null ? null : studentId;
             ViewData["TeacherId"] = teacherId == null ? null : teacherId;
-
+            
             
             if (!studentClassId.HasValue)
                 {

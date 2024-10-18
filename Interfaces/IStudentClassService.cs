@@ -1,4 +1,5 @@
 ﻿using SchoolSystem.Models;
+using static SchoolSystem.Models.Student;
 
 namespace SchoolSystem.Interfaces
 {
