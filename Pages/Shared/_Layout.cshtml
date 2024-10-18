@@ -36,7 +36,7 @@
             </div>
         </nav>
 
-        @if (!ViewContext.RouteData.Values["page"].ToString().Contains("/Account"))
+        @if (!ViewContext.RouteData.Values["page"].ToString().Contains("/Account") && !ViewContext.RouteData.Values["page"].ToString().Contains("/Admin"))
         {
             // Initialize studentId and teacherId as nullable long
             long? studentId = null;

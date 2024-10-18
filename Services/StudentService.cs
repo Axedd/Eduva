@@ -14,9 +14,9 @@ namespace SchoolSystem.Services
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IIdValidationService _idValidationService;
 
-        public StudentService(ApplicationDbContext context, 
-            Random random, 
-            IHttpContextAccessor httpContextAccessor, 
+        public StudentService(ApplicationDbContext context,
+            Random random,
+            IHttpContextAccessor httpContextAccessor,
             IStudentClassService studentClassService,
             IIdValidationService idValidationService)
         {
@@ -25,8 +25,10 @@ namespace SchoolSystem.Services
             _httpContextAccessor = httpContextAccessor;
             _studentClassService = studentClassService;
             _idValidationService = idValidationService;
-        }    
-        
+        }
+
+        #region Student Retrieval Methods
+
         public async Task<List<Student>> GetAllStudents()
         {
             return await _context.Students.ToListAsync();
@@ -36,6 +38,32 @@ namespace SchoolSystem.Services
         {
             return await _context.Students.Where(s => s.UserId != null).ToListAsync();
         }
+
+        public async Task<Student> GetStudentById(long studentId)
+        {
+            var student = await _context.Students.FirstOrDefaultAsync(s => s.StudentId == studentId);
+
+            if (student == null)
+            {
+                throw new KeyNotFoundException($"Student with ID {studentId} not found.");
+            }
+
+            return student;
+        }
+
+        public async Task<List<Student>> GetStudentsByClassAsync(int classId)
+        {
+            var students = await _context.Students
+                .Where(s => s.StudentClassId == classId)
+                .OrderBy(s => s.FirstName)
+                .ToListAsync();
+
+            return students;
+        }
+
+        #endregion
+
+        #region Class and Student ID Methods
 
         public async Task<int> GetClassIdOfStudentAsync(string? userId = null, long? studentId = null)
         {
@@ -59,36 +87,6 @@ namespace SchoolSystem.Services
             return 0; // Return 0 if neither studentId nor userId is valid
         }
 
-
-        public async Task<Student> GetStudentById(long studentId)
-        {
-            var student = await _context.Students.FirstOrDefaultAsync(s => s.StudentId == studentId);
-
-            if (student == null)
-            {
-                throw new KeyNotFoundException($"Student with ID {studentId} not found.");
-            }
-
-            return student;
-        }
-
-        public async Task<List<Student>> GetStudentsByClassAsync(int classId)
-        {
-            var students = await _context.Students
-                .Where(s => s.StudentClassId == classId)
-                .OrderBy(s => s.FirstName)
-                .ToListAsync();
-            
-            return students;
-        }
-
-
-        public async Task UpdateStudentAsync(Student student)
-        {
-            _context.Students.Update(student);
-            await _context.SaveChangesAsync();
-        }
-
         public async Task<long> GenerateStudentId()
         {
             var existingStudentIds = await _context.Students.Select(s => s.StudentId).ToListAsync();
@@ -101,5 +99,17 @@ namespace SchoolSystem.Services
 
             return generatedStudenttId;
         }
+
+        #endregion
+
+        #region Student Management Methods
+
+        public async Task UpdateStudentAsync(Student student)
+        {
+            _context.Students.Update(student);
+            await _context.SaveChangesAsync();
+        }
+
+        #endregion
     }
 }

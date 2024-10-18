@@ -54,6 +54,8 @@ namespace SchoolSystem.Pages.Schedule
 
         public bool ShowStudentList {  get; set; }
 
+        public long? StudentId { get; set; }
+        public long? TeacherId { get; set; }
 
 
         public async Task<IActionResult> OnGetAsync(int? studentClassId, long? teacherId, int? week, long? studentId = null)
@@ -63,6 +65,10 @@ namespace SchoolSystem.Pages.Schedule
 
             ViewData["StudentId"] = studentId == null ? null : studentId;
             ViewData["TeacherId"] = teacherId == null ? null : teacherId;
+
+            StudentId = studentId;
+            TeacherId = teacherId;
+
 
             // Attempt to retrieve studentClassId based on provided parameters
             if (!studentClassId.HasValue)

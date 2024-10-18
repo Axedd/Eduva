@@ -23,9 +23,9 @@
 <div class="container-fluid mt-3">
     <div class="row schedule-header">
         <div class="col d-flex justify-content-between align-items-center">
-            <a asp-page-handler="" asp-route-week="@(Model.WeekNum - 1)" class="fa-solid fa-arrow-left"></a>
+            <a asp-page-handler="" asp-route-week="@(Model.WeekNum - 1)" asp-route-studentid="@Model.StudentId" asp-route-teacherId="@Model.TeacherId" class="fa-solid fa-arrow-left"></a>
             <h2 class="text-center m-0">Week @Model.WeekNum - @Model.Week[0].Year</h2>
-            <a asp-page-handler="" asp-route-week="@(Model.WeekNum + 1)" class="fa-solid fa-arrow-right"></a>
+            <a asp-page-handler="" asp-route-week="@(Model.WeekNum + 1)" asp-route-studentid="@Model.StudentId" asp-route-teacherId="@Model.TeacherId" class="fa-solid fa-arrow-right"></a>
         </div>
     </div>
     <div class="row schedule-header text-center">

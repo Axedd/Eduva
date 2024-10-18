@@ -81,6 +81,7 @@ builder.Services.AddScoped<ISubjectService, SubjectService>();
 builder.Services.AddScoped<IAgendaService, AgendaService>();
 builder.Services.AddScoped<IScheduleService, ScheduleService>();
 builder.Services.AddScoped<IPreferenceService, PreferenceService>();
+builder.Services.AddScoped<IScheduleCalculatorService, ScheduleCalculatorService>();
 
 
 // API key Injection for "TinyMCE"

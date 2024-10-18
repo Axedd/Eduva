@@ -35,10 +35,13 @@ namespace SchoolSystem.Pages.Events
         public string TinyMceApiKey { get; private set; }
         public bool ShowStudentList { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(long agendaId, bool? editmode)
+        public async Task<IActionResult> OnGetAsync(long agendaId, bool? editmode, long? studentId, long? teacherId)
         {
             UserRole = _userService.GetUserRole();
             TinyMceApiKey = _agendaService.GetTinyMceApiKey();
+
+            ViewData["StudentId"] = studentId == null ? null : studentId;
+            ViewData["TeacherId"] = teacherId == null ? null : teacherId;
 
 
             if (!await _idValidationService.IsValidAgendaId(agendaId))
