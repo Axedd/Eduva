@@ -18,7 +18,10 @@ namespace SchoolSystem.Services
 
         public async Task<Teacher> GetTeacherById(long teacherId)
         {
-            var teacher = await _context.Teachers.FirstOrDefaultAsync(t => t.TeacherId == teacherId);
+            var teacher = await _context.Teachers
+                .Include(t => t.SubjectTeachers)
+                .ThenInclude(st => st.Subject)
+                .FirstOrDefaultAsync(t => t.TeacherId == teacherId);
 
             if (teacher == null)
             {

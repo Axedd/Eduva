@@ -15,12 +15,14 @@ namespace SchoolSystem.Pages.Admin
     {
         private readonly ApplicationDbContext _context;
         private readonly IIdValidationService _idValidationService;
+        private readonly ITeacherService _teacherService;
         private readonly ILogger<EditTeacherModel> _logger;
 
-        public EditTeacherModel(ApplicationDbContext context, IIdValidationService idValidationService, ILogger<EditTeacherModel> logger)
+        public EditTeacherModel(ApplicationDbContext context, IIdValidationService idValidationService, ITeacherService teacherService,  ILogger<EditTeacherModel> logger)
         {
             _context = context;
             _idValidationService = idValidationService;
+            _teacherService = teacherService;
             _logger = logger;
         }
 
@@ -39,10 +41,7 @@ namespace SchoolSystem.Pages.Admin
                 return NotFound();
             }
 
-            Teacher = await _context.Teachers
-                .Include(t => t.SubjectTeachers)
-                .ThenInclude(st => st.Subject)
-                .FirstOrDefaultAsync(t => t.TeacherId == teacherId);
+            Teacher = await _teacherService.GetTeacherById(teacherId);
 
             Subjects = await _context.Subjects.ToListAsync();
 
@@ -66,8 +65,6 @@ namespace SchoolSystem.Pages.Admin
         public async Task<IActionResult> OnPostAsync()
         {
             await LoadTeacherData();
-
-
 
             return Page();
         }
@@ -110,10 +107,7 @@ namespace SchoolSystem.Pages.Admin
                 return NotFound();
             }
 
-            Teacher = await _context.Teachers
-                .Include(t => t.SubjectTeachers)
-                .ThenInclude(st => st.Subject)
-                .FirstOrDefaultAsync(t => t.TeacherId == Teacher.TeacherId);
+            Teacher = await _teacherService.GetTeacherById(Teacher.TeacherId);
 
             Subjects = await _context.Subjects.ToListAsync();
 

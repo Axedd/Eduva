@@ -10,30 +10,21 @@ namespace SchoolSystem.Pages.Schedule
 
     public class IndexModel : BaseService
     {
-        private readonly IAgendaService _agendaService;
         private readonly IScheduleService _scheduleService;
         private readonly IStudentService _studentService;
         private readonly IUserService _userService;
         private readonly ITeacherService _teacherService;
-        private readonly IIdValidationService _idValidationService;
-        private readonly IStudentClassService _studentClassService;
-        public IndexModel(IAgendaService agendaService, 
+        public IndexModel(
             IScheduleService scheduleService, 
             IStudentService studentService, 
             IUserService userService,
             ITeacherService teacherService,
-            IConfiguration configuration,
-            IIdValidationService idValidationService,
-            IStudentClassService studentClassService,
             ILogger<BaseService> logger) : base(logger)
         {
-            _agendaService = agendaService;
             _scheduleService = scheduleService;
             _studentService = studentService;
             _userService = userService;
             _teacherService = teacherService;
-            _idValidationService = idValidationService;
-            _studentClassService = studentClassService;
         }
 
         public List<Agenda> Agendas { get; set; } = new List<Agenda>();
@@ -44,15 +35,7 @@ namespace SchoolSystem.Pages.Schedule
         public int GlobalLatestEndTime { get; set; }
         public Dictionary<string, List<List<Agenda>>> OverlappingGroupsByDay { get; set; }
         public List<ScheduleModulePreferences> ScheduleModulePreferences { get; set; }
-        public Agenda AgendaDetails { get; set; }
         public string UserRole { get; set; }
-        public bool IsAgendaTeacher { get; set; }
-       
-        public bool EditMode { get; set; }
-        [BindProperty]
-        public Agenda AgendaUpdate { get; set; }
-
-        public bool ShowStudentList {  get; set; }
 
         public long? StudentId { get; set; }
         public long? TeacherId { get; set; }
@@ -104,19 +87,14 @@ namespace SchoolSystem.Pages.Schedule
             if (Agendas.Count > 0)
             {
                 // Group agendas by day and find times
-                AgendasByDay = GroupAgendasByDay(Agendas);
-                GlobalEarliestStartTime = await FindGlobalEarliestStartTime(Agendas);
-                GlobalLatestEndTime = FindGlobalLatestEndTime(Agendas);
-                OverlappingGroupsByDay = new Dictionary<string, List<List<Agenda>>>();
-
-                foreach (var day in AgendasByDay.Keys)
-                {
-                    OverlappingGroupsByDay[day] = FindOverlappingGroups(AgendasByDay[day]);
-                }
+                AgendasByDay = _scheduleService.GroupAgendasByDay(Agendas);
+                GlobalEarliestStartTime = await _scheduleService.GetGlobalEarliestStartTime(Agendas);
+                GlobalLatestEndTime = _scheduleService.GetGlobalLatestEndTime(Agendas);
+                OverlappingGroupsByDay = _scheduleService.FindOverlappingEvents(Agendas);
             }
             else
             {
-                GlobalEarliestStartTime = await FindGlobalEarliestStartTime();
+                GlobalEarliestStartTime = await _scheduleService.GetGlobalEarliestStartTime(Agendas);
                 GlobalLatestEndTime = 1024; // Default value if no agendas
             }
 
@@ -124,90 +102,6 @@ namespace SchoolSystem.Pages.Schedule
             WeekNum = weekNum;
 
             return Page();
-        }
-
-
-
-        private Dictionary<string, List<Agenda>> GroupAgendasByDay(List<Agenda> agendas)
-        {
-            var agendasByDay = new Dictionary<string, List<Agenda>>();
-
-            foreach (var agenda in agendas)
-            {
-                var date = agenda.StartDateTime.Date.ToString("yyyy-MM-dd");
-                if (!agendasByDay.ContainsKey(date))
-                {
-                    agendasByDay[date] = new List<Agenda>();
-                }
-                agendasByDay[date].Add(agenda);
-            }
-
-            return agendasByDay;
-        }
-
-        private async Task<int> FindGlobalEarliestStartTime(List<Agenda>? agendas = null)
-        {
-            // Get schedule preferences from the service
-            ScheduleModulePreferences = await _scheduleService.GetScheduleModulePreferencesAsync();
-
-            int earliestAgendaStartTime;
-
-            // If 'agendas' is null or empty, use default value from ScheduleModulePreferences
-            if (agendas == null || !agendas.Any())
-            {
-                // Use default start time from ScheduleModulePreferences
-                earliestAgendaStartTime = ScheduleModulePreferences[0].StartTime.Hour * 60 + ScheduleModulePreferences[0].StartTime.Minute;
-                Console.WriteLine(earliestAgendaStartTime);
-            }
-            else
-            {
-                // Calculate the earliest agenda start time from the provided agendas
-                earliestAgendaStartTime = agendas.Min(a => a.StartDateTime.Hour * 60 + a.StartDateTime.Minute);
-
-                // Compare with preferences and find the earliest start time
-                foreach (var preference in ScheduleModulePreferences)
-                {
-                    int preferenceMinutes = preference.StartTime.Hour * 60 + preference.StartTime.Minute;
-
-                    if (earliestAgendaStartTime > preferenceMinutes)
-                    {
-                        earliestAgendaStartTime = preferenceMinutes;
-                    }
-                }
-            }
-
-            return earliestAgendaStartTime;
-        }
-
-        private int FindGlobalLatestEndTime(List<Agenda> agendas)
-        {
-            return agendas.Max(a => a.EndDateTime.Hour * 60 + a.EndDateTime.Minute);
-        }
-
-        private List<List<Agenda>> FindOverlappingGroups(List<Agenda> dayAgendas)
-        {
-            var overlappingGroups = new List<List<Agenda>>();
-            dayAgendas = dayAgendas.OrderBy(a => a.StartDateTime).ToList();
-
-            var currentGroup = new List<Agenda> { dayAgendas[0] };
-            for (int i = 1; i < dayAgendas.Count; i++)
-            {
-                var prevEndTime = dayAgendas[i - 1].EndDateTime;
-                var currentStartTime = dayAgendas[i].StartDateTime;
-
-                if (currentStartTime < prevEndTime)
-                {
-                    currentGroup.Add(dayAgendas[i]);
-                }
-                else
-                {
-                    overlappingGroups.Add(currentGroup);
-                    currentGroup = new List<Agenda> { dayAgendas[i] };
-                }
-            }
-
-            overlappingGroups.Add(currentGroup);
-            return overlappingGroups;
-        }
+        }    
     }
 }

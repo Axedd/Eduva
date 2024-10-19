@@ -62,5 +62,33 @@ namespace SchoolSystem.Services
             return (currentWeekNumber, currentWeekDays);
         }
 
+        public Dictionary<string, List<Agenda>> GroupAgendasByDay(List<Agenda> agendas)
+        {
+            return _scheduleCalculatorService.GroupAgendasByDay(agendas);
+        }
+
+        public async Task<int> GetGlobalEarliestStartTime(List<Agenda> agendas)
+        {
+            return await _scheduleCalculatorService.FindGlobalEarliestStartTime(agendas);
+        }
+
+        public int GetGlobalLatestEndTime(List<Agenda> agendas)
+        {
+            return _scheduleCalculatorService.FindGlobalLatestEndTime(agendas);
+        }
+
+        public Dictionary<string, List<List<Agenda>>> FindOverlappingEvents(List<Agenda> agendas)
+        {
+            var AgendasByDay = GroupAgendasByDay(agendas);
+
+            var OverlappingGroupsByDay = new Dictionary<string, List<List<Agenda>>>();
+
+            foreach (var day in AgendasByDay.Keys)
+            {
+                OverlappingGroupsByDay[day] = _scheduleCalculatorService.FindOverlappingGroups(AgendasByDay[day]);
+            }
+            return OverlappingGroupsByDay;
+        }
+
     }
 }

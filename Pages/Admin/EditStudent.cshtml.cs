@@ -14,16 +14,19 @@ namespace SchoolSystem.Pages.Admin
 		private readonly ApplicationDbContext _context;
 		private readonly IIdValidationService _idValidationService;
 		private readonly IStudentClassService _studentClassService;
+		private readonly IStudentService _studentService;
 		private readonly ILogger<EditStudentModel> _logger; // Logger for diagnostics
 
 		public EditStudentModel(ApplicationDbContext context,
 			IIdValidationService idValidationService,
 			IStudentClassService studentClassService,
+			IStudentService studentService,
 			ILogger<EditStudentModel> logger) : base(logger)
 		{
 			_context = context;
 			_idValidationService = idValidationService;
 			_studentClassService = studentClassService;
+			_studentService = studentService;
 			_logger = logger; // Initialize the logger
 		}
 
@@ -41,9 +44,7 @@ namespace SchoolSystem.Pages.Admin
 				return BadRequest("Invalid student ID.");
 			}
 
-			Student = await _context.Students
-				.Include(sc => sc.StudentClass)
-				.FirstOrDefaultAsync(s => s.StudentId == studentId);
+			Student = await _studentService.GetStudentById(studentId);
 
 			StudentClasses = await _studentClassService.GetStudentClassesAsync();
 
@@ -61,9 +62,7 @@ namespace SchoolSystem.Pages.Admin
 			if (!ModelState.IsValid)
 			{
 				StudentClasses = await _studentClassService.GetStudentClassesAsync();
-				Student = await _context.Students
-					.Include(sc => sc.StudentClass)
-					.FirstOrDefaultAsync(s => s.StudentId == Student!.StudentId);
+				Student = await _studentService.GetStudentById(StudentId);
 				
 				return Page();
 			}
@@ -74,11 +73,9 @@ namespace SchoolSystem.Pages.Admin
 				return BadRequest("Invalid student information.");
 			}
 
-			var existingStudent = await _context.Students
-				.Include(s => s.StudentClass)
-				.FirstOrDefaultAsync(s => s.StudentId == Student.StudentId);
+			var existingStudent = await _studentService.GetStudentById(StudentId);
 
-			if (existingStudent == null)
+            if (existingStudent == null)
 			{
 				_logger.LogWarning("Student not found in the database: {StudentId}", Student.StudentId);
 				return NotFound();

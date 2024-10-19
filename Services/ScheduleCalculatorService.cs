@@ -1,10 +1,19 @@
 ﻿using SchoolSystem.Interfaces;
+using SchoolSystem.Models;
 using System.Globalization;
 
 namespace SchoolSystem.Services
 {
     public class ScheduleCalculatorService : IScheduleCalculatorService
     {
+        private readonly IPreferenceService _preferenceService;
+
+        public ScheduleCalculatorService(IPreferenceService preferenceService)
+        {
+            _preferenceService = preferenceService;
+        }
+
+
         public (DateTime weekStart, DateTime weekEnd) GetWeekDays(int? weekNum)
         {
             DateTime weekStart;
@@ -100,6 +109,88 @@ namespace SchoolSystem.Services
             return weekNumber;
         }
 
-      
+        public Dictionary<string, List<Agenda>> GroupAgendasByDay(List<Agenda> agendas)
+        {
+            var agendasByDay = new Dictionary<string, List<Agenda>>();
+
+            foreach (var agenda in agendas)
+            {
+                var date = agenda.StartDateTime.Date.ToString("yyyy-MM-dd");
+                if (!agendasByDay.ContainsKey(date))
+                {
+                    agendasByDay[date] = new List<Agenda>();
+                }
+                agendasByDay[date].Add(agenda);
+            }
+
+            return agendasByDay;
+        }
+
+        public async Task<int> FindGlobalEarliestStartTime(List<Agenda>? agendas = null)
+        {
+            // Get schedule preferences from the service
+            var ScheduleModulePreferences = await _preferenceService.GetScheduleModulePreferencesAsync();
+
+            int earliestAgendaStartTime;
+
+            // If 'agendas' is null or empty, use default value from ScheduleModulePreferences
+            if (agendas == null || !agendas.Any())
+            {
+                // Use default start time from ScheduleModulePreferences
+                earliestAgendaStartTime = ScheduleModulePreferences[0].StartTime.Hour * 60 + ScheduleModulePreferences[0].StartTime.Minute;
+                Console.WriteLine(earliestAgendaStartTime);
+            }
+            else
+            {
+                // Calculate the earliest agenda start time from the provided agendas
+                earliestAgendaStartTime = agendas.Min(a => a.StartDateTime.Hour * 60 + a.StartDateTime.Minute);
+
+                // Compare with preferences and find the earliest start time
+                foreach (var preference in ScheduleModulePreferences)
+                {
+                    int preferenceMinutes = preference.StartTime.Hour * 60 + preference.StartTime.Minute;
+
+                    if (earliestAgendaStartTime > preferenceMinutes)
+                    {
+                        earliestAgendaStartTime = preferenceMinutes;
+                    }
+                }
+            }
+
+            return earliestAgendaStartTime;
+        }
+
+        public int FindGlobalLatestEndTime(List<Agenda> agendas)
+        {
+            return agendas.Max(a => a.EndDateTime.Hour * 60 + a.EndDateTime.Minute);
+        }
+
+        public List<List<Agenda>> FindOverlappingGroups(List<Agenda> dayAgendas)
+        {
+            var overlappingGroups = new List<List<Agenda>>();
+            dayAgendas = dayAgendas.OrderBy(a => a.StartDateTime).ToList();
+
+            var currentGroup = new List<Agenda> { dayAgendas[0] };
+            for (int i = 1; i < dayAgendas.Count; i++)
+            {
+                var prevEndTime = dayAgendas[i - 1].EndDateTime;
+                var currentStartTime = dayAgendas[i].StartDateTime;
+
+                if (currentStartTime < prevEndTime)
+                {
+                    currentGroup.Add(dayAgendas[i]);
+                }
+                else
+                {
+                    overlappingGroups.Add(currentGroup);
+                    currentGroup = new List<Agenda> { dayAgendas[i] };
+                }
+            }
+
+            overlappingGroups.Add(currentGroup);
+            return overlappingGroups;
+        }
+
+
     }
 }
