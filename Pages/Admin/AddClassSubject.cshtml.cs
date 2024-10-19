@@ -12,13 +12,19 @@ namespace SchoolSystem.Pages.Admin
     public class AddClassSubjectModel : PageModel
     {
         private readonly ApplicationDbContext _context;
-        private readonly SubjectService _subjectService;
+        private readonly ISubjectService _subjectService;
+        private readonly IStudentClassService _studentClassService;
         private readonly IIdValidationService _idValidationService;
 
-        public AddClassSubjectModel(ApplicationDbContext context, SubjectService subjectService, IIdValidationService idValidationService)
+        public AddClassSubjectModel(
+            ApplicationDbContext context,
+            ISubjectService subjectService,
+            IStudentClassService studentClassService,
+            IIdValidationService idValidationService)
         {
             _context = context;
             _subjectService = subjectService;
+            _studentClassService = studentClassService;
             _idValidationService = idValidationService;
         }
 
@@ -28,8 +34,6 @@ namespace SchoolSystem.Pages.Admin
         public long SelectedTeacherId { get; set; }
         public List<Subject> Subjects { get; set; }
         public StudentClass StudentClass { get; set; }
-
-
 
         public async Task<IActionResult> OnGetAsync(string studentClassId)
         {
@@ -50,39 +54,25 @@ namespace SchoolSystem.Pages.Admin
         }
 
         public async Task<IActionResult> OnGetTeachersFromSubjectIdAsync(long subjectId)
-		{
-            var subjectTeachers = await _context.SubjectTeachers
-                .Include(st => st.Teacher)
-                .Include(st => st.Subject)
-                .Where(st => st.SubjectId == subjectId)
-                .Select(st => new SubjectTeacherDto
-                {
-                    SubjectId = st.SubjectId,
-                    Teacher = new TeacherDto
-                    {
-                        TeacherId = st.Teacher.TeacherId,
-                        FirstName = st.Teacher.FirstName,
-                        LastName = st.Teacher.LastName,
-                        ProfilePicturePath = st.Teacher.ProfilePicturePath
-                    }
-                    })
-        .ToListAsync();
+        {
+            var subjectTeachers = await _subjectService.GetSubjectTeachersAsync(subjectId);
 
             return new JsonResult(subjectTeachers);
-		}
-        
+        }
+
         public async Task<IActionResult> OnPostAssignSubjectAsync(string studentClassId)
         {
             if (!int.TryParse(studentClassId, out int classId) || classId <= 0)
             {
                 ModelState.AddModelError(string.Empty, "Invalid class ID.");
-                return Page(); 
+                return Page();
             }
 
             try
             {
                 await _subjectService.AssignSubjectToClassAsync(SelectedSubjectId, SelectedTeacherId, classId);
             }
+
             catch (Exception ex)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
@@ -98,8 +88,8 @@ namespace SchoolSystem.Pages.Admin
         // Helper method to load necessary data
         private async Task LoadDataAsync(int studentClassId)
         {
-            StudentClass = await _context.StudentClasses.FindAsync(studentClassId);
-            Subjects = await _context.Subjects.Include(s => s.SubjectTeachers).ToListAsync();
+            StudentClass = await _studentClassService.GetStudentClassByIdAsync(studentClassId);
+            Subjects = await _subjectService.GetSubjectWithTeachersAsync();
         }
     }
 }

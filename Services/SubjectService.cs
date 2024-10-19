@@ -16,8 +16,6 @@ namespace SchoolSystem.Services
             _random = random;
         }
 
-        public List<Subject> Subjects { get;  set; }
-
         public async Task<int> GenerateSubjectIdAsync()
         {
 
@@ -84,6 +82,31 @@ namespace SchoolSystem.Services
         public async Task<Subject> GetSubjectByIdAsync(long subjectId)
         {
             return await _context.Subjects.Where(s => s.SubjectId == subjectId).FirstOrDefaultAsync();
+        }
+
+        public async Task<List<SubjectTeacherDto>> GetSubjectTeachersAsync(long subjectId)
+        {
+            return await _context.SubjectTeachers
+                .Include(st => st.Teacher)
+                .Include(st => st.Subject)
+                .Where(st => st.SubjectId == subjectId)
+                .Select(st => new SubjectTeacherDto
+                {
+                    SubjectId = st.SubjectId,
+                    Teacher = new TeacherDto
+                    {
+                        TeacherId = st.Teacher.TeacherId,
+                        FirstName = st.Teacher.FirstName,
+                        LastName = st.Teacher.LastName,
+                        ProfilePicturePath = st.Teacher.ProfilePicturePath
+                    }
+                })
+        .ToListAsync();
+        }
+
+        public async Task<List<Subject>> GetSubjectWithTeachersAsync()
+        {
+            return await _context.Subjects.Include(s => s.SubjectTeachers).ToListAsync();
         }
 
 
