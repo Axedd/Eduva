@@ -11,16 +11,39 @@
     <h2>Admin Dashboard</h2>
 
     <div class="list-group">
+
+        <!-- Students Section -->
+        <h3>Students</h3>
         <a class="list-group-item list-group-item-action" asp-page="/Admin/AddStudent">Add New Student</a>
         <a class="list-group-item list-group-item-action" asp-page="/Admin/ManageStudents">Manage Students</a>
-        <a class="list-group-item list-group-item-action" asp-page="/Admin/ManageStudents">Add New Teacher</a>
+
+        <!-- Teachers Section -->
+        <h3>Teachers</h3>
+        <a class="list-group-item list-group-item-action" asp-page="/Admin/AddTeacher">Add New Teacher</a>
         <a class="list-group-item list-group-item-action" asp-page="/Admin/ManageTeachers">Manage Teachers</a>
+
+        <!-- Classes Section -->
+        <h3>Classes</h3>
         <a class="list-group-item list-group-item-action" asp-page="/Admin/ManageClasses">Manage Classes</a>
+
+        <!-- Subjects Section -->
+        <h3>Subjects</h3>
+        <a class="list-group-item list-group-item-action" asp-page="/Admin/AddSubject">Add Subjects</a>
+
+        <!-- Agendas Section -->
+        <h3>Agendas</h3>
         <a class="list-group-item list-group-item-action" asp-page="/Admin/ManageAgendas">Manage Agendas</a>
+
+        <!-- Users Section -->
+        <h3>Users</h3>
         <a class="list-group-item list-group-item-action" asp-page="/Admin/ManageUsers">Manage Users</a>
+
         <br />
+
+        <!-- Preferences Section -->
+        <h3>Preferences</h3>
         <a class="list-group-item list-group-item-action" asp-page="/Admin/Preferences">Preferences</a>
-        
+
         <!-- Add more admin links as needed -->
     </div>
 </div>

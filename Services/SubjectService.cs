@@ -70,6 +70,18 @@ namespace SchoolSystem.Services
 
         }
 
+
+        public async Task AddSubjectAsync(Subject newSubject)
+        {
+            var generatedSubjectId = await GenerateSubjectIdAsync();
+            newSubject.SubjectId = generatedSubjectId;
+
+            _context.Subjects.Add(newSubject);
+            await _context.SaveChangesAsync();
+
+        }
+
+
         public async Task<StudentClassSubjects> GetStudentClassSubjectById(int studentClassId, long subjectId)
         {
             return await _context.StudentClassSubjects
@@ -107,6 +119,11 @@ namespace SchoolSystem.Services
         public async Task<List<Subject>> GetSubjectWithTeachersAsync()
         {
             return await _context.Subjects.Include(s => s.SubjectTeachers).ToListAsync();
+        }
+
+        public async Task<List<Subject>> GetAllSubjectsAsync()
+        {
+            return await _context.Subjects.ToListAsync();
         }
 
 

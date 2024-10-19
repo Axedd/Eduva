@@ -11,14 +11,15 @@ namespace SchoolSystem.Pages.Admin
 {
     public class AddStudentModel : BaseService
     {
-        private readonly ApplicationDbContext _context;
         private readonly IStudentService _studentService;
         private readonly IStudentClassService _studentClassService;
 
-        public AddStudentModel(ApplicationDbContext context, IStudentService studentService, IStudentClassService studentClassService, ILogger<BaseService> logger)
+        public AddStudentModel(
+            IStudentService studentService, 
+            IStudentClassService studentClassService, 
+            ILogger<BaseService> logger)
             : base(logger)
         {
-            _context = context;
             _studentService = studentService;
             _studentClassService = studentClassService;
         }
@@ -48,12 +49,7 @@ namespace SchoolSystem.Pages.Admin
 
             try
             {
-                NewStudent.StudentId = await _studentService.GenerateStudentId();
-                NewStudent.JoinedDate = DateTime.Now;
-                NewStudent.ProfilePicturePath = "/students/default.jpg";
-
-                _context.Students.Add(NewStudent);
-                await _context.SaveChangesAsync();
+                await _studentService.AddStudentAsync(NewStudent);
 
                 TempData["SuccessMessage"] = "Student added successfully!";
                 return RedirectToPage();

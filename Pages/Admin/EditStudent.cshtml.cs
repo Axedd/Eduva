@@ -11,19 +11,17 @@ namespace SchoolSystem.Pages.Admin
 {
 	public class EditStudentModel : BaseService
 	{
-		private readonly ApplicationDbContext _context;
 		private readonly IIdValidationService _idValidationService;
 		private readonly IStudentClassService _studentClassService;
 		private readonly IStudentService _studentService;
 		private readonly ILogger<EditStudentModel> _logger; // Logger for diagnostics
 
-		public EditStudentModel(ApplicationDbContext context,
+		public EditStudentModel(
 			IIdValidationService idValidationService,
 			IStudentClassService studentClassService,
 			IStudentService studentService,
 			ILogger<EditStudentModel> logger) : base(logger)
 		{
-			_context = context;
 			_idValidationService = idValidationService;
 			_studentClassService = studentClassService;
 			_studentService = studentService;
@@ -59,7 +57,13 @@ namespace SchoolSystem.Pages.Admin
 
 		public async Task<IActionResult> OnPostAsync()
 		{
-			if (!ModelState.IsValid)
+            if (Student == null || !await _idValidationService.IsValidStudentIdAsync(Student.StudentId))
+            {
+                _logger.LogWarning("Invalid or null student ID.");
+                return BadRequest("Invalid student information.");
+            }
+
+            if (!ModelState.IsValid)
 			{
 				StudentClasses = await _studentClassService.GetStudentClassesAsync();
 				Student = await _studentService.GetStudentById(StudentId);
@@ -67,39 +71,9 @@ namespace SchoolSystem.Pages.Admin
 				return Page();
 			}
 
-			if (Student == null || !await _idValidationService.IsValidStudentIdAsync(Student.StudentId))
-			{
-				_logger.LogWarning("Invalid or null student ID.");
-				return BadRequest("Invalid student information.");
-			}
-
-			var existingStudent = await _studentService.GetStudentById(StudentId);
-
-            if (existingStudent == null)
-			{
-				_logger.LogWarning("Student not found in the database: {StudentId}", Student.StudentId);
-				return NotFound();
-			}
-
-			existingStudent.FirstName = Student.FirstName;
-			existingStudent.LastName = Student.LastName;
-
-			if (Student.StudentClassId != null)
-			{
-				if (!await _idValidationService.IsValidStudentClassIdAsync((int)Student.StudentClassId))
-				{
-					_logger.LogWarning("Invalid Student Class ID: {StudentClassId}", Student.StudentClassId);
-					return BadRequest("Invalid Student Class ID.");
-				}
-
-				existingStudent.StudentClassId = Student.StudentClassId;
-			}
-
-			_context.Students.Update(existingStudent);
-
 			try
 			{
-				await _context.SaveChangesAsync();
+				await _studentService.UpdateStudentAsync(Student);
 				TempData["SuccessMessage"] = "Student details updated successfully!";
 			}
 			catch (DbUpdateConcurrencyException ex)

@@ -13,18 +13,21 @@ namespace SchoolSystem.Services
         private Random _random;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IIdValidationService _idValidationService;
+        private readonly ILogger<StudentService> _logger;
 
         public StudentService(ApplicationDbContext context,
             Random random,
             IHttpContextAccessor httpContextAccessor,
             IStudentClassService studentClassService,
-            IIdValidationService idValidationService)
+            IIdValidationService idValidationService,
+            ILogger<StudentService> logger)
         {
             _context = context;
             _random = random;
             _httpContextAccessor = httpContextAccessor;
             _studentClassService = studentClassService;
             _idValidationService = idValidationService;
+            _logger = logger;
         }
 
         #region Student Retrieval Methods
@@ -106,9 +109,45 @@ namespace SchoolSystem.Services
 
         #region Student Management Methods
 
-        public async Task UpdateStudentAsync(Student student)
+        public async Task RegisterStudentAsync(Student student)
         {
             _context.Students.Update(student);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateStudentAsync(Student student)
+        {
+            var existingStudent = await GetStudentById(student.StudentId);
+
+            if (existingStudent == null)
+            {
+                _logger.LogWarning("Student not found in the database: {StudentId}", student.StudentId);
+            }
+
+            existingStudent.FirstName = student.FirstName;
+            existingStudent.LastName = student.LastName;
+
+            if (student.StudentClassId != null)
+            {
+                if (!await _idValidationService.IsValidStudentClassIdAsync((int)student.StudentClassId))
+                {
+                    _logger.LogWarning("Invalid Student Class ID: {StudentClassId}", student.StudentClassId);
+                }
+
+                existingStudent.StudentClassId = student.StudentClassId;
+            }
+
+            _context.Students.Update(existingStudent);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task AddStudentAsync(Student newStudent)
+        {
+            newStudent.StudentId = await GenerateStudentId();
+            newStudent.JoinedDate = DateTime.Now;
+            newStudent.ProfilePicturePath = "/students/default.jpg"; // Assign default profile picture for development
+
+            _context.Add(newStudent);
             await _context.SaveChangesAsync();
         }
 

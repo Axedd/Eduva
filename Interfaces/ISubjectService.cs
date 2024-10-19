@@ -10,6 +10,7 @@ namespace SchoolSystem.Interfaces
 		Task<StudentClassSubjects> GetStudentClassSubjectById(int studentClassId, long subjectId);
 		Task<List<SubjectTeacherDto>> GetSubjectTeachersAsync(long subjectId);
 		Task<List<Subject>> GetSubjectWithTeachersAsync();
-
+		Task<List<Subject>> GetAllSubjectsAsync();
+		Task AddSubjectAsync(Subject newSubject);
     }
 }

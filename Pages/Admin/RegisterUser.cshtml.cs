@@ -104,7 +104,7 @@ namespace SchoolSystem.Pages.Admin
                 {
                     var student = await _studentService.GetStudentById(studentId.Value);
                     student.UserId = newUser.Id;  // Link Student to the ApplicationUser
-                    await _studentService.UpdateStudentAsync(student);  // Save the changes
+                    await _studentService.RegisterStudentAsync(student);  TODO: // CREATE THE REGISTER STUDENT METHOD
                     await _userManager.AddToRoleAsync(newUser, "Student");
 
                     TempData["SuccessMessage"] = "User has been successfully registered.";

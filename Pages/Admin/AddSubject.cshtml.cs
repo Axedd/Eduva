@@ -5,19 +5,20 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using SchoolSystem.Services;
 using SchoolSystem.Pages.Shared;
+using SchoolSystem.Interfaces;
 
 namespace SchoolSystem.Pages.Admin
 {
     public class AddSubjectModel : BaseService
     {
-        private readonly ApplicationDbContext _context;
-        private readonly SubjectService _subjectService;
+        private readonly ISubjectService _subjectService;
+        private readonly IValidationService _validationService;
 
-        public AddSubjectModel(ApplicationDbContext context, SubjectService subjectService, ILogger<BaseService> logger)
+        public AddSubjectModel(ISubjectService subjectService, IValidationService validationService, ILogger<BaseService> logger)
             : base(logger)
         {
-            _context = context;
             _subjectService = subjectService;
+            _validationService = validationService;
         }
 
         [BindProperty]
@@ -26,31 +27,27 @@ namespace SchoolSystem.Pages.Admin
 
         public async Task<IActionResult> OnGetAsync()
         {
-            Subjects = await _context.Subjects.ToListAsync();
-
+            Subjects = await _subjectService.GetAllSubjectsAsync();
 
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
-            int generatedSubjectId;
-            var existingSubjectNames = await _context.Subjects.Select(s => s.SubjectName).ToListAsync();
 
-            if (existingSubjectNames.Contains(NewSubject.SubjectName))
+            if (await _validationService.IsValidSubjectAsync(NewSubject.SubjectName))
             {
                 ModelState.AddModelError(string.Empty, "A subject with this name already exists.");
+                Subjects = await _subjectService.GetAllSubjectsAsync();
                 return Page();
             }
 
-            generatedSubjectId = await _subjectService.GenerateSubjectIdAsync();
-            NewSubject.SubjectId = generatedSubjectId;
-
-            _context.Subjects.Add(NewSubject);
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _subjectService.AddSubjectAsync(NewSubject);
+                TempData["SuccessMessage"] = "Subject added successfully!";
+                return RedirectToPage();
             }
             catch (DbUpdateException ex)
             {
@@ -63,7 +60,7 @@ namespace SchoolSystem.Pages.Admin
                 HandleError(ex, "Unexpected error occurred while adding a subject.");
             }
 
-            Subjects = await _context.Subjects.ToListAsync();
+            Subjects = await _subjectService.GetAllSubjectsAsync();
             return Page();
         }
     }
