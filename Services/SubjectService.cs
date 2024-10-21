@@ -81,6 +81,12 @@ namespace SchoolSystem.Services
 
         }
 
+        public async Task AddSubjectTeacherAsync(SubjectTeachers newSubjectTeacher)
+        {
+            await _context.SubjectTeachers.AddAsync(newSubjectTeacher);
+            await _context.SaveChangesAsync();
+        }
+
 
         public async Task<StudentClassSubjects> GetStudentClassSubjectById(int studentClassId, long subjectId)
         {

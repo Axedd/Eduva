@@ -12,5 +12,6 @@ namespace SchoolSystem.Interfaces
 		Task<List<Subject>> GetSubjectWithTeachersAsync();
 		Task<List<Subject>> GetAllSubjectsAsync();
 		Task AddSubjectAsync(Subject newSubject);
+		Task AddSubjectTeacherAsync(SubjectTeachers newSubjectTeacher);
     }
 }

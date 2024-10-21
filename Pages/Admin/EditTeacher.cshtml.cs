@@ -13,17 +13,17 @@ namespace SchoolSystem.Pages.Admin
 {
     public class EditTeacherModel : PageModel
     {
-        private readonly ApplicationDbContext _context;
         private readonly IIdValidationService _idValidationService;
         private readonly ITeacherService _teacherService;
+        private readonly ISubjectService _subjectService;
         private readonly ILogger<EditTeacherModel> _logger;
 
-        public EditTeacherModel(ApplicationDbContext context, IIdValidationService idValidationService, ITeacherService teacherService,  ILogger<EditTeacherModel> logger)
+        public EditTeacherModel(IIdValidationService idValidationService, ITeacherService teacherService,  ILogger<EditTeacherModel> logger, ISubjectService subjectService)
         {
-            _context = context;
             _idValidationService = idValidationService;
             _teacherService = teacherService;
             _logger = logger;
+            _subjectService = subjectService;
         }
 
         [BindProperty]
@@ -43,7 +43,7 @@ namespace SchoolSystem.Pages.Admin
 
             Teacher = await _teacherService.GetTeacherById(teacherId);
 
-            Subjects = await _context.Subjects.ToListAsync();
+            Subjects = await _subjectService.GetAllSubjectsAsync();
 
             if (Teacher == null)
             {
@@ -90,10 +90,7 @@ namespace SchoolSystem.Pages.Admin
             };
 
             // Add the new subject-teacher relationship to the database
-            await _context.SubjectTeachers.AddAsync(subjectTeacher);
-
-            // Save changes in the database
-            await _context.SaveChangesAsync();
+            await _subjectService.AddSubjectTeacherAsync(subjectTeacher);
 
             return RedirectToPage(new { teacherId = Teacher.TeacherId });
         }
@@ -109,7 +106,7 @@ namespace SchoolSystem.Pages.Admin
 
             Teacher = await _teacherService.GetTeacherById(Teacher.TeacherId);
 
-            Subjects = await _context.Subjects.ToListAsync();
+            Subjects = await _subjectService.GetAllSubjectsAsync();
 
             if (Teacher == null)
             {
