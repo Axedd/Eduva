@@ -34,39 +34,17 @@ namespace SchoolSystem.Pages.Admin
 
         public async Task<IActionResult> OnGetAsync(long teacherId)
         {
-
-            if (!await _idValidationService.IsValidTeacherIdAsync(teacherId))
-            {
-                _logger.LogWarning("Invalid Teacher ID: {}", teacherId);
-                return NotFound();
-            }
-
             Teacher = await _teacherService.GetTeacherById(teacherId);
 
-            Subjects = await _subjectService.GetAllSubjectsAsync();
-
-            if (Teacher == null)
-            {
-                _logger.LogWarning("Could Not Find Teacher");
-                return NotFound();
-            }
-
-            foreach (var subject in Teacher.SubjectTeachers)
-            {
-                if (subject.Subject != null && Subjects.Contains(subject.Subject))
-                {
-                    Subjects.Remove(subject.Subject);
-                }
-            }
-
-            return Page();
+            return await LoadTeacherData();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
-            await LoadTeacherData();
 
-            return Page();
+            // TODO: add functionality to update teacher information
+
+            return await LoadTeacherData();
         }
 
 
@@ -83,7 +61,7 @@ namespace SchoolSystem.Pages.Admin
                 return await LoadTeacherData(); // Create a method to load data again
             }
 
-            var subjectTeacher = new Models.SubjectTeachers
+            var subjectTeacher = new SubjectTeachers
             {
                 SubjectId = subjectId,
                 TeacherId = Teacher.TeacherId

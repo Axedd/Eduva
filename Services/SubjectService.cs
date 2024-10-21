@@ -2,11 +2,13 @@
 using SchoolSystem.Models;
 using Microsoft.EntityFrameworkCore;
 using SchoolSystem.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+using SchoolSystem.Dtos;
 
 namespace SchoolSystem.Services
 {
     public class SubjectService : ISubjectService
-	{
+    {
         private ApplicationDbContext _context;
         private Random _random;
 
@@ -67,7 +69,6 @@ namespace SchoolSystem.Services
             await _context.StudentClassSubjects.AddAsync(studentClassSubject);
             await _context.SaveChangesAsync();
 
-
         }
 
 
@@ -87,6 +88,23 @@ namespace SchoolSystem.Services
             await _context.SaveChangesAsync();
         }
 
+        public async Task<List<SubjectDto>> GetStudentClassSubjectsAsync(int classId)
+        {
+
+            var subjects = await _context.StudentClassSubjects
+               .Where(sc => sc.StudentClassId == classId)
+               .Include(scs => scs.Subject)
+               .Select(scs => new SubjectDto
+               {
+                   SubjectId = scs.SubjectId,
+                   SubjectName = scs.Subject.SubjectName,
+                   StudentClassId = scs.StudentClassId,
+               })
+               .ToListAsync();
+
+            return subjects;
+        }
+ 
 
         public async Task<StudentClassSubjects> GetStudentClassSubjectById(int studentClassId, long subjectId)
         {
@@ -95,6 +113,25 @@ namespace SchoolSystem.Services
                 .Include(scs => scs.Subject)
                 .Where(scs => scs.StudentClassId == studentClassId && scs.SubjectId == subjectId)
                 .FirstOrDefaultAsync();
+        }
+
+        public async Task<StudentClassSubjectDto> GetStudentClassSubjectInfoAsync(int classId, long subjectId)
+        {
+            var subjectInfo = await _context.StudentClassSubjects
+                 .Where(scs => scs.StudentClassId == classId && scs.SubjectId == subjectId)
+                 .Include(scs => scs.Subject)
+                 .Include(scs => scs.Teacher)
+                 .Select(scs => new StudentClassSubjectDto
+                 {
+                     SubjectId = scs.SubjectId,
+                     SubjectName = scs.Subject.SubjectName,
+                     StudentClassId = scs.StudentClassId,
+                     TeacherName = scs.Teacher.FirstName + " " + scs.Teacher.LastName,
+                     TeacherId = scs.Teacher.TeacherId
+                 })
+                 .FirstOrDefaultAsync();
+
+            return subjectInfo;
         }
 
         public async Task<Subject> GetSubjectByIdAsync(long subjectId)

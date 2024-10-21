@@ -4,31 +4,32 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using System.Xml.Linq;
+using SchoolSystem.Interfaces;
 
 namespace SchoolSystem.Pages.Admin
 {
     public class ManageClassesModel : PageModel
     {
         private readonly ApplicationDbContext _context;
+        private readonly IStudentClassService _studentClassService;
+        private readonly ISubjectService _subjectService;
 
-        public ManageClassesModel(ApplicationDbContext context)
+        public ManageClassesModel(ApplicationDbContext context, IStudentClassService studentClassService, ISubjectService subjectService)
         {
             _context = context;
+            _studentClassService = studentClassService;
+            _subjectService = subjectService;
         }
 
         public List<StudentClass> StudentClasses { get; set; }
         public List<StudentClassSubjects> StudentClassSubjects { get; set; }
-        public Subject? Subject { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
         {
             try
             {
-                StudentClasses = await _context.StudentClasses
-                    .OrderBy(sc => sc.ClassName)
-                    .ToListAsync();
+                StudentClasses = await _studentClassService.GetStudentClassesAsync();
 
-                
                 return Page();
             }
             catch (Exception ex)
@@ -43,17 +44,9 @@ namespace SchoolSystem.Pages.Admin
         {
             try
             {
-                var subjects = await _context.StudentClassSubjects
-                    .Where(sc => sc.StudentClassId == classId)
-                    .Include(scs => scs.Subject)
-                    .Select(scs => new
-                    {
-                        scs.Subject.SubjectId,
-                        scs.Subject.SubjectName,
-                        scs.StudentClassId
-                    })
-                    .ToListAsync();
+                var subjects = await _subjectService.GetStudentClassSubjectsAsync(classId);
 
+                // JSON for javascript
                 return new JsonResult(subjects);
             }
             catch (Exception ex)
@@ -63,24 +56,15 @@ namespace SchoolSystem.Pages.Admin
             }
         }
 
+
+        // When user selects a studentclass subject this handler retrieves the relevant subjectinfo
         public async Task<IActionResult> OnGetSubjectInfoByStudentClassIdAsync(int classId, int subjectId)
         {
             try
             {
-                var subjectInfo = await _context.StudentClassSubjects
-                    .Where(scs => scs.StudentClassId == classId && scs.SubjectId == subjectId)
-                    .Include(scs => scs.Subject)
-                    .Include(scs => scs.Teacher)
-                    .Select(scs => new
-                    {
-                        scs.Teacher.TeacherId,
-                        scs.Teacher.FirstName,
-                        scs.Teacher.LastName,
-                        scs.Subject.SubjectName,
-                        scs.Subject.SubjectId
-                    })
-                    .FirstOrDefaultAsync();
+                var subjectInfo = await _subjectService.GetStudentClassSubjectInfoAsync(classId, subjectId);
 
+                // JSON for javascript
                 return new JsonResult(subjectInfo);
             }
             catch (Exception ex)

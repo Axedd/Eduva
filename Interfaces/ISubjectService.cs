@@ -1,4 +1,5 @@
-﻿using SchoolSystem.Models;
+﻿using SchoolSystem.Dtos;
+using SchoolSystem.Models;
 
 namespace SchoolSystem.Interfaces
 {
@@ -13,5 +14,7 @@ namespace SchoolSystem.Interfaces
 		Task<List<Subject>> GetAllSubjectsAsync();
 		Task AddSubjectAsync(Subject newSubject);
 		Task AddSubjectTeacherAsync(SubjectTeachers newSubjectTeacher);
+		Task<List<SubjectDto>> GetStudentClassSubjectsAsync(int classId);
+		Task<StudentClassSubjectDto> GetStudentClassSubjectInfoAsync(int classId, long subjectId);
     }
 }

@@ -100,9 +100,10 @@
                     })
                     .then(data => {
                         var classInfo = document.getElementById('class-info');
+                        console.log(data);
                         classInfo.innerHTML = `
                                             <li><strong>Class:</strong> ${data.subjectName}</li>
-                                             <li><strong>Teacher:</strong> ${data.firstName} ${data.lastName}</li>
+                                             <li><strong>Teacher:</strong> ${data.teacherName}</li>
                                         `;
                     })
                     .catch(error => console.error('Error fetching data:', error));

@@ -17,6 +17,7 @@ namespace SchoolSystem.Models
     {
         public long SubjectId { get; set; }
         public string SubjectName { get; set; }
+        public int StudentClassId { get; set; }
     }
 
 
