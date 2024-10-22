@@ -3,6 +3,7 @@ using SchoolSystem.Models;
 using Microsoft.EntityFrameworkCore;
 using SchoolSystem.Interfaces;
 using System.Security.Claims;
+using SchoolSystem.Dtos;
 
 namespace SchoolSystem.Services
 {
@@ -56,11 +57,48 @@ namespace SchoolSystem.Services
             return student;
         }
 
-        public async Task<List<Student>> GetStudentsByClassAsync(int classId)
+        public async Task<StudentGeneralInfoDto> GetStudentGeneralInfoAsync(long studentId)
+        {
+            var student = await _context.Students
+                .Where(s => s.StudentId == studentId)
+                .Include(s => s.StudentClass)
+                .Select(s => new StudentGeneralInfoDto
+                {
+                    StudentId = s.StudentId,
+                    FirstName = s.FirstName,
+                    LastName = s.LastName,
+                    ProfilePicturePath = s.ProfilePicturePath,
+                    Gender = s.Gender,
+                    UserId = s.UserId ?? "",
+                    StudentClass = new StudentClassDto() {
+                        StudentClassId = s.StudentClass.StudentClassId,
+                        ClassName = s.StudentClass.ClassName
+                    }
+                })
+                .FirstOrDefaultAsync();
+
+            return student;
+        }
+
+        public async Task<List<StudentGeneralInfoDto>> GetStudentsByClassAsync(int classId)
         {
             var students = await _context.Students
                 .Where(s => s.StudentClassId == classId)
-                .OrderBy(s => s.FirstName)
+                .Include(s => s.StudentClass)
+                .Select(s => new StudentGeneralInfoDto
+                {
+                    StudentId = s.StudentId,
+                    FirstName = s.FirstName,
+                    LastName = s.LastName,
+                    ProfilePicturePath = s.ProfilePicturePath,
+                    Gender = s.Gender,
+                    UserId = s.UserId ?? "",
+                    StudentClass = new StudentClassDto()
+                    {
+                        StudentClassId = s.StudentClass.StudentClassId,
+                        ClassName = s.StudentClass.ClassName
+                    }
+                })
                 .ToListAsync();
 
             return students;

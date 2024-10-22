@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using SchoolSystem.Interfaces;
+using SchoolSystem.Dtos;
 
 namespace SchoolSystem.Pages.Admin
 {
@@ -26,7 +27,7 @@ namespace SchoolSystem.Pages.Admin
         public List<StudentClass> StudentClasses { get; set; }
         public List<Student> ClassStudents { get; set; }
 
-        public List<Student> Students { get; set; }
+        public List<StudentGeneralInfoDto> Students { get; set; }
 
         public long? SelectedClassId { get; set; }
         public long? SelectedStudentId { get; set; }
@@ -61,41 +62,13 @@ namespace SchoolSystem.Pages.Admin
         // API to get students by class ID
         public async Task<IActionResult> OnGetGetStudentsByClassAsync(int classId)
         {
-            var students = await _context.Students
-                .Where(s => s.StudentClassId == classId)
-                .Select(s => new
-                {
-                    s.StudentId,
-                    s.FirstName,
-                    s.LastName,
-                    s.ProfilePicturePath
-                })
-                .OrderBy(s => s.FirstName)
-                .ToListAsync();
+            var students = await _studentService.GetStudentsByClassAsync(classId);
             return new JsonResult(students);
         }
 
         public async Task<IActionResult> OnGetGetStudentByIdAsync(long studentId)
         {
-            var student = await _context.Students
-        .Where(s => s.StudentId == studentId)
-        .Include(s => s.StudentClass)
-        .Select(s => new
-        {
-            s.StudentId,
-            s.FirstName,
-            s.LastName,
-            s.ProfilePicturePath,
-            s.Gender,
-            s.UserId,
-            StudentClass = new
-            {
-                s.StudentClass.StudentClassId,
-                s.StudentClass.ClassName
-            }
-        })
-        .FirstOrDefaultAsync();
-
+            var student = await _studentService.GetStudentGeneralInfoAsync(studentId);
             if (student == null)
             {
                 return NotFound();
