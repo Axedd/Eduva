@@ -36,8 +36,6 @@ namespace SchoolSystem.Pages.Admin
 				{
                     SubjectTeachersDtos = await _teacherService.GetTeachersAsync(true, false);
                 }
-
-				
             }
 			catch (Exception ex)
 			{

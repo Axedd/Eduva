@@ -86,6 +86,9 @@
         <div class="col-sm-2">
             <button type="submit" formaction="@Url.Page("EditTeacher", "AssignTeacherSubject")" class="btn btn-primary btn-sm">Assign Subject</button>
         </div>
+        <div class="col-sm-2">
+            <a class="btn btn-secondary" asp-page="RegisterUser" asp-route-teacherId="@Model.Teacher.TeacherId">Register</a>
+        </div>
     </div>
 
     <button type="submit" class="btn btn-primary">Save</button>

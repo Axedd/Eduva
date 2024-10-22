@@ -16,6 +16,7 @@ namespace SchoolSystem.Pages.Admin
         private readonly IStudentService _studentService;
         private readonly IUserService _userService;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IUserRegistrationService _userRegistrationService;
 
         public RegisterUserModel(
             ApplicationDbContext context, 
@@ -23,7 +24,8 @@ namespace SchoolSystem.Pages.Admin
             ITeacherService teacherService, 
             IStudentService studentService, 
             IUserService userService,
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager,
+            IUserRegistrationService userRegistrationService)
         {
             _context = context;
             _idValidationService = idValidationService;
@@ -31,10 +33,11 @@ namespace SchoolSystem.Pages.Admin
             _studentService = studentService;
             _userService = userService;
             _userManager = userManager;
+            _userRegistrationService = userRegistrationService;
         }
 
         [BindProperty]
-        public ApplicationUser ApplicationUser { get; set; }
+        public ApplicationUser NewApplicationUser { get; set; }
         public Teacher Teacher { get; private set; }
         public Student Student { get; private set; }
 
@@ -77,49 +80,35 @@ namespace SchoolSystem.Pages.Admin
                 return Page();
             }
 
-            string username = await _userService.GenerateUsername();  // Generate a unique username
+            IdentityResult result;
 
-            ApplicationUser newUser = new ApplicationUser
+            if (studentId != null)
             {
-                UserName = username,
-                FirstName = ApplicationUser.FirstName,  
-                LastName = ApplicationUser.LastName,
-                DateOfBirth = ApplicationUser.DateOfBirth,
-                Address = ApplicationUser.Address,
-                JoinedDate = DateTime.Now,  
-                Email = null 
-            };
-
-            if (newUser == null)
+                result = await _userRegistrationService.RegisterStudentAsync(NewApplicationUser, studentId.Value);
+            }
+            else if (teacherId != null)
             {
-                throw new InvalidOperationException("The ApplicationUser object could not be created.");
+                result = await _userRegistrationService.RegisterTeacherAsync(NewApplicationUser, teacherId.Value);
+            }
+            else
+            {
+                // Handle the case where neither ID is provided
+                ModelState.AddModelError(string.Empty, "Either Teacher ID or Student ID must be provided.");
+                return Page();
             }
 
-            var result = await _userManager.CreateAsync(newUser);
-
+            // Check if the result indicates success or failure
             if (result.Succeeded)
             {
-                // After user creation, link the user with the student
+                // Handle success case
                 if (studentId.HasValue)
                 {
-                    var student = await _studentService.GetStudentById(studentId.Value);
-                    student.UserId = newUser.Id;  // Link Student to the ApplicationUser
-                    await _studentService.RegisterStudentAsync(student);  TODO: // CREATE THE REGISTER STUDENT METHOD
-                    await _userManager.AddToRoleAsync(newUser, "Student");
-
-                    TempData["SuccessMessage"] = "User has been successfully registered.";
-
+                    TempData["SuccessMessage"] = "Student has been successfully registered.";
                     return RedirectToPage(new { studentId = studentId });
-                } 
+                }
                 else if (teacherId.HasValue)
                 {
-                    var teacher = await _teacherService.GetTeacherById(teacherId.Value);
-                    teacher.UserId = newUser.Id;  // Link Student to the ApplicationUser
-                    await _teacherService.UpdateTeacherAsync(teacher);  // Save the changes
-                    await _userManager.AddToRoleAsync(newUser, "Teacher");
-
                     TempData["SuccessMessage"] = "User has been successfully registered.";
-
                     return RedirectToPage(new { teacherId = teacherId });
                 }
 

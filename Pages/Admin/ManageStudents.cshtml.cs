@@ -53,13 +53,9 @@ namespace SchoolSystem.Pages.Admin
                 }
 
             }
-
-
-
             return Page();
         }
 
-        // API to get students by class ID
         public async Task<IActionResult> OnGetGetStudentsByClassAsync(int classId)
         {
             var students = await _studentService.GetStudentsByClassAsync(classId);
