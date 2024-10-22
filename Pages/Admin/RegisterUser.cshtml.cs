@@ -10,29 +10,20 @@ namespace SchoolSystem.Pages.Admin
 {
     public class RegisterUserModel : PageModel
     {
-        private readonly ApplicationDbContext _context;
         private readonly IIdValidationService _idValidationService;
         private readonly ITeacherService _teacherService;
         private readonly IStudentService _studentService;
-        private readonly IUserService _userService;
-        private readonly UserManager<ApplicationUser> _userManager;
         private readonly IUserRegistrationService _userRegistrationService;
 
         public RegisterUserModel(
-            ApplicationDbContext context, 
             IIdValidationService idValidationService, 
             ITeacherService teacherService, 
             IStudentService studentService, 
-            IUserService userService,
-            UserManager<ApplicationUser> userManager,
             IUserRegistrationService userRegistrationService)
         {
-            _context = context;
             _idValidationService = idValidationService;
             _teacherService = teacherService;
             _studentService = studentService;
-            _userService = userService;
-            _userManager = userManager;
             _userRegistrationService = userRegistrationService;
         }
 
