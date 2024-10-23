@@ -1,16 +1,4 @@
-﻿body {
-    background-color: #F5FFF5;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-h1 {
-    color: #003366;
-    text-align: center;
-    margin-bottom: 30px;
-    font-weight: bold;
-    font-size: 2em;
-}
-
+﻿
 .admin-container {
     max-width: 800px;
     margin: 0 auto;
@@ -50,17 +38,6 @@ h1 {
 .form-group {
     margin-bottom: 15px;
 }
-button {
-    display: block;
-    margin: 20px 0 0;
-    padding: 10px 20px;
-    background-color: #008C8C;
-    border: none;
-    color: white;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
 
 .form-control, .form-select {
     width: 100%;

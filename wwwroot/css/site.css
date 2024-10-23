@@ -1,6 +1,9 @@
 html, body {
-    height: 100%;
-    font-size: 14px;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
 }
 
 @media (min-width: 768px) {
@@ -16,9 +19,33 @@ body {
     /* Remove margin-bottom to avoid interfering with the footer placement */
 }
 
-main {
-    flex-grow: 1;
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #1D3557;
+    color: white;
+    padding: 0 20px;
+    box-sizing: border-box;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
 }
+
+
+main {
+    margin-top: 60px; /* Push the main content below the fixed header */
+    padding: 20px;
+    width: 100%; /* Allow the content to use full width */
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+    flex-grow: 1; /* This allows the main content to take up the remaining space */
+    overflow: auto; /* Ensures scrollable content if necessary */
+}
+
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
     box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
@@ -55,6 +82,123 @@ select.form-select {
     padding: 20px; /* Add padding around the container */
 }
 
-.container {
-    max-width: 1200px; /* Adjust width if needed */
+/* Update container class to use a more specific name to avoid Bootstrap conflicts */
+.app-container {
+    margin-left: 250px; /* Adjust for the sidebar width */
+    padding: 20px;
+    width: calc(100% - 250px); /* Account for sidebar width */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: margin-left 0.3s ease, width 0.3s ease;
 }
+
+    .app-container.full-width {
+        margin-left: 0;
+        width: 100%;
+    }
+
+/* Update main styles */
+main {
+    margin-top: 60px;
+    width: 100%;
+    max-width: 1200px; /* or whatever maximum width you prefer */
+    padding: 20px;
+    box-sizing: border-box;
+    flex-grow: 1;
+}
+
+/* Remove the conflicting styles */
+.main-content {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.toggle-sidebar {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 5px;
+    font-size: 20px;
+}
+
+.header-actions a {
+    color: white;
+    text-decoration: none;
+    margin-left: 20px;
+}
+
+/* Sidebar */
+.sidebar {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    height: calc(100vh - 60px);
+    width: 250px;
+    background-color: #457B9D;
+    color: white;
+    padding: 20px;
+    box-sizing: border-box;
+    box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
+    z-index: 500;
+    transition: transform 0.3s ease;
+}
+
+    .sidebar.closed {
+        transform: translateX(-250px);
+    }
+
+    .sidebar h2 {
+        margin-top: 0;
+        font-size: 20px;
+    }
+
+    .sidebar ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+        .sidebar ul li {
+            margin: 20px 0;
+        }
+
+            .sidebar ul li a {
+                color: white;
+                text-decoration: none;
+                font-size: 18px;
+                transition: color 0.3s ease;
+            }
+
+                .sidebar ul li a:hover {
+                    color: #A8DADC;
+                }
+
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-250px);
+    }
+
+        .sidebar.open {
+            transform: translateX(0);
+        }
+
+    .main-content {
+        margin-left: 0;
+    }
+}
+
+.header-actions a {
+    color: white;
+    text-decoration: none;
+    margin-left: 20px;
+}
+
+.header-logo {
+    font-weight: bold;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+

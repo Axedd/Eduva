@@ -12,77 +12,75 @@
     @RenderSection("Styles", required: false)
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index">Eduva</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                </div>
-                <div class="mr-2">
-                    <partial name="_LoginStatusPartial" />
-                </div>
+    <header class="header">
+        <div class="header-logo">
+            <button class="toggle-sidebar">☰</button>
+            Eduva
+        </div>
+        <div class="header-actions">
+            <div class="mr-2">
+                <partial name="_LoginStatusPartial" />
             </div>
-        </nav>
-
-        @if (!ViewContext.RouteData.Values["page"].ToString().Contains("/Account") && !ViewContext.RouteData.Values["page"].ToString().Contains("/Admin"))
-        {
-            // Initialize studentId and teacherId as nullable long
-            long? studentId = null;
-            long? teacherId = null;
-
-            // Check if ViewData contains the keys before accessing
-            if (ViewData.ContainsKey("StudentId") && ViewData["StudentId"] is long)
-            {
-                studentId = (long)ViewData["StudentId"];
-            }
-
-            if (ViewData.ContainsKey("TeacherId"))
-            {
-                teacherId = ViewData["TeacherId"] as long?;
-            }
-
-            // Default actualId to 0
-            long actualId = 0;
-
-            // Assign actualId based on the presence of studentId or teacherId
-            if (studentId.HasValue)
-            {
-                actualId = studentId.Value; // Assign value if studentId is not null
-            }
-            else if (teacherId.HasValue)
-            {
-                actualId = teacherId.Value; // Assign value if teacherId is not null
-            }
-
-            // Determine the userType based on the presence of studentId or teacherId
-            string? userType = null;
-
-            if (actualId != 0)
-            {
-                userType = studentId.HasValue ? "Student" : "Teacher";
-            }
-
-            // Invoke the component with actualId and userType
-            @await Component.InvokeAsync("UserHeaderInfo", new { id = actualId, type = userType });
-        }
-
+        </div>
 
     </header>
 
-    <div class="container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>Menu</h2>
+        <ul>
+            <li><a href="#">Dashboard</a></li>
+            <li><a asp-area="" asp-page="/Schedule/Index">Schedule</a></li>
+            <li><a href="#">Grades</a></li>
+            <li><a href="#">Reports</a></li>
+            <li><a href="#">Settings</a></li>
+        </ul>
+    </div>
+
+    <div class="app-container">
         <main role="main" class="pb-3">
+            @if (!ViewContext.RouteData.Values["page"].ToString().Contains("/Account") && !ViewContext.RouteData.Values["page"].ToString().Contains("/Admin"))
+            {
+                // Initialize studentId and teacherId as nullable long
+                long? studentId = null;
+                long? teacherId = null;
+
+                // Check if ViewData contains the keys before accessing
+                if (ViewData.ContainsKey("StudentId") && ViewData["StudentId"] is long)
+                {
+                    studentId = (long)ViewData["StudentId"];
+                }
+
+                if (ViewData.ContainsKey("TeacherId"))
+                {
+                    teacherId = ViewData["TeacherId"] as long?;
+                }
+
+                // Default actualId to 0
+                long actualId = 0;
+
+                // Assign actualId based on the presence of studentId or teacherId
+                if (studentId.HasValue)
+                {
+                    actualId = studentId.Value; // Assign value if studentId is not null
+                }
+                else if (teacherId.HasValue)
+                {
+                    actualId = teacherId.Value; // Assign value if teacherId is not null
+                }
+
+                // Determine the userType based on the presence of studentId or teacherId
+                string? userType = null;
+
+                if (actualId != 0)
+                {
+                    userType = studentId.HasValue ? "Student" : "Teacher";
+                }
+
+                // Invoke the component with actualId and userType
+                @await Component.InvokeAsync("UserHeaderInfo", new { id = actualId, type = userType })
+                ;
+            }
             @RenderBody()
         </main>
     </div>
