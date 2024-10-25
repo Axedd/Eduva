@@ -13,15 +13,10 @@
     </style>
 }
 
-
-
-
-
-<h4>Schedule Preferences</h4>
-
 @if (Model.ScheduleModulePreferences.Count > 0)
 {
     <div class="container">
+        <h4>Schedule Preferences</h4>
         <ul class="list-group">
             @foreach (var ModulePreference in Model.ScheduleModulePreferences)
             {
@@ -71,33 +66,32 @@
                 </li>
             }
         </ul>
+        <form class="form-inline" method="post">
+            <div class="form-group mx-sm-2 mb-2">
+                <label class="sr-only" for="inlineFormInput">Module Number</label>
+                <input type="text" name="ScheduleModulePreference.ModuleNumber" class="form-control" id="inlineFormInput" placeholder="0">
+            </div>
+
+            <div class="form-group mx-sm-2 mb-2">
+                <label class="sr-only" for="inlineFormInputGroup">Start Time</label>
+                <input type="time" name="ScheduleModulePreference.StartTime" class="form-control" id="inlineFormInputGroup" placeholder="00:00">
+            </div>
+
+            <div class="form-group mx-sm-2 mb-2">
+                <label class="sr-only" for="inlineFormInputGroup">End Time</label>
+                <input type="time" name="ScheduleModulePreference.EndTime" class="form-control" id="inlineFormInputGroup" placeholder="00:00">
+            </div>
+
+            <div class="form-check mx-sm-2 mb-2">
+                <input class="form-check-input" name="ScheduleModulePreference.IsBreakTime" type="checkbox" id="autoSizingCheck">
+                <label class="form-check-label" for="autoSizingCheck">
+                    Break Time?
+                </label>
+            </div>
+
+            <button type="submit" class="btn btn-primary mb-2">Add</button>
+        </form>
     </div>
-
-    <form class="form-inline" method="post">
-        <div class="form-group mx-sm-2 mb-2">
-            <label class="sr-only" for="inlineFormInput">Module Number</label>
-            <input type="text" name="ScheduleModulePreference.ModuleNumber" class="form-control" id="inlineFormInput" placeholder="0">
-        </div>
-
-        <div class="form-group mx-sm-2 mb-2">
-            <label class="sr-only" for="inlineFormInputGroup">Start Time</label>
-            <input type="time" name="ScheduleModulePreference.StartTime" class="form-control" id="inlineFormInputGroup" placeholder="00:00">
-        </div>
-
-        <div class="form-group mx-sm-2 mb-2">
-            <label class="sr-only" for="inlineFormInputGroup">End Time</label>
-            <input type="time" name="ScheduleModulePreference.EndTime" class="form-control" id="inlineFormInputGroup" placeholder="00:00">
-        </div>
-
-        <div class="form-check mx-sm-2 mb-2">
-            <input class="form-check-input" name="ScheduleModulePreference.IsBreakTime" type="checkbox" id="autoSizingCheck">
-            <label class="form-check-label" for="autoSizingCheck">
-                Break Time?
-            </label>
-        </div>
-
-        <button type="submit" class="btn btn-primary mb-2">Add</button>
-    </form>
 } else
 {
 	<p>No preferences made</p>

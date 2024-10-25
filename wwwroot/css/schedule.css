@@ -1,37 +1,66 @@
-﻿.schedule-header {
-    background-color: #f8f9fa;
-    border-bottom: 2px solid #dee2e6;
-    margin-bottom: 10px; /* Space below header */
+﻿/* Container styles */
+.container-fluid {
+    width: auto;
+    min-width: 100%;
+    padding: 0 15px;
+    box-sizing: border-box;
+    overflow: hidden; /* Remove overflow handling from container */
 }
 
+/* Wrapper for schedule to handle scrolling */
+.schedule-wrapper {
+    overflow-x: auto;
+    overflow-y: hidden;
+    margin: 0 -15px; /* Compensate for container padding */
+    padding: 0 15px;
+}
+
+/* Schedule headers */
+.schedule-header:first-of-type,
+.schedule-header:nth-of-type(2) {
+    min-width: 1550px;
+    width: auto;
+    margin: 0;
+}
+
+/* Schedule container */
 .schedule-container {
-    display: flex; /* Flexbox for the main container */
+    min-width: 1550px;
+    width: auto;
+    position: relative;
+    white-space: nowrap;
+    overflow: visible; /* Remove overflow handling */
 }
 
 .schedule-column {
-    display: flex;
-    flex-direction: column; /* Each day as a single column */
-    flex: 1; /* Equal width for each column */
-    padding: 0 5px; /* Add some padding between columns */
-    border: 1px solid #dee2e6; /* Optional: add border to columns */
-    position: relative; /* Allow absolute positioning for children */
-    height: 600px; /* Adjust height as needed for earlier events (e.g., 04:00 to 15:15) */
+    display: inline-block;
+    vertical-align: top;
+    width: 200px;
+    padding: 0 5px;
+    border: 1px solid #dee2e6;
+    position: relative;
+    min-height: 600px;
+    overflow: visible;
 }
 
 .module-column {
-    height: 600px; 
-    flex: 0 0 150px;
+    display: inline-block;
+    vertical-align: top;
+    width: 150px;
     padding-right: 10px;
     position: relative;
+    min-height: 600px;
+    overflow: visible;
 }
 
+/* Schedule items */
 .schedule-cell {
     border: 1px solid #dee2e6;
     padding: 5px;
-    height: 75px; /* Fixed height for each module */
     width: 120px;
     box-sizing: border-box;
-    position: absolute; /* Allow for child positioning */
+    position: absolute;
+    background-color: white;
 }
 
 .schedule-item {
@@ -41,11 +70,48 @@
     padding: 5px;
     font-size: 0.8em;
     overflow: hidden;
-    width: calc(100% - 10px); /* Adjust for padding */
-    left: calc(3%); /* Add space on the left */
-    transition: top 0.2s;
+    box-sizing: border-box;
+    width: 180px;
+    left: 10px;
 }
 
-.schedule-break {
-    height: 25px;
+/* Headers */
+.schedule-header {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+}
+
+    .schedule-header:first-of-type .col {
+        width: 100%;
+        padding: 0 150px;
+    }
+
+    .schedule-header:nth-of-type(2) {
+        display: flex;
+    }
+
+        .schedule-header:nth-of-type(2) .col:first-child {
+            width: 150px;
+            flex: none;
+        }
+
+        .schedule-header:nth-of-type(2) .col {
+            width: 200px;
+            flex: none;
+            padding: 10px 5px;
+        }
+
+/* Keep text from wrapping */
+.module-info, .module-time {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Media query for smaller screens */
+@media (max-width: 1550px) {
+    .schedule-wrapper {
+        overflow-x: auto;
+        overflow-y: hidden;
+    }
 }

@@ -45,21 +45,27 @@ namespace SchoolSystem.Services
         public async Task<(int WeekNumber, List<DateTime> WeekDays)> GetCurrentWeekAsync(int? weekNum)
         {
             DateTime today = DateTime.Today;
-            int currentWeekNumber = 0;
+            int currentWeekNumber = weekNum ?? _scheduleCalculatorService.GetWeekNumberOfYear(today);
 
-            if (weekNum != null)
-            {
-                currentWeekNumber = weekNum.Value;
-            }
-            else
-            {
-                currentWeekNumber = _scheduleCalculatorService.GetWeekNumberOfYear(today);
-            }
+            List<DateTime> currentWeekDays = _scheduleCalculatorService.GetCurrentWeekDays(currentWeekNumber);
 
-            List<DateTime> currentWeekDays = _scheduleCalculatorService.GetCurrentWeekDays(weekNum);
+            // Check for weekend agendas and remove weekends if none found
+            currentWeekDays = await RemoveWeekendsIfNoAgendas(currentWeekDays);
 
-            // Return both the week number and the list of weekdays
             return (currentWeekNumber, currentWeekDays);
+        }
+
+        public async Task<List<DateTime>> RemoveWeekendsIfNoAgendas(List<DateTime> weekDays)
+        {
+            var weekendDays = GetWeekendDays(weekDays);
+
+            // If there are no agendas on weekend days, remove them from the list
+            if (!await _agendaService.HasWeekendAgendas(weekendDays))
+            {
+                return weekDays.Except(weekendDays).ToList();
+            }
+
+            return weekDays;
         }
 
         public Dictionary<string, List<Agenda>> GroupAgendasByDay(List<Agenda> agendas)
@@ -77,6 +83,7 @@ namespace SchoolSystem.Services
             return _scheduleCalculatorService.FindGlobalLatestEndTime(agendas);
         }
 
+
         public Dictionary<string, List<List<Agenda>>> FindOverlappingEvents(List<Agenda> agendas)
         {
             var AgendasByDay = GroupAgendasByDay(agendas);
@@ -88,6 +95,11 @@ namespace SchoolSystem.Services
                 OverlappingGroupsByDay[day] = _scheduleCalculatorService.FindOverlappingGroups(AgendasByDay[day]);
             }
             return OverlappingGroupsByDay;
+        }
+
+        private List<DateTime> GetWeekendDays(List<DateTime> dates)
+        {
+            return dates.Where(date => date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday).ToList();
         }
 
     }

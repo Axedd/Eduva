@@ -93,16 +93,16 @@ select.form-select {
     transition: margin-left 0.3s ease, width 0.3s ease;
 }
 
-    .app-container.full-width {
+.app-container.full-width {
         margin-left: 0;
         width: 100%;
-    }
+}
 
 /* Update main styles */
 main {
     margin-top: 60px;
     width: 100%;
-    max-width: 1200px; /* or whatever maximum width you prefer */
+    max-width: 1600px; /* or whatever maximum width you prefer */
     padding: 20px;
     box-sizing: border-box;
     flex-grow: 1;

@@ -16,5 +16,7 @@ namespace SchoolSystem.Interfaces
         string SanitizeAgenda(string textToSanitize);
 
         string GetTinyMceApiKey();
+
+        Task<bool> HasWeekendAgendas(List<DateTime> weekendDays);
     }
 }

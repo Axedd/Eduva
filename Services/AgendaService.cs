@@ -5,6 +5,7 @@ using SchoolSystem.Data;
 using SchoolSystem.Interfaces;
 using SchoolSystem.Models;
 using System;
+using System.Linq;
 
 namespace SchoolSystem.Services
 {
@@ -216,6 +217,19 @@ namespace SchoolSystem.Services
                 _logger.LogError(ex, "An unexpected error occurred while updating the agenda with ID {AgendaId}.", agendaId);
                 throw new Exception("An unexpected error occurred. Please try again.");
             }
+        }
+
+        public async Task<bool> HasWeekendAgendas(List<DateTime> weekendDays)
+        {
+            foreach (var day in weekendDays)
+            {
+                if (await _context.Agenda.AnyAsync(a => a.StartDateTime.Date == day.Date))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public string SanitizeAgenda(string textToSanitize)
