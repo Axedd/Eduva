@@ -1,4 +1,3 @@
-using SchoolSystem.Authorization;
 using SchoolSystem.Data;
 using SchoolSystem.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -62,10 +61,6 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders(); 
 
-
-
-// Register authorization handlers
-builder.Services.AddSingleton<IAuthorizationHandler, HRMangerProbationRequirementHandler>();
 
 
 // Dependency Injection
